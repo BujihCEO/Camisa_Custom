@@ -1,0 +1,142 @@
+.Bg_Tshirt {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.Tshirt {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1/1;
+    background-image: url(assents/Branco.png);
+    background-size: cover;
+    background-position: center;
+    margin: auto;
+    overflow: hidden;
+}
+
+.Tshirt.Zoom {
+    background-size: 190%;
+}
+
+.Preview {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 29/42;
+    border: 2px solid transparent;
+}
+
+.Preview.border {
+    border: 2px dashed red;
+}
+
+.Preview.Zoom {
+    transform: scale(1.90);
+}
+
+.Pr_Drag {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.ImgSelector {
+    display: none;
+}
+
+.ImgSelector.selected {
+    position: absolute;
+    display: block;
+    border: 2px dashed red;
+}
+
+.ImgDragMove {
+    height: 100%;
+    width: 100%;
+}
+
+.ImgSizeControl {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -60px;
+    right: -60px;
+    height: 60px;
+    width: 60px;
+    background-color: white;
+    background-image: url(assents/Size.svg);
+    background-size: 90%;
+    background-position: center;
+    border: 2px solid;
+    border-radius: 40%;
+    border-bottom-left-radius: 0;
+    box-sizing: border-box;
+}
+
+.Zomm_Wrap {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 12%;
+    aspect-ratio: 1/1;
+    bottom: 1%;
+    left: 1%;
+    background-color: #fff;
+    border: 3px solid black;
+    border-radius: 30%;
+}
+
+.Zoom_Btn {
+    height: 100%;
+    width: 100%;
+    color: black;
+    margin: 10%;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.Zoom_Btn.selected {
+    display: none;
+}
+
+.Zoom_Btn.In {
+    background-image: url(assents/Zoom-in.svg);
+}
+
+.Zoom_Btn.Out {
+    background-image: url(assents/Zoom-out.svg);
+}
+
+.Pr_Border {
+    position: absolute;
+    height: 12%;
+    aspect-ratio: 1/1;
+    bottom: 1%;
+    right: 1%;
+    color: black;
+    background-color: white;
+    background-image: url(assents/Border.svg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 3px solid black;
+    border-radius: 30%;
+}
+
+.Personalization {
+    height: 2000px;
+    width: 100%;
+    background-color: aqua;
+}

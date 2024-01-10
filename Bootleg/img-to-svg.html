@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG com Borda</title>
+</head>
+<body>
+    <input type="file" id="inputFile" accept="image/*" onchange="loadAndVectorizeImage()">
+    <div id="svgContainer"></div>
+
+    <script src="https://potrace.sourceforge.io/js/potrace.min.js"></script>
+    <script>
+        function loadAndVectorizeImage() {
+            var input = document.getElementById('inputFile');
+            var svgContainer = document.getElementById('svgContainer');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var img = new Image();
+
+                    img.onload = function() {
+                        // Cria um elemento SVG
+                        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                        svg.setAttribute("width", img.width);
+                        svg.setAttribute("height", img.height);
+
+                        // Adiciona o caminho vetorizado ao SVG
+                        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path.setAttribute("d", getVectorizedPath(img));
+                        path.setAttribute("stroke", "black"); // Cor da borda
+                        path.setAttribute("stroke-width", "5"); // Largura da borda
+
+                        svg.appendChild(path);
+                        svgContainer.innerHTML = ''; // Limpa o conteúdo anterior
+                        svgContainer.appendChild(svg);
+                    };
+
+                    img.src = e.target.result;
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function getVectorizedPath(img) {
+            // Converte a imagem para um caminho SVG usando Potrace
+            var bitmap = new potrace.Bitmap(img);
+            var path = bitmap.trace().toSVG();
+            return path;
+        }
+    </script>
+</body>
+</html>

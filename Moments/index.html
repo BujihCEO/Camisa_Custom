@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="moments.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="headerWrap">
+        <div class="headerTitlle">Personalize</div>
+    </div>
+    <div class="Scroll">
+        <div class="Bg_Tshirt">
+            <div class="Tshirt">
+                <div class="Preview">
+                    <div class="Pr_Drag">
+                        <div class="Pr_ImgWrap display_1">
+                        </div>
+                    </div>
+                    <div class="ImgSelector">
+                        <div class="ImgDragMove"></div>
+                        <div class="ImgSizeControl"></div>
+                    </div>
+                </div>
+                <div class="Zomm_Wrap">
+                    <div class="Zoom_Btn In"></div>
+                    <div class="Zoom_Btn Out selected"></div>
+                </div>
+                <div class="Pr_Border"></div>
+            </div>
+        </div>
+        <div class="Personalization">
+            <div class="WRAPBTNOPTIONS">
+                <div class="BtnCustom BTNOPTIONS selected">Template</div>
+                <div class="BtnCustom BTNOPTIONS">Fotos</div>
+            </div>
+            <div class="CustomContainer selected">
+                <div class="TemplatesWrap"></div>
+            </div>
+            <div class="CustomContainer">
+                <div class="UploadImgWrap display_1">
+                </div>
+                <div class="ImgOptions">
+                    <div class="ImgEffect">
+                        <div class="Tittle">Brilho</div>
+                        <input type="range" class="threshold-slider" min="0.40" max="2" value="1" step="0.01" onchange="changeThreshold()" oninput="sliderStyle()">
+                    </div>
+                    <label class="ImgInputLabel" for="imgInput">
+                        Mudar imagem
+                        <div></div>
+                    </label>
+                    <input class="imgInput" id="imgInput" type="file" accept="image/*" oninput="loadNewImage()" style="display: none;">
+                </div>
+            </div>
+        </div>
+        <div class="loadContainer">
+            <div class="loading"></div>
+        </div>
+    </div>
+    <button onclick="Print()">Tirar Print</button>
+</body>
+<script src="potrace.js"></script>
+<script src="print.js"></script>
+<script src="moments.js"></script>
+<script></script>
+</html>

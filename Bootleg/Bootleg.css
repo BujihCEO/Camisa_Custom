@@ -1,0 +1,1143 @@
+:root {
+    --mask-image: none;
+    --mask-position: center bottom;
+    --mask-size: contain;
+    --text-color: #FFD700;
+}
+
+.PickersTitle {
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+    line-height: 1;
+    font-size: 25px;
+}
+
+.ProductSizeBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    width: 100%;
+    margin: 15px 0px;
+    overflow-x: auto;
+}
+
+.SizePicker {
+    display: flex;
+    height: 85%;
+    font-size: 25px;
+    background-color: #fff;
+    font-weight: 600;
+    color: #000;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 0px 10px;
+    margin: 0px 10px;
+    transition: .5s;
+    align-items: center;
+    justify-content: center;
+}
+
+.SizePicker.selected {
+    height: 100%;
+    background-color: black;
+    color: white;
+}
+
+.ProductColorsBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ColorPicker {
+    height: 90%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 50%;
+    transition: .5s;
+    margin: 0px 10px;
+}
+
+.ColorPicker.selected {
+    height: 100%;
+    border: 2px solid red;
+}
+
+.Bg_Tshirt {
+    position: sticky;
+    top: 0px;
+    width: 100%;
+    background-color: #ffffff;
+    z-index: 3;
+}
+
+.TshirtContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1/1;
+    background-image: url(Preto.png);
+    background-size: 100% auto;
+    background-position: center;
+    margin: auto;
+    overflow: hidden;
+    transition: .5s;
+}
+
+.previewContainer {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 3508/4961;
+    border: 1px dashed transparent;
+    box-sizing: content-box;
+    transition: .5s;
+}
+
+.preview {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.previewContainer.border {
+    border: 1px dashed limegreen;
+}
+
+.TshirtContainer.Zoom {
+    background-size: 190%;
+}
+
+.previewContainer.Zoom {
+    transform: scale(1.90);
+}
+
+.ImgContainerMasked {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: grayscale(1);
+    background-size: cover;
+    background-repeat: no-repeat;
+    -webkit-mask-image: var(--mask-image);
+    -webkit-mask-size: var(--mask-size);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: var(--mask-position);
+    mask-image: var(--mask-image);;
+    mask-size: var(--mask-size);
+    mask-repeat: no-repeat;
+    mask-position: var(--mask-position);
+}
+
+.ImgContainerColor {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #ffd700;
+    mix-blend-mode: multiply;
+    -webkit-mask-image: var(--mask-image);;
+    -webkit-mask-size: var(--mask-size);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: var(--mask-position);
+    mask-image: var(--mask-image);;
+    mask-size: var(--mask-size);
+    mask-repeat: no-repeat;
+    mask-position: var(--mask-position);
+}
+
+.ImgContainer {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ImgMaskContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.ImgMaskContainer.masked {
+    -webkit-mask-image: var(--mask-image);;
+    -webkit-mask-size: var(--mask-size);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: var(--mask-position);
+    mask-image: var(--mask-image);;
+    mask-size: var(--mask-size);
+    mask-repeat: no-repeat;
+    mask-position: var(--mask-position);
+}
+
+.PreviewImgContainer {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    height: 40%;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.PreviewImgContainer.selected {
+    border-color: #ff000082;
+}
+
+.PreviewImgContainer.rounded {
+    width: auto !important;
+}
+
+.RoundedContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.RoundedContainer.rounded {
+    aspect-ratio: 1/1;
+    background: black;
+    border: 2px solid gold;
+    border-radius: 50%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.imgWrap {
+    position: relative;
+    height: 100%;
+}
+
+.PreviewImg {
+    position: relative;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.PreviewImg.gradientMask {
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 30%);
+    mask-image: linear-gradient(to top, transparent 0%, black 30%);
+}
+
+.BlendModeImg {
+    display: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    -webkit-mask-image: unset;
+    -webkit-mask-size: cover;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: top;
+    mask-image: unset;
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    mask-position: top;
+}
+
+.BlendModeImg.blended {
+    display: block;
+}
+
+.TextPreview {
+    position: absolute;
+    font-size: 60px;
+    text-transform: uppercase;
+    text-align: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-repeat: no-repeat;
+    -webkit-text-stroke-color: #ffffff;
+    -webkit-text-stroke-width: 3px;
+    letter-spacing: 1px;
+    line-height: 1;
+    filter: drop-shadow(0px 0px 0px white);
+}
+
+.TextPreviewBG {
+    position: relative;
+    top: 0;
+    padding: 0px 1.5px;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.TextPreviewColor {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    background-color: var(--text-color);
+    mix-blend-mode: multiply;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.ImgSelector {
+    display: none;
+}
+
+.ImgSelector.selected {
+    position: absolute;
+    display: block;
+    border: 2px dashed red;
+}
+
+.ImgDragMove {
+    height: 100%;
+    width: 100%;
+}
+
+.ImgSizeControl {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -8px;
+    right: -8px;
+    height: 16px;
+    width: 16px;
+    background-color: #fff;
+    border: 2px solid black;
+    border-radius: 50%;
+    box-sizing: border-box;
+    cursor: ne-resize;
+}
+
+.ImgSizeControl::after {
+    content: '';
+    position: absolute;
+    height: 200%;
+    width: 200%;
+}
+
+.ImgCutBtn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: calc(50% - 8px);
+    bottom: -8px;
+    height: 16px;
+    width: 16px;
+    background: white;
+    border: 2px solid black;
+    border-radius: 30px;
+    cursor: n-resize;
+    box-sizing: border-box;
+}
+
+.ImgCutBtn::after {
+    content: '';
+    position: absolute;
+    height: 200%;
+    width: 200%;
+}
+
+.PreviwLayout {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 14%;
+    aspect-ratio: 1/1;
+    bottom: 3%;
+    left: 1%;
+    background-color: #fff;
+    border: 3px solid black;
+    border-radius: 20%;
+}
+
+.ZoomBtn {
+    height: 100%;
+    width: 100%;
+    color: black;
+    margin: 10%;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.ZoomBtn.selected {
+    display: none;
+}
+
+.ZoomBtn.In {
+    background-image: url(Zoom-in.svg);
+}
+
+.ZoomBtn.Out {
+    background-image: url(Zoom-out.svg);
+}
+
+.PreviewBorder {
+    position: absolute;
+    height: 14%;
+    aspect-ratio: 1/1;
+    bottom: 3%;
+    right: 1%;
+    color: black;
+    background-color: white;
+    background-image: url(Border.svg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 3px solid black;
+    border-radius: 20%;
+}
+
+.ContainerCustomization {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    font-size: .7rem;
+    background-color: #0ff;
+    background-image: url(Christmas.gif);
+    padding: 6px 0 20px;
+    border-bottom-left-radius: 2em;
+    border-bottom-right-radius: 2em;
+}
+
+.OptionCustomization {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.CustomizationContainer {
+    display: none;
+}
+
+.CustomizationContainer.selected {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.InputContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 14em;
+    width: 95%;
+    border-radius: 2em;
+    background-color: #fff;
+    box-shadow: 5px 5px 15px #000;
+    margin: 3em auto 0;
+}
+
+.UploadImageLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.UploadImageLabel p {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin: 0 10px;
+}
+
+.UploadImageLabel svg {
+    height: 80%;
+}
+
+.IconsContainer {
+    display: none;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+.imgIconsContainer {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+    border-left: 4px solid black;
+    border-right: 4px solid black;
+}
+
+.ImageIcon {
+    height: 85%;
+    max-width: 100%;
+    background-color: #fff;
+    border-radius: 2em;
+    margin: 0 3%;
+    border: 2px solid black;
+    box-shadow: 0 0;
+    transition: .5s;
+}
+
+.ImageIcon.selected {
+    height: 90%;
+    border: 2px solid red;
+    box-shadow: 0 0 5px;
+}
+
+.clearIconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0% 0;
+}
+
+.clearIconContainer svg {
+    height: 70%;
+}
+
+.ImgControls {
+    display: none;
+    width: 100%;
+    margin: 20px 0px 0px;
+}
+
+.ContainerCustomization input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 95%;
+    height: 40px;
+    background-color: #ddd;
+    border-radius: 40px;
+    margin: 0;
+    z-index: 2;
+}
+
+.ContainerCustomization input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.ContainerCustomization input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    background: #fff;
+    border-radius: 0px;
+    border: 3px solid #000;
+    margin: 0 -20 0 0;
+}
+
+.ControlImgContainer {
+    display: none;
+}
+
+.ControlImgContainer.selected {
+    display: flex;
+    flex-direction: column;
+}
+
+.ControlImgContainer button {
+    cursor: pointer;
+}
+
+.ControlImgContainer svg {
+    height: 100%;
+}
+
+.PositionBtns {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+}
+
+.PositionBtns button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    aspect-ratio: 1/1;
+    margin: -20px 55px;
+    border: 0px solid black;
+    border-radius: 80px;
+    transition: box-shadow 0.5s;
+}
+
+.LayerControls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 9em;
+}
+
+.LayerControls button {
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 1em;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 700;
+    transition: box-shadow .5s;
+    background-size: 100%;
+    background-color: #fff;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.MaskControls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 9em;
+}
+
+.MaskControls button {
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 1em;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 700;
+    transition: box-shadow .5s;
+    background-size: 100%;
+    background-color: #fff;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.LayerControls > *, .MaskControls > * {
+    margin: 0 0.3em
+}
+
+.BtnsSizeContainer {
+    grid-column: 1 / 3;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 60px 0px 70px;
+}
+
+.BtnsSizeContainer button {
+    display: flex;
+    height: 150px;
+    width: 150px;
+    border: 6px solid black;
+    border-radius: 40px;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    font-weight: 700;
+    transition: box-shadow 0.5s;
+}
+
+.SizeType {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ImgEffect {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0 0;
+}
+
+.ImgEffect.selected {
+    display: flex;
+}
+
+.ImgEffect.Shadow {
+    margin: 0px;
+} 
+
+.LabelImgShadowColor {
+    height: 50px;
+    width: 150px;
+    border: 2px solid black;
+    border-radius: 25px;
+}
+
+.InputColorContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.CopyandPasteColor {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 40px;
+    width: 85px;
+    border: 3px solid black;
+    background-color: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.TittleCopyandPast {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    font-size: 2.8em;
+    line-height: 1;
+    color: #000;
+    background-color: #fff;
+    border-bottom: 3px solid black;
+}
+
+.ImgEffect.Gradient {
+    flex-direction: row;
+}
+
+.ImgGradient {
+    height: 60px;
+    aspect-ratio: 1/1;
+    background-color: transparent;
+    background-image: linear-gradient(to top,transparent 0%, black 0%);
+    border: 3px solid white;
+    border-radius: 15px;
+    margin: 0 15px;
+}
+
+.ImgGradient.With {
+    background-image: linear-gradient(to top,transparent 0%, black 50%);
+}
+
+.ContainerImgCorEff {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+}
+
+.OptionImgColorEffect {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+    background-color: #fff;
+    color: #000;
+    border: 2px solid black;
+    border-radius: 15px;
+    margin: 0px 15px;
+    padding: 5px;
+    box-shadow: 0 0 0px;
+    transition: .5s;
+}
+
+.OptionImgColorEffect.selected {
+    height: 100%;
+    border: 2px solid red;
+    box-shadow: 0 0 10px red;
+}
+
+.ImgColorEffectContainer {
+    display: none;
+}
+
+.ImgColorEffectContainer.selected {
+    display: flex;
+    margin: 20px 0px 0px;
+}
+
+.RoundedSelector {
+    flex-shrink: 0;
+    height: 90%;
+    aspect-ratio: 1/1;
+    margin: 0 13px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 0px solid red;
+    box-shadow: 2px 2px 5px #000;
+    transition: .5s;
+}
+
+.RoundedSelector.selected {
+    border: 2px solid red;
+    height: 100%;
+}
+
+.RoundedEffectOptions.WRAPBTNOPTIONS {
+    width: 0%;
+    transition: width 1s;
+}
+
+.RoundedEffectOptions.WRAPBTNOPTIONS.selected {
+    width: 100%;
+}
+
+.RoundedCustomContainer {
+    display: none;
+}
+
+.RoundedCustomContainer.selected {
+    display: flex;
+    flex-direction: column;
+}
+
+.btnType1 {
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 1em;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 700;
+    transition: box-shadow .5s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.ContainerCustomization input[type="text"] {
+    width: 80%;
+    font-size: 3em;
+    font-weight: 700;
+    text-align: center;
+    border: 0px; 
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 20px auto;
+}
+
+.OptionTextContainer {
+    display: none;
+}
+
+.OptionTextContainer.selected {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.TextSettings {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 9em;
+}
+
+.TextSettings > * {
+    margin: 0 0.3em;
+}
+
+.TextSettings button {
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 1em;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 700;
+    transition: box-shadow .5s;
+    background-size: 100%;
+    background-color: #fff;
+    color: black;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.TextSettings svg {
+    height: 100%;
+}
+
+.PositionTextBtns {
+    display: flex;
+    align-items: center;
+    margin: 60px 0px 70px;
+    justify-content: center;
+}
+
+.PositionTextBtns button {
+    display: flex;
+    height: 150px;
+    width: 150px;
+    border: 6px solid black;
+    border-radius: 40px;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    margin: 0px 50px;
+    transition: box-shadow 0.5s;
+}
+
+.FontFamilyContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 10em;
+    overflow-x: scroll;
+}
+
+.FontFamilySelector {
+    display: flex;
+    height: 90%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    font-size: 5em;
+    font-weight: 700;
+    line-height: 0;
+    color: black;
+    background-size: 100%;
+    background-color: #fff;
+    margin: 0 10px;
+    transition: border .5s,height .5s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.FontFamilySelector.selected {
+    border: 2px solid red;
+    height: 100%;
+}
+
+.BackgroundTextEffect {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 10em;
+    overflow-x: scroll;
+}
+
+.btnBackgroundText {
+    display: flex;
+    height: 90%;
+    aspect-ratio: 1/1;
+    flex-shrink: 0;
+    border: 2px solid black;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 700;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    margin: 0 10px;
+    transition: .5s;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.btnBackgroundText.selected {
+    border: 2px solid red;
+    height: 100%;
+}
+
+.BackgroundCustomOptions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 24em;
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.BgOption {
+    flex-shrink: 0;
+    position: relative;
+    height: 90%;
+    aspect-ratio: 29/42;
+    margin: 0 10px;
+    border-radius: 1em;
+    border: 3px solid black;
+    transition: border .5s, height .5s;
+    cursor: pointer;
+}
+
+.BgOption.selected {
+    height: 100%;
+    border: 3px solid red;
+}
+
+.BgOption.Texture {
+    background-size: cover;
+}
+
+.jscolor {
+    height: 50px;
+    aspect-ratio: 2/1.5;
+    margin: 0 20px;
+    border: 3px solid black;
+    border-radius: 10px;
+}
+
+.jscolor-wrap {
+    left: calc(50% - 156px) !important;
+}
+
+.jscolor-wrap .jscolor-btn {
+    width: 100%;
+    border: none !important;
+}
+
+.Wrap_1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 3em 0 0;
+}
+
+.Tittle_1 {
+    display: flex;
+    font-size: 3em;
+    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    color: #000;
+    padding: 0 15px;
+    margin-bottom: 15px;
+    border-radius: 2em;
+    box-shadow: 0 5px 10px #000;
+}
+
+.WRAPBTNOPTIONS {
+    display: flex;
+    width: 100%;
+    border-radius: 2em;
+    overflow: hidden;
+    overflow-x: auto;
+    :first-child {
+        margin-left: 0px;
+    }
+    :last-child {
+        margin-right: 0px;
+    }
+}
+
+.WRAPBTNOPTIONS.SUB {
+    margin: 20px 0px 0px;
+}
+
+.BTNOPTIONS {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 1.7em;
+    font-size: 3em;
+    font-weight: 700;
+    padding: 10px 20px;
+    margin: 0 3px;
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+}
+
+.BTNOPTIONS.selected {
+    background-color: #000;
+    color: #fff;
+}
+
+@keyframes BoxShadowSelected {
+    0% {
+        width: 0px;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.Positive {
+    background: url(Positive.svg) center / contain no-repeat white;
+}
+
+.Negative {
+    background: url(Negative.svg) center / contain no-repeat white;
+}
+
+.Up {
+    background: url(Up.svg) center / contain no-repeat;
+}
+
+.Down {
+    background: url(Down.svg) center / contain no-repeat;
+}
+
+.Left {
+    background: url(Left.svg) center / contain no-repeat;
+}
+
+.Right {
+    background: url(Right.svg) center / contain no-repeat;
+}
+
+.MaskImgFalse {
+    background: url(Mask-Out.png) center / contain no-repeat;
+}
+
+.MaskImgTrue {
+    background: url(Mask-In.png) center / contain no-repeat;
+}
+
+.RoundedSelector {
+    background: url(Rounded.png) center / contain no-repeat;
+}
+
+.Layer-Exm {
+    background: url(LayerSvg.svg) center / contain no-repeat;
+}
+
+@media screen and (min-width: 768px) {
+    .ContainerCustomization {
+        ::-webkit-scrollbar {
+            background-color: #fff;
+            width: 16px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #fff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #babac0;
+            border-radius: 16px;
+            border: 4px solid #fff;
+        }
+        ::-webkit-scrollbar-button {
+            display:none;
+        }
+    }
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="card">
+        <div class="halftone"></div>
+    </div>
+    <div class="card">
+        <div class="halftone"></div>
+    </div>
+</body>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1rem;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, min(400px, 100%));
+  gap: 1rem;
+  align-items: center;
+  background: linear-gradient(45deg, red, blue);
+  justify-content: center;
+}
+
+.card {
+    --mask: radial-gradient(circle at center, rgb(0 0 0), rgb(0 0 0 / 0.2));
+    --dotsColor: 255 255 255;
+    --bg: radial-gradient(circle at center, rgb(var(--dotsColor)) 3%, rgb(var(--dotsColor) / 0.4) var(--dotRadius, 70%));
+    --bgSize: var(--size);
+    --cardBg: linear-gradient(135deg, hotpink, blue);
+    background: var(--cardBg);
+    overflow: hidden;
+    border: 2px solid;
+    border-image: var(--cardBg) 30;
+}
+
+.halftone {
+    position: relative;
+    aspect-ratio: 1;
+    background: rgb(0 0 0);
+    filter: contrast(var(--contrast, 20)) invert(var(--invert, 0));
+    mix-blend-mode: var(--blendMode, multiply);
+}
+
+.halftone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg);
+    background-size: var(--bgSize, 0.75rem) var(--bgSize, 0.75rem);
+    background-repeat: round;
+    background-position: 0 0, var(--bgPosition) var(--bgPosition);
+    -webkit-mask-image: var(--mask);
+    mask-image: var(--mask);
+    mask-size: cover;
+    mask-position: center;
+    transition: background-size 100ms;
+}
+</style>
+</html>

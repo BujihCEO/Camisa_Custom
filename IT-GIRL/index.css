@@ -1,0 +1,523 @@
+.Bg_Tshirt {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+    z-index: 3;
+}
+
+.Tshirt {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1/1;
+    background-image: url(assents/Branco.png);
+    background-size: cover;
+    background-position: center;
+    margin: auto;
+    overflow: hidden;
+    --resize: 1;
+    --color: red;
+}
+
+.Tshirt.Zoom {
+    background-size: 190%;
+}
+
+.Preview {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 3508/4961;
+    border: 2px solid transparent;
+    opacity: 80%;
+}
+
+.Preview.border {
+    border: 2px dashed red;
+}
+
+.Preview.Zoom {
+    transform: scale(1.90);
+}
+
+.Pr_Drag {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.imgWrap {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 1%;
+    width: 72%;
+    aspect-ratio: 1/1.67;
+    border: calc(0.4vw * var(--resize)) solid var(--color);
+    border-radius: calc(2vw * var(--resize));
+    overflow: hidden;
+}
+
+.ImgContainer {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    filter: contrast(25000%);
+    --mask: '';
+    -webkit-mask-image: var(--mask);
+    -webkit-mask-position: top;
+    -webkit-mask-size: cover;
+    mask-image: var(--mask);
+    mask-position: top;
+    mask-size: cover;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.ImgPreview {
+    position: relative;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    background-color: var(--color);
+}
+
+.halftone {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    right: -100%;
+    bottom: -100%;
+    background-blend-mode: multiply;
+    background: radial-gradient(100% 100%, var(--color), white);
+    --size: calc(0.1vh * var(--resize));
+    background-size: var(--size) var(--size);
+    background-position: 0 -3px, -2px 0, 2px 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    transform: rotate(11.25deg);
+    z-index: 1;
+}
+
+.TextName {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    bottom: 0px;
+    font-size: calc(14vw * var(--resize));
+    font-family: font_1;
+    color: white;
+    -webkit-text-stroke: calc(0.5vw * var(--resize)) var(--color);
+    line-height: .88;
+    text-transform: uppercase;
+}
+
+.Star {
+    background-color: var(--color);
+    -webkit-mask-image: url(assents/Star.svg);
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url(assents/Star.svg);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.Star.A1 {
+    position: absolute;
+    left: 0%;
+    top: 7%;
+    height: 23.05%;
+    aspect-ratio: 1/1;
+    -webkit-mask-position: left;
+    mask-position: left;
+}
+
+.Star.A2 {
+    position: absolute;
+    right: 0%;
+    top: 43%;
+    height: 23.05%;
+    aspect-ratio: 1/1;
+    -webkit-mask-position: right;
+    mask-position: right;
+}
+
+.oval {
+    position: absolute;
+    display: flex;
+    bottom: -1%;
+    left: 8%;
+    width: 10%;
+    aspect-ratio: 1/2;
+    border: calc(.4vw * var(--resize)) solid var(--color);
+    border-radius: 50%;
+    transform: rotate(75deg);
+    align-items: center;
+    justify-content: center;
+}
+
+.dateText {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 0;
+    left: 13.8%;
+    bottom: 6.3%;
+    color: var(--color);
+    font-family: font_2;
+    font-size: calc(2vw * var(--resize));
+    line-height: 0;
+}
+
+.midBar {
+    position: absolute;
+    bottom: 6.1%;
+    width: 45%;
+    height: calc(.4vw * var(--resize));
+    background-color: var(--color);
+}
+
+.PrText {
+    position: absolute;
+    color: var(--color);
+    font-size: calc(2vw * var(--resize));
+    bottom: 6.3%;
+    right: 5%;
+    font-family: font_2;
+    line-height: 0;
+}
+
+.ImgSelector {
+    display: none;
+}
+
+.ImgSelector.selected {
+    position: absolute;
+    display: block;
+    border: 2px dashed red;
+}
+
+.ImgDragMove {
+    height: 100%;
+    width: 100%;
+}
+
+.ImgSizeControl {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -60px;
+    right: -60px;
+    height: 60px;
+    width: 60px;
+    background-color: white;
+    background-image: url(assents/Size.svg);
+    background-size: 90%;
+    background-position: center;
+    border: 2px solid;
+    border-radius: 40%;
+    border-bottom-left-radius: 0;
+    box-sizing: border-box;
+}
+
+.Zomm_Wrap {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 12%;
+    aspect-ratio: 1/1;
+    bottom: 1%;
+    left: 1%;
+    background-color: #fff;
+    border: 3px solid black;
+    border-radius: 30%;
+}
+
+.Zoom_Btn {
+    height: 100%;
+    width: 100%;
+    color: black;
+    margin: 10%;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.Zoom_Btn.selected {
+    display: none;
+}
+
+.Zoom_Btn.In {
+    background-image: url(assents/Zoom-in.svg);
+}
+
+.Zoom_Btn.Out {
+    background-image: url(assents/Zoom-out.svg);
+}
+
+.Pr_Border {
+    position: absolute;
+    height: 12%;
+    aspect-ratio: 1/1;
+    bottom: 1%;
+    right: 1%;
+    color: black;
+    background-color: white;
+    background-image: url(assents/Border.svg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 3px solid black;
+    border-radius: 30%;
+}
+
+.Personalization {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: aqua;
+    background-image: url(https://usagif.com/wp-content/uploads/gif/snwflks-103.gif);
+    padding: 0px 0px 40px;
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+}
+
+.BtnCustomWrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.BtnCustom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 80px;
+    font-size: 60px;
+    font-family: sans-serif;
+    font-weight: 700;
+    padding: 10px 20px;
+    border: 6px solid black;
+    background-color: #fff;
+    color: black;
+}
+
+.BtnCustom.selected {
+    background-color: #000;
+    color: white;
+    font-size: 70px;
+}
+
+.CustomContainer {
+    display: none;
+}
+
+.CustomContainer.selected {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.UploadImgWrap {
+    display: flex;
+    width: 30%;
+    margin: 40px 0px 0px;
+}
+
+.IconContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background-color: white;
+    background-image: url(assents/Upload.svg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 0px solid black;
+    border-radius: 20%;
+    overflow: hidden;
+    box-shadow: 3px 5px 10px #000;
+    transition: border 0.5s, transform 0.5s;
+    box-sizing: border-box;
+}
+
+.IconContainer.selected {
+    transform: scale(1.1); 
+    border: 6px solid black;
+    z-index: 2;
+}
+
+.iconInput {
+    height: 100%;
+    width: 100%;
+}
+
+.imgIcon {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #ffffff;
+    object-fit: cover;
+}
+
+.ImgOptions {
+    display: none;
+}
+
+.ImgOptions.selected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 30px 0px;
+}
+
+.ImgEffect {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+    font-size: 50px;
+    font-family: sans-serif;
+    font-weight: 700;
+    margin: 70px 0px 0px;
+}
+
+.threshold-slider {
+    width: 100%;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 95%;
+    height: 80px;
+    margin: 10px 0;
+    background-color: #ddd;
+    border-radius: 40px;
+    margin: 0px;
+    z-index: 2;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 80px;
+    border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 100px;
+    background: #fff;
+    border-radius: 50px;
+    border: 6px solid #000;
+    margin-top: -10px;
+}
+
+.ImgInputLabel {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    width: 95%;
+    font-size: 50px;
+    font-family: sans-serif;
+    font-weight: 700;
+    background-color: #000;
+    color: #fff;
+    border: 6px solid #000;
+    border-radius: 50px;
+    margin: 100px 0px 0px;
+}
+
+.ImgInputLabel > * {
+    margin: 0px 20px;
+}
+
+.ImgInputLabel div {
+    height: 100%;
+    aspect-ratio: 1/1;
+    background-image: url(assents/Upload.svg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: invert(100%);
+}
+
+.InputTextContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 40px 0px 0px;
+}
+
+.Tittle {
+    position: relative;
+    font-size: 50px;
+    font-family: sans-serif;
+    font-weight: 700;
+    background-color: black;
+    color: white;
+    padding: 15px 30px 10px;
+    margin: 0 0 0 0px;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+}
+
+input[type="text"] {
+    width: 80%;
+    font-size: 60px;
+    font-family: sans-serif;
+    font-weight: 700;
+    border: 6px solid black;
+    border-radius: 30px;
+    padding: 20px 30px;
+}
+
+input[type="number"] {
+    width: 80%;
+    font-size: 60px;
+    font-family: sans-serif;
+    font-weight: 700;
+    border: 6px solid black;
+    border-radius: 30px;
+    padding: 20px 30px;
+}
+
+@font-face {
+    font-family: font_1;
+    src: url(assents/Lucidity_Psych.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: font_2;
+    src: url(assents/Lovelo_Black.otf) format('truetype');
+}

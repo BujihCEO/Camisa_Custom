@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <title>Document</title>
+    <script src="potrace.js"></script>
+</head>
+<body>
+    <div class="Scroll">
+        <div class="Bg_Tshirt">
+            <div class="Tshirt">
+                <div class="Preview">
+                    <div class="Pr_Drag">
+                        <div class="Pr_Bg_1"></div>
+                        <div class="TextPreview">
+                            Sometimes some things are just felt, not explaned.
+                        </div>
+                        <div class="Pr_ImgWrap">
+                            <div class="ImgContainer" data-position="1"></div>
+                            <div class="ImgContainer" data-position="2"></div>
+                            <div class="ImgContainer" data-position="3"></div>
+                            <div class="ImgContainer" data-position="4"></div>
+                        </div>
+                        <div class="Pr_Wrap">
+                            <div class="barCode"></div>
+                            <div class="TextPreview_2">Bujih</div>
+                        </div>
+                    </div>
+                    <div class="ImgSelector">
+                        <div class="ImgDragMove"></div>
+                        <div class="ImgSizeControl"></div>
+                    </div>
+                </div>
+                <div class="Zomm_Wrap">
+                    <div class="Zoom_Btn In"></div>
+                    <div class="Zoom_Btn Out selected"></div>
+                </div>
+                <div class="Pr_Border"></div>
+            </div>
+        </div>
+        <div class="Personalization">
+            <div class="BtnCustomWrap">
+                <div class="BtnCustom selected">Fotos</div>
+                <div class="BtnCustom">Textos</div>
+            </div>
+            <div class="CustomContainer selected">
+                <div class="UploadImgWrap">
+                    <div class="IconContainer" data-position="1">
+                        <label class="iconInput" for="imgInput"></label>
+                    </div>
+                    <div class="IconContainer" data-position="2">
+                        <label class="iconInput" for="imgInput"></label>
+                    </div>
+                    <div class="IconContainer" data-position="3">
+                        <label class="iconInput" for="imgInput"></label>
+                    </div>
+                    <div class="IconContainer" data-position="4">
+                        <label class="iconInput" for="imgInput"></label>
+                    </div>
+                </div>
+                <div class="ImgOptions">
+                    <div class="ImgEffect">
+                        <div class="Tittle">Brilho</div>
+                        <input type="range" class="threshold-slider" min="0.40" max="2" value="1" step="0.01" onchange="changeThreshold()" oninput="sliderStyle()">
+                    </div>
+                    <label class="ImgInputLabel" for="imgInput">
+                        Mudar imagem
+                        <div></div>
+                    </label>
+                    <input class="imgInput" id="imgInput" type="file" accept="image/*" oninput="loadNewImage()" style="display: none;">
+                </div>
+            </div>
+            <div class="CustomContainer">
+                <div class="InputTextContainer">
+                    <div class="Tittle">Texto Superior</div>
+                    <input class="InputText_1" type="text" placeholder="Escreva aqui..">
+                </div>
+                <div class="InputTextContainer">
+                    <div class="Tittle">Texto Inferior</div>
+                    <input class="InputText_2" type="text" placeholder="Escreva aqui..">
+                </div>
+            </div>
+        </div>
+        <div class="loadContainer">
+            <div class="loading"></div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

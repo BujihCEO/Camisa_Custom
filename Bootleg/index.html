@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="Bootleg.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="scrollContainer">
+        <div class="Bg_Tshirt">
+            <div class="TshirtContainer">
+                <div class="previewContainer">
+                    <div class="preview PrintTarget">
+                        <div class="ImgContainerMasked"></div>
+                        <div class="ImgContainerColor"></div>
+                        <div class="ImgContainer">
+                            <div class="TextPreview" min-left="0" min-right="0">
+                                <div class="TextPreviewBG">Nome</div>
+                                <div class="TextPreviewColor">Nome</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ImgSelector">
+                        <div class="ImgDragMove"></div>
+                        <div class="ImgSizeControl"></div>
+                        <div class="ImgCutBtn"></div>
+                    </div>
+                </div>
+                <div class="PreviwLayout">
+                    <div class="ZoomBtn In" onclick="ZoomInLayout(this)"></div>
+                    <div class="ZoomBtn Out selected" onclick="ZoomOutLayout(this)"></div>
+                </div>
+                <div class="PreviewBorder"></div>
+            </div>
+        </div>
+        <div class="ContainerCustomization">
+            <div class="WRAPBTNOPTIONS">
+                <div class="OptionCustom BTNOPTIONS selected">FOTOS</div>
+                <div class="OptionCustom BTNOPTIONS">TEXTO</div>
+                <div class="OptionCustom BTNOPTIONS">FUNDO</div>
+            </div>
+            <div class="CustomizationContainer selected">
+                <div class="InputContainer">
+                    <label for="LabelUploadImg" class="UploadImageLabel">
+                        <p>ADICIONAR IMAGEM</p>
+                        <div style="display: flex; justify-content: center; align-items: center; height: 70%; aspect-ratio: 1/1;">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11 8C11 7.44772 11.4477 7 12 7C12.5523 7 13 7.44771 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44771 11 8 11H11V8Z" fill="#0F0F0F"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M23 4C23 2.34315 21.6569 1 20 1H4C2.34315 1 1 2.34315 1 4V20C1 21.6569 2.34315 23 4 23H20C21.6569 23 23 21.6569 23 20V4ZM21 4C21 3.44772 20.5523 3 20 3H4C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4Z" fill="#0F0F0F"></path> </g></svg>
+                        </div>
+                    </label>
+                    <div class="FullUploaded" style="display: none; font-size: 42px; font-family: sans-serif; font-weight: 700; height: 100%;aspect-ratio: 1/1;flex-direction: column;align-items: center;justify-content: center;">
+                        <span>Cheio</span> 
+                        <span>(8/8)</span>
+                    </div>
+                    <input type="file" id="LabelUploadImg" class="imageUpload" accept="image/*" style="display: none;">
+                    <div class="IconsContainer">
+                        <div class="imgIconsContainer"></div>
+                        <div class="clearIconContainer">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12L14 16M14 12L10 16M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="ImgControls">
+                    <div class="WRAPBTNOPTIONS">
+                        <div class="BtnsChooseControlsImg BTNOPTIONS selected">Ajustes</div>
+                        <div class="BtnsChooseControlsImg BTNOPTIONS">Efeitos</div>
+                    </div>
+                    <div class="ControlImgContainer settings selected">
+                        <div class="Wrap_1">
+                            <div class="Tittle_1">Ordem</div>
+                            <div class="LayerControls">
+                                <button class="LayerDown Down"></button>
+                                <div class="Layer-Exm" style="height: 100%; aspect-ratio: 1/1;"></div>
+                                <button class="LayerUp Up"></button>
+                            </div>
+                        </div>
+                        <div class="Wrap_1">
+                            <div class="Tittle_1">Integração ao Fundo</div>
+                            <div class="MaskControls">
+                                <button class="MaskImgFalse"></button>
+                                <button class="MaskImgTrue"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ControlImgContainer Effect">
+                        <div class="WRAPBTNOPTIONS SUB">
+                            <div class="BtnImgEffect BTNOPTIONS selected">Sombra</div>
+                            <div class="BtnImgEffect BTNOPTIONS">Gradiante</div>
+                            <div class="BtnImgEffect BTNOPTIONS">Cor</div>
+                            <div class="BtnImgEffect BTNOPTIONS">Arredondado</div>
+                        </div>
+                        <div class="ImgEffect Shadow selected">
+                            <div class="Wrap_1">
+                                <div class="Tittle_1">Cor</div>
+                                <div class="InputColorContainer">
+                                    <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputImgShadowColor)" color="#FFFFFF">
+                                        <div class="TittleCopyandPast">
+                                            Colar
+                                        </div>
+                                    </div>
+                                    <button data-jscolor="{valueElement:'#InputImgShadowColor', onInput: 'updateJSColor(this, \'#CopyColor-ImgShadow\')'}"></button>
+                                    <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-ImgShadow">
+                                        <div class="TittleCopyandPast">
+                                            Copiar
+                                        </div>
+                                    </div>
+                                    <input class="InputImgShadowColor" id="InputImgShadowColor" value="#FFFFFF" type="text" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="Wrap_1">
+                                <div class="Tittle_1">Intesidade</div>
+                                <input type="range" class="ImgShadow" value="0" min="0" max="15" oninput="sliderStyle(this)">
+                            </div>
+                        </div>
+                        <div class="ImgEffect Gradient">
+                            <button class="ImgGradient"></button>
+                            <button class="ImgGradient With"></button>
+                        </div>
+                        <div class="ImgEffect Color">
+                            <div class="ContainerImgCorEff">
+                                <button class="OptionImgColorEffect">
+                                    <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">  <g> <path class="st0" d="M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087 c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512 c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z"></path> <path class="st0" d="M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0 c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z"></path> </g> </g></svg>
+                                </button>
+                                <button class="OptionImgColorEffect With">
+                                    <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+                                        <defs>
+                                          <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color: red;"></stop>
+                                            <stop offset="16.66%" style="stop-color: orange;"></stop>
+                                            <stop offset="33.33%" style="stop-color: yellow;"></stop>
+                                            <stop offset="50%" style="stop-color: green;"></stop>
+                                            <stop offset="66.66%" style="stop-color: blue;"></stop>
+                                            <stop offset="83.33%" style="stop-color: indigo;"></stop>
+                                            <stop offset="100%" style="stop-color: violet;"></stop>
+                                          </linearGradient>
+                                        </defs>
+                                      
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_iconCarrier" style="fill: url(#rainbow-gradient);">
+                                          <g>
+                                            <path class="st0" d="M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087 c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512 c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z"></path>
+                                            <path class="st0" d="M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0 c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z"></path>
+                                          </g>
+                                        </g>
+                                    </svg>                                  
+                                </button>
+                            </div>
+                            <div class="ImgColorEffectContainer">
+                                <div class="InputColorContainer">
+                                    <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputImgColor)" color="#FFFFFF">
+                                        <div class="TittleCopyandPast">
+                                            Colar
+                                        </div>
+                                    </div>
+                                    <button data-jscolor="{valueElement:'#InputImgColor', onInput: 'updateJSColor(this, \'#CopyColor-ImgColor\')'}"></button>
+                                    <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-ImgColor">
+                                        <div class="TittleCopyandPast">
+                                            Copiar
+                                        </div>
+                                    </div>
+                                    <input class="InputImgColor selected" id="InputImgColor" value="#7fffd4" type="text" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ImgEffect Rounded">
+                            <div style="display: flex; width: 100%; height: 60px; justify-content: center; align-items: center;">
+                                <div class="RoundedSelector"></div>
+                                <div class="RoundedEffectOptions WRAPBTNOPTIONS ">
+                                    <div class="RoundedOptions BTNOPTIONS selected">Borda</div>
+                                    <div class="RoundedOptions BTNOPTIONS">Fundo</div>
+                                    <div class="RoundedOptions BTNOPTIONS">Sombra</div>
+                                </div>
+                            </div>
+                            <div class="RoundedCustomContainer border selected">
+                                <div class="Wrap_1">
+                                    <div class="Tittle_1">Cor</div>
+                                    <div class="InputColorContainer">
+                                        <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputRoundedBorderColor)" color="#FFFFFF">
+                                            <div class="TittleCopyandPast">
+                                                Colar
+                                            </div>
+                                        </div>
+                                        <button data-jscolor="{valueElement:'#InputRoundedBorderColor', onInput: 'updateJSColor(this, \'#CopyColor-RoundedBorderColor\')'}"></button>
+                                        <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-RoundedBorderColor">
+                                            <div class="TittleCopyandPast">
+                                                Copiar
+                                            </div>
+                                        </div>
+                                        <input class="InputRoundedBorderColor selected" id="InputRoundedBorderColor" value="#ffd700" type="text" style="display: none;">
+                                    </div>
+                                </div>
+                                <div class="Wrap_1">
+                                    <div class="Tittle_1">Espessura</div>
+                                    <div style="display: flex; justify-content: space-evenly; width: 100%; height: 9em;">
+                                        <button class="LessRoundedBorder btnType1 Negative"></button>
+                                        <button class="MoreRoundedBorder btnType1 Positive"></button>
+                                    </div>
+                                </div> 
+                            </div>
+                            <div class="RoundedCustomContainer background">
+                                <div class="Wrap_1">
+                                    <div class="Tittle_1">Cor</div>
+                                    <div class="InputColorContainer">
+                                        <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputRoundedBGColor)" color="#FFFFFF">
+                                            <div class="TittleCopyandPast">
+                                                Colar
+                                            </div>
+                                        </div>
+                                        <button data-jscolor="{valueElement:'#InputRoundedBGColor', onInput: 'updateJSColor(this, \'#CopyColor-RoundedBGColor\')'}"></button>
+                                        <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-RoundedBGColor">
+                                            <div class="TittleCopyandPast">
+                                                Copiar
+                                            </div>
+                                        </div>
+                                        <input class="InputRoundedBGColor" id="InputRoundedBGColor" value="#000000" type="text" style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="RoundedCustomContainer shadow">
+                                <div class="Wrap_1">
+                                    <div class="Tittle_1">Cor</div>
+                                    <div class="InputColorContainer">
+                                        <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputRoundedShadowColor)" color="#FFFFFF">
+                                            <div class="TittleCopyandPast">
+                                                Colar
+                                            </div>
+                                        </div>
+                                        <button data-jscolor="{valueElement:'#InputRoundedShadowColor', onInput: 'updateJSColor(this, \'#CopyColor-RoundedShadowColor\')'}"></button>
+                                        <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-RoundedShadowColor">
+                                            <div class="TittleCopyandPast">
+                                                Copiar
+                                            </div>
+                                        </div>
+                                        <input class="InputRoundedShadowColor selected" id="InputRoundedShadowColor" value="#ffd700" type="text" style="display: none;">
+                                    </div>
+                                </div>
+                                <div class="Wrap_1">
+                                    <div class="Tittle_1">Tamanho</div>
+                                    <div style="display: flex; justify-content: space-evenly; width: 100%; height: 9em;">
+                                        <button class="LessRoundedShadow btnType1 Negative"></button>
+                                        <button class="MoreRoundedShadow btnType1 Positive"></button>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="CustomizationContainer">
+                <input type="text" class="TextInput" placeholder="Digite aqui...">
+                <div class="WRAPBTNOPTIONS">
+                    <div class="btnOptionText BTNOPTIONS selected">Ajustes</div>
+                    <div class="btnOptionText BTNOPTIONS">Estilo</div>
+                </div>
+                <div class="OptionTextContainer selected">
+                    <div class="Wrap_1 FontSize">
+                        <div class="Tittle_1">Tamanho</div>
+                        <div class="TextSettings">
+                            <button class="TextSize2xLess">2X</button>
+                            <button class="TextSizeLess Negative"></button>
+                            <div class="SizeType">
+                                <?xml version="1.0" encoding="utf-8"?>
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0" transform="matrix(1, 0, 0, 1, 2.220446049250313e-16, 0)"/>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1, 0, 0, 1, 2.220446049250313e-16, 0)"/>
+                                <g id="SVGRepo_iconCarrier" transform="matrix(1.1666669845581055, 0, 0, 1.1666669845581055, -2.0000040531158447, -2.0000040531158447)">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6h4m4 0h-4m0 0v12M4 11h3m3 0H7m0 0v7" stroke="#000000" style="stroke-width: 4.28571px;"/>
+                                </g>
+                                <g id="g-1" transform="matrix(1.1666669845581055, 0, 0, 1.1666669845581055, -2.0000040531158447, -2.0000040531158447)">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6h4m4 0h-4m0 0v12M4 11h3m3 0H7m0 0v7" style="stroke: rgb(255, 255, 255); stroke-width: 1.71429px;"/>
+                                </g>
+                                </svg>
+                            </div>
+                            <button class="TextSizePlus Positive"></button>
+                            <button class="TextSize2xPlus">2X</button>
+                        </div>
+                    </div>
+                    <div class="Wrap_1 LetterSpacing">
+                        <div class="Tittle_1">Espaço entre letras</div>
+                        <div class="TextSettings">
+                            <button class="LessLetterSpacing Negative"></button>
+                            <div class="SizeType">
+                                <?xml version="1.0" encoding="utf-8"?>
+                                <svg viewBox="0 0 15 15" style="height: 75%;" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+                                <g id="g-1" transform="matrix(0.8633110523223877, 0, 0, 0.8633110523223877, 0.9788130521774294, 0.6367120146751405)">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.55293 0.999969C4.75295 0.999969 4.93372 1.11917 5.0125 1.30301L8.01106 8.29982C8.11984 8.55363 8.00226 8.84757 7.74844 8.95635C7.49463 9.06512 7.20069 8.94754 7.09191 8.69373L6.11613 6.41685H2.98973L2.01395 8.69373C1.90517 8.94754 1.61123 9.06512 1.35742 8.95635C1.1036 8.84757 0.986023 8.55363 1.0948 8.29982L4.09336 1.30301C4.17214 1.11917 4.35291 0.999969 4.55293 0.999969ZM4.55293 2.76929L5.75186 5.56685H3.354L4.55293 2.76929ZM11.0562 9.00214C11.2617 9.00214 11.4463 8.87633 11.5215 8.68502L14.2733 1.68299C14.3743 1.42598 14.2478 1.13575 13.9908 1.03475C13.7338 0.933747 13.4436 1.06021 13.3426 1.31722L11.0562 7.13514L8.76973 1.31722C8.66873 1.06021 8.3785 0.933747 8.1215 1.03475C7.86449 1.13575 7.73802 1.42598 7.83902 1.68299L10.5908 8.68502C10.666 8.87633 10.8506 9.00214 11.0562 9.00214ZM14.9537 12.4999C14.9537 12.606 14.9115 12.7077 14.8365 12.7828L12.8365 14.7828C12.6803 14.939 12.4271 14.939 12.2708 14.7828C12.1146 14.6265 12.1146 14.3733 12.2708 14.2171L13.588 12.8999H1.51937L2.83653 14.2171C2.99274 14.3733 2.99274 14.6265 2.83653 14.7828C2.68032 14.939 2.42705 14.939 2.27084 14.7828L0.270843 12.7828C0.195828 12.7077 0.153687 12.606 0.153687 12.4999C0.153687 12.3938 0.195828 12.2921 0.270843 12.2171L2.27084 10.2171C2.42705 10.0609 2.68032 10.0609 2.83653 10.2171C2.99274 10.3733 2.99274 10.6265 2.83653 10.7828L1.51937 12.0999L13.588 12.0999L12.2708 10.7828C12.1146 10.6265 12.1146 10.3733 12.2708 10.2171C12.4271 10.0609 12.6803 10.0609 12.8365 10.2171L14.8365 12.2171C14.9115 12.2921 14.9537 12.3938 14.9537 12.4999Z" style="paint-order: stroke; fill-rule: evenodd; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 1.26363px;"/>
+                                </g>
+                                </svg>
+                            </div>
+                            <button class="MoreLetterSpacing Positive"></button>
+                        </div>
+                    </div>
+                    <div class="Wrap_1 Position">
+                        <div class="Tittle_1">Posição</div>
+                        <div class="TextSettings">
+                            <button class="TextDown Down"></button>
+                            <button class="TextUp Up"></button>
+                        </div>
+                    </div>
+                    <div class="Wrap_1 Stroke">
+                        <div class="Tittle_1">Borda</div>
+                        <div class="TextSettings">
+                            <button class="TextStrokeLess Negative"></button>
+                            <div class="SizeType">
+                                <svg viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+                                <g id="SVGRepo_iconCarrier" transform="matrix(0.75, 0, 0, 0.75, 2.8125000000000004, 3)">
+                                    <polygon points="14.802 4 11.247 20 15 20 15 22 5.5 22 5.5 20 9.198 20 12.753 4 9.5 4 9.5 2 19 2 19 4" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-linejoin: round; stroke-width: 4.44444px; paint-order: stroke;"/>
+                                </g>
+                                </svg>                            
+                            </div>
+                            <button class="TextStrokePlus Positive"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="OptionTextContainer">
+                    <div class="Wrap_1">
+                        <div class="Tittle_1">Fonte</div>
+                        <div class="FontFamilyContainer"></div>
+                    </div>
+                    <div class="Wrap_1">
+                        <div class="Tittle_1">Cor</div>
+                        <div class="InputColorContainer">
+                            <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputTextColor)" color="#FFFFFF">
+                                <div class="TittleCopyandPast">
+                                    Colar
+                                </div>
+                            </div>
+                            <button data-jscolor="{valueElement:'#InputTextColor', onInput: 'updateJSColor(this, \'#CopyColor-TextColor\')'}"></button>
+                            <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-TextColor">
+                                <div class="TittleCopyandPast">
+                                    Copiar
+                                </div>
+                            </div>
+                            <input class="InputTextColor" id="InputTextColor" value="#ffd700" type="text" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="Wrap_1">
+                        <div class="Tittle_1">Fundo</div>
+                        <div class="BackgroundTextEffect"></div>
+                    </div>
+                    <div class="Wrap_1">
+                        <div class="Tittle_1">Cor - Borda</div>
+                        <div class="InputColorContainer">
+                            <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputStrokeColor)" color="#FFFFFF">
+                                <div class="TittleCopyandPast">
+                                    Colar
+                                </div>
+                            </div>
+                            <button data-jscolor="{valueElement:'#InputStrokeColor', onInput: 'updateJSColor(this, \'#CopyColor-StrokeColor\')'}"></button>
+                            <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-StrokeColor">
+                                <div class="TittleCopyandPast">
+                                    Copiar
+                                </div>
+                            </div>
+                            <input class="InputStrokeColor" id="InputStrokeColor" value="#ffffff" type="text" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="CustomizationContainer">
+                <div class="Wrap_1 Color">
+                    <div class="Tittle_1 Mask">
+                        Cor
+                    </div>
+                    <div class="InputColorContainer">
+                        <div class="CopyandPasteColor PasteColorBtn" onclick="PastColor(this, InputBgColor)" color="#FFFFFF">
+                            <div class="TittleCopyandPast">
+                                Colar
+                            </div>
+                        </div>
+                        <button data-jscolor="{valueElement:'#InputBgColor', onInput: 'updateJSColor(this, \'#CopyColor-InputBgColor\')'}"></button>
+                        <div class="CopyandPasteColor CopyColorBtn" id="CopyColor-InputBgColor">
+                            <div class="TittleCopyandPast">
+                                Copiar
+                            </div>
+                        </div>
+                        <input class="InputBgColor" id="InputBgColor" value="#ffd700" type="text" style="display: none;">
+                    </div>
+                </div>
+                <div class="Wrap_1 Mask">
+                    <div class="Tittle_1 Mask">
+                        Recorte
+                    </div>
+                    <div class="BackgroundCustomOptions Mask">
+    
+                    </div>
+                </div>
+                <div class="Wrap_1 Texture">
+                    <div class="Tittle_1 Texture">
+                        Textura
+                    </div>
+                    <div class="BackgroundCustomOptions Texture">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="BuyNow" style="display: flex;height: 200px;width: 100%;align-items: center;justify-content: center;">
+        <button class="BtnBuyNow" style="height: 50%;width: 350px;font-size: 40px;">
+            Comprar Agora
+        </button>
+    </div>
+    <script src="dom-to-image.js"></script>
+    <script src="jscolor.js"></script>
+    <script src="Bootleg.js"></script>
+</body>
+</html>

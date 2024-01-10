@@ -1,0 +1,100 @@
+.Bg-Tshirt {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.Tshirt {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1/1;
+    background-image: url(Imagens/Preto.png);
+    background-size: cover;
+    background-position: center;
+    margin: auto;
+    overflow: hidden;
+}
+
+.Preview {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 29/42;
+    border: 2px solid;
+}
+
+.Pr_Img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.imgWrap {
+    position: absolute;
+    overflow: hidden;
+}
+
+.ImagePreview {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: top;
+    filter: grayscale(1);
+}
+
+.ImagePreview.onDrag {
+    height: auto;
+    width: '';
+}
+
+.ImgSelector {
+    display: none;
+    position: absolute;
+    border: 4px solid red;
+}
+
+.ImgSelector.selected {
+    display: block;
+}
+
+.ImgDragMove {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.ImgSizeControl {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    height: 40px;
+    width: 40px;
+    background: white;
+    border: 4px solid black;
+    border-radius: 40px;
+    cursor: ne-resize;
+}
+
+.ImgCutBtn {
+    position: absolute;
+    left: calc(50% - 20px);
+    bottom: -24px;
+    height: 40px;
+    width: 40px;
+    background: white;
+    border: 4px solid black;
+    border-radius: 30px;
+    cursor: n-resize;
+}
+
+.Personalization {
+    height: 2000px;
+    width: 100%;
+    background-color: aqua;
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="Scroll">
+        <div class="Bg_Tshirt">
+            <div class="Tshirt">
+                <div class="Preview">
+                    <div class="Pr_Drag">
+                        <div class="imgWrap">
+                            <div class="ImgContainer"></div>
+                            <div class="TextName">
+                                nome
+                            </div>
+                        </div>
+                        <div class="Star A1"></div>
+                        <div class="Star A2"></div>
+                        <div class="oval">
+                        </div>
+                        <div class="dateText">1997</div>
+                        <div class="midBar"></div>
+                        <div class="PrText">Legend</div>
+                    </div>
+                    <div class="ImgSelector">
+                        <div class="ImgDragMove">
+                        </div>
+                        <div class="ImgSizeControl"></div>
+                    </div>
+                </div>
+                <div class="Zomm_Wrap">
+                    <div class="Zoom_Btn In"></div>
+                    <div class="Zoom_Btn Out selected"></div>
+                </div>
+                <div class="Pr_Border"></div>
+            </div>
+        </div>
+        <div class="Personalization">
+            <div class="BtnCustomWrap">
+                <div class="BtnCustom selected">Foto</div>
+                <div class="BtnCustom">Textos</div>
+            </div>
+            <div class="CustomContainer selected">
+                <div class="UploadImgWrap">
+                    <div class="IconContainer">
+                        <label class="iconInput" for="imgInput"></label>
+                    </div>
+                    <input class="imgInput"  id="imgInput" type="file" accept="image/*" oninput="loadNewImage()" style="display: none;">
+                </div>
+                <div class="ImgOptions">
+                    <div class="ImgEffect">
+                        <div class="Tittle">Efeito</div>
+                        <input type="range" class="Slider" min="0.01" max="1" value="0.50" step="0.01" oninput="imgBrightness()">
+                    </div>
+                    <label class="ImgInputLabel" for="imgInput">
+                        Mudar imagem
+                        <div></div>
+                    </label>
+                </div>
+            </div>
+            <div class="CustomContainer">
+                <div class="InputTextContainer">
+                    <div class="Tittle">Nome</div>
+                    <input class="InputText_1" type="text" placeholder="Escreva aqui..">
+                </div>
+                <div class="InputTextContainer">
+                    <div class="Tittle">Data</div>
+                    <input class="InputText_2" type="number" placeholder="Escreva aqui..">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="BuyNow" style="display: flex;height: 200px;width: 100%;align-items: center;justify-content: center;">
+        <button class="BtnBuyNow" style="height: 50%;width: 350px;font-size: 40px;">
+            Comprar Agora
+        </button>
+    </div>
+    <script src="dom-to-image.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
