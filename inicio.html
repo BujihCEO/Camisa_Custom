@@ -8,9 +8,7 @@
 <body>
     <h1>Subpastas:</h1>
     <ul id="subfolders"></ul>
-
     <script>
-        // Função para carregar e exibir as subpastas
         function loadSubfolders() {
             fetch('https://api.github.com/repos/BujihCEO/Camisa_Custom/contents/', {
                 headers: {
@@ -34,8 +32,6 @@
             })
             .catch(error => console.error('Erro ao carregar subpastas:', error));
         }
-
-        // Chama a função para carregar as subpastas quando a página é carregada
         window.onload = loadSubfolders;
     </script>
 </body>
