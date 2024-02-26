@@ -28,13 +28,17 @@
         <div class="Personalization">
             <label class="addImage empty" for="InputImage"></label>
             <div class="imgIconBox">
-                <div class="imgSlider"></div>
                 <div class="iconsButtons">
-                    <label class="addImage" for="InputImage">Adicionar</label>
-                    <div class="deletImg" onclick="deleteImg()"> Deletar</div>
+                    <label class="addImage" for="InputImage">
+                        <div class="Icon-1-1 imageAdd"></div>
+                    </label>
+                    <div class="deletImg" onclick="deleteImg()">
+                        <div class="Icon-1-1 delete"></div>
+                    </div>
                 </div>
+                <div class="imgSlider"></div>
                 <div class="sliderBox">
-                    
+                    <input type="range" class="Slider" min="0.40" max="2" value="1" step="0.01" onchange="updateEffect()" oninput="sliderStyle()">
                 </div>
                 <input class="InputImage" id="InputImage" type="file" accept="image/*" onchange="loadImage(this)" style="display: none;">
             </div>
@@ -42,7 +46,6 @@
         </div>
     </div>
 </body>
-<script src="//daybrush.com/moveable/release/latest/dist/moveable.min.js"></script>
 <script src="potrace.js"></script>
 <script src="index.js"></script>
 </html>

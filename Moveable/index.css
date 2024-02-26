@@ -28,15 +28,28 @@
     position: absolute;
     width: 35%;
     aspect-ratio: 29/42;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
 }
 
 .Preview.border {
-    border: 2px dashed red;
+    border: 1px dashed red;
 }
 
 .Preview.Zoom {
     transform: scale(1.90);
+}
+
+.Preview.left {
+    border-left: 1px solid blue;
+}
+.Preview.top {
+    border-top: 1px solid blue;
+}
+.Preview.right {
+    border-right: 1px solid blue;
+}
+.Preview.bottom {
+    border-bottom: 1px solid blue;
 }
 
 .Pr_Drag {
@@ -49,24 +62,60 @@
     overflow: hidden;
 }
 
-.ImgSelector {
-    display: none;
-}
-
-.ImgSelector.selected {
+.ImgWrap {
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid blue;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ImgPreviewBox {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ImgPreview {
+    position: relative;
+    user-select: none;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.ImgPreview svg {
+    height: 100%;
+    width: 100%;
+    user-select: none;
+}
+
+.ImgSelector {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid blue;
     --border: 2px;
     --positons: -6px;
     --size: 10px;
 }
 
+.ImgSelector.selected {
+    display: flex;
+}
+
 .ImgDragMove {
     height: 100%;
     width: 100%;
+    cursor: move;
 }
 
 .imgSize {
@@ -84,7 +133,7 @@
 }
 
 .imgSize.Zoom {
-    scale: calc(1/1.9);
+    scale: .6;
 }
 
 .imgSize::after {
@@ -97,17 +146,26 @@
 .T, .T-L, .T-R {
     top: var(--positons);
 }
-
 .B, .B-L, .B-R {
     bottom: var(--positons);
 }
-
 .L, .T-L, .B-L {
     left: var(--positons);
 }
-
 .R, .T-R, .B-R {
     right: var(--positons);
+}
+.T-R, .B-L {
+    cursor: nesw-resize;
+}
+.T-L, .B-R {
+    cursor: nwse-resize;
+}
+.T, .B {
+    cursor: ns-resize;
+}
+.R, .L {
+    cursor: ew-resize;
 }
 
 .Zomm_Wrap {
@@ -183,12 +241,12 @@
 
 .imgIconBox {
     display: none;
+    flex-direction: column;
     max-width: 100%;
     margin: 0 20px;
     background-color: white;
     border-radius: 20px;
     overflow: hidden;
-    flex-direction: column;
 }
 
 .imgSlider {
@@ -198,7 +256,7 @@
     width: 100%;
     height: 120px;
     overflow-x: auto;
-    padding: 10px 0;
+    padding: 20px 0;
 }
 
 .imgIcon {
@@ -210,6 +268,7 @@
     border-radius: 15px;
     margin: 0 5px;
     box-sizing: border-box;
+    cursor: pointer;
     transition: 0.5s;
 }
 
@@ -229,8 +288,15 @@
 .iconsButtons {
     display: flex;
     width: 100%;
-    height: 30px;
-    border-top: 4px solid black;
+    height: 40px;
+    border-bottom: 4px solid black;
+}
+
+.iconsButtons >* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
 .addImage {
@@ -243,19 +309,55 @@
     border-left: 2px solid black;
 }
 
-.ImgWrap {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+.sliderBox {
+    position: relative;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 10px 15px;
 }
 
-.ImgPreview {
-    position: absolute;
-    height: 50%;
+.sliderBox.selected {
+    display: flex;
 }
 
-.ImgPreview svg {
-    height: 100%;
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
+    height: 40px;
+    background-color: #ddd;
+    border-radius: 40px;
+    margin: 0;
+    border: 3px solid black;
+    z-index: 2;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    background: #fff;
+    border-radius: 0px;
+    border: 3px solid #000;
+    margin: 0 -20 0 0;
+}
+
+.Icon-1-1 {
+    height: 100%;
+    aspect-ratio: 1/1;
+}
+
+.Icon-1-1.imageAdd {
+    background: url(https://www.svgrepo.com/show/521942/add-ellipse.svg) center / contain no-repeat white;
+}
+
+.Icon-1-1.delete {
+    background: url(https://www.svgrepo.com/show/533024/trash-xmark.svg) center / contain no-repeat white;
 }

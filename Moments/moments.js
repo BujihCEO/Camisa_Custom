@@ -205,7 +205,7 @@ function loadNewImage() {
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, newImage.width, newImage.height);
-            ctx.filter = 'brightness(1) contrast(25000%) grayscale(1)';
+            ctx.filter = 'brightness(1) contrast(25000%) grayscale(1) invert(1)';
             ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
             var imgCanvas = canvas.toDataURL();
             potrace(imgCanvas);
@@ -239,7 +239,7 @@ function displaySVG(size, type) {
 }
 
 function newSVG(svg) {
-    svg = svg.replace(/fill="black"/g, 'fill="red"');
+    svg = svg.replace(/fill="black"/g, 'fill="var(--color1)"');
     const match = svg.match(/<svg[^>]* width="([^"]+)"[^>]* height="([^"]+)"/);
     if (match && match.length === 3) {
         const width = match[1];

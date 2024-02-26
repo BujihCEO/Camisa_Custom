@@ -31,7 +31,7 @@
     width: 100%;
     max-width: 50vh;
     aspect-ratio: 1/1;
-    background-image: url(assents/Branco.png);
+    background-image: url(assents/Preto.png);
     background-size: cover;
     background-position: center;
     margin: auto;
@@ -287,6 +287,8 @@
 .ImgPreview svg {
     height: 100%;
     width: auto;
+    --color1: red;
+    --color2: transparent;
 }
 
 .ImgSelector {

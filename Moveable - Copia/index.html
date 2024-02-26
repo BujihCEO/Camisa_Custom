@@ -13,36 +13,42 @@
                 <div class="Preview">
                     <div class="Pr_Drag">
                         <div class="ImgWrap"></div>
+                        <div class="nameBox">
+                            <div class="name">Nome</div>
+                            <div class="iconsBox"></div>
+                        </div>
                     </div>
                     <div class="ImgSelector">
                         <div class="ImgDragMove"></div>
                     </div>
                 </div>
-                <div class="Zomm_Wrap">
-                    <div class="Zoom_Btn In"></div>
-                    <div class="Zoom_Btn Out selected"></div>
-                </div>
-                <div class="Pr_Border"></div>
+                <div class="MoveExmp"></div>
             </div>
         </div>
         <div class="Personalization">
+            <div class="tittle">Fotos:</div>
             <label class="addImage empty" for="InputImage"></label>
             <div class="imgIconBox">
-                <div class="imgSlider"></div>
                 <div class="iconsButtons">
-                    <label class="addImage" for="InputImage">Adicionar</label>
-                    <div class="deletImg" onclick="deleteImg()"> Deletar</div>
+                    <label class="addImage" for="InputImage">
+                        <div class="Icon-1-1 imageAdd"></div>
+                    </label>
+                    <div class="deletImg" onclick="deleteImg()">
+                        <div class="Icon-1-1 delete"></div>
+                    </div>
                 </div>
-                <div class="sliderBox">
-                    
+                <div class="imgSlider"></div>
+                <div class="idxCtrl hidden">
+                    <div class="idxCtrl_before"></div>
+                    <div class="idxCtrl_after"></div>
                 </div>
                 <input class="InputImage" id="InputImage" type="file" accept="image/*" onchange="loadImage(this)" style="display: none;">
             </div>
-            
+            <div class="tittle">Nome:</div>
+            <input class="inputText" type="text" placeholder="Digite aqui...">
         </div>
     </div>
 </body>
-<script src="//daybrush.com/moveable/release/latest/dist/moveable.min.js"></script>
 <script src="potrace.js"></script>
 <script src="index.js"></script>
 </html>

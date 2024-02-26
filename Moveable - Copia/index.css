@@ -1,0 +1,411 @@
+.Bg_Tshirt {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.Tshirt {
+    --resize: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1/1;
+    background-image: url(assents/Preto.png);
+    background-size: cover;
+    background-position: center;
+    margin: auto;
+    overflow: hidden;
+}
+
+.Tshirt.Zoom {
+    background-size: 190%;
+}
+
+.Preview {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 29/42;
+}
+
+.Preview.Zoom {
+    transform: scale(1.90);
+}
+
+
+.Pr_Drag {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    --bg_color: #ffffff;
+}
+
+.Pr_Drag::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mask: url(assents/Fundo.svg) center / contain no-repeat;
+    background-color: var(--bg_color);
+}
+
+.ImgWrap {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 25%;
+    width: 100%;
+    height: 46%;
+    border: 1px dashed transparent;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.ImgWrap.border {
+    border: 1px dashed red;
+}
+
+.ImgPreviewBox {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ImgPreviewBox::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: var(--bg_color);
+    mix-blend-mode: color;
+}
+
+.ImgPreview {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+}
+
+.ImgPreview svg {
+    height: 100%;
+    width: 100%;
+    user-select: none;
+}
+
+.nameBox {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 23%;
+    width: 100%;
+    height: 4%;
+}
+
+.name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-family: font_1;
+    font-size: 130%;
+    color: var(--bg_color);
+    line-height: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.iconsBox {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.iconName {
+    height: 100%;
+    aspect-ratio: 1/1;
+    mask: url(assents/bar.svg) center / contain no-repeat;
+    background: var(--bg_color);
+}
+
+.ImgSelector {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 0 1px blue;
+    --border: 1px;
+    --positons: -4px;
+    --size: 7px;
+}
+
+.ImgSelector.selected {
+    display: flex;
+}
+
+.ImgDragMove {
+    height: 100%;
+    width: 100%;
+    cursor: move;
+}
+
+.imgSize {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--size);
+    width: var(--size);
+    background-color: white;
+    border: var(--border) solid black;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.imgSize.Zoom {
+    scale: .6;
+}
+
+.imgSize::after {
+    content: '';
+    position: absolute;
+    height: 300%;
+    width: 300%;
+}
+
+.T, .T-L, .T-R {
+    top: var(--positons);
+}
+.B, .B-L, .B-R {
+    bottom: var(--positons);
+}
+.L, .T-L, .B-L {
+    left: var(--positons);
+}
+.R, .T-R, .B-R {
+    right: var(--positons);
+}
+.T-R, .B-L {
+    cursor: nesw-resize;
+}
+.T-L, .B-R {
+    cursor: nwse-resize;
+}
+.T, .B {
+    cursor: ns-resize;
+}
+.R, .L {
+    cursor: ew-resize;
+}
+
+.MoveExmp {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 19%;
+    aspect-ratio: 1/1;
+    bottom: 6%;
+    right: 1%;
+}
+
+.MoveExmp::before {
+    content: '';
+    height: 50%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    animation: pulse-animation .5s infinite;
+}
+
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.Personalization {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: aqua;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.Personalization > :first-child {
+    margin-top: 0;
+}
+
+.addImage.empty {
+    position: relative;
+    width: 30%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 30px;
+    margin: 0 auto;
+    background: url(assents/Upload.svg) center / contain no-repeat white;
+    overflow: hidden;
+}
+
+.imgIconBox {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    margin: 0 20px;
+    background-color: white;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.imgSlider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    overflow-x: auto;
+    padding: 10px 0px;
+}
+
+.idxCtrl {
+    position: relative;
+    display: flex;
+    height: 30px;
+    width: 80%;
+    border: 3px solid black;
+    border-radius: 15px;
+    margin: 0 0 10px;
+}
+
+.idxCtrl >* {
+    width: 50%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.idxCtrl_before {
+    background: url(https://www.svgrepo.com/show/509012/action-undo.svg) center / contain no-repeat;
+}
+
+.idxCtrl_after {
+    background: url(https://www.svgrepo.com/show/509011/action-redo.svg) center / contain no-repeat;
+}
+
+
+.imgIcon {
+    position: relative;
+    height: 85%;
+    object-fit: contain;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 15px;
+    margin: 0 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.imgIcon:first-child {
+    margin-left: 10px;
+}
+
+.imgIcon:last-child {
+    margin-right: 10px;
+}
+
+.imgIcon.selected {
+    height: 100%;
+    border: 2px solid red;
+}
+
+.iconsButtons {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    border-bottom: 4px solid black;
+}
+
+.iconsButtons >* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.addImage {
+    width: 50%;
+    border-right: 2px solid black;
+}
+
+.deletImg {
+    width: 50%;
+    border-left: 2px solid black;
+}
+
+.Icon-1-1 {
+    height: 100%;
+    aspect-ratio: 1/1;
+}
+
+.Icon-1-1.imageAdd {
+    background: url(https://www.svgrepo.com/show/521942/add-ellipse.svg) center / contain no-repeat white;
+}
+
+.Icon-1-1.delete {
+    background: url(https://www.svgrepo.com/show/533024/trash-xmark.svg) center / contain no-repeat white;
+}
+
+.tittle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    background: white;
+    margin: 20px 0px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+input[type="text"] {
+    width: 80%;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    border: 0px;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+@font-face {
+    font-family: font_1;
+    src: url(assents/ArchivoBlack-Regular.ttf) format('truetype');
+}
