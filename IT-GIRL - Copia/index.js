@@ -120,6 +120,7 @@ function loadImage(input) {
             canvas.height = imgCanvas.height;
             var ctx = canvas.getContext('2d');
             ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
             ctx.filter = 'brightness(1)';
             ctx.drawImage(imgCanvas, 0, 0, imgCanvas.width, imgCanvas.height);
             imgCanvas = canvas.toDataURL();

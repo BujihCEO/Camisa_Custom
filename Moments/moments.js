@@ -205,7 +205,7 @@ function loadNewImage() {
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, newImage.width, newImage.height);
-            ctx.filter = 'brightness(1) contrast(25000%) grayscale(1) invert(1)';
+            ctx.filter = 'brightness(1) contrast(25000%) grayscale(1)';
             ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
             var imgCanvas = canvas.toDataURL();
             potrace(imgCanvas);
