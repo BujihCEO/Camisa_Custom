@@ -1,0 +1,333 @@
+.ImgSelector {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 0 1px blue;
+    --border: 1px;
+    --positons: -4px;
+    --size: 7px;
+}
+
+.ImgSelector.selected {
+    display: flex;
+}
+
+.ImgDragMove {
+    height: 100%;
+    width: 100%;
+    cursor: move;
+}
+
+.imgSize {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--size);
+    width: var(--size);
+    background-color: white;
+    border: var(--border) solid black;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.imgSize.Zoom {
+    scale: .6;
+}
+
+.imgSize::after {
+    content: '';
+    position: absolute;
+    height: 300%;
+    width: 300%;
+}
+
+.T, .T-L, .T-R {
+    top: var(--positons);
+}
+.B, .B-L, .B-R {
+    bottom: var(--positons);
+}
+.L, .T-L, .B-L {
+    left: var(--positons);
+}
+.R, .T-R, .B-R {
+    right: var(--positons);
+}
+.T-R, .B-L {
+    cursor: nesw-resize;
+}
+.T-L, .B-R {
+    cursor: nwse-resize;
+}
+.T, .B {
+    cursor: ns-resize;
+}
+.R, .L {
+    cursor: ew-resize;
+}
+
+.MoveExmp {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 19%;
+    aspect-ratio: 1/1;
+    bottom: 6%;
+    right: 1%;
+}
+
+.MoveExmp::before {
+    content: '';
+    height: 50%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    animation: pulse-animation .5s infinite;
+}
+
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.tittle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    background: white;
+    margin: 20px 0px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.imgSliderBox {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.addImage.empty {
+    position: relative;
+    width: 30%;
+    aspect-ratio: 1/1;
+    border: 2px solid black;
+    border-radius: 30px;
+    margin: 0 auto;
+    background: url(assents/Upload.svg) center / contain no-repeat white;
+    overflow: hidden;
+}
+
+.imgIconBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    margin: 0 20px;
+    background-color: white;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.imgSlider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    overflow-x: auto;
+    padding: 10px 0px;
+}
+
+.imgIcon {
+    position: relative;
+    height: 85%;
+    object-fit: contain;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 15px;
+    margin: 0 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.imgIcon:first-child {
+    margin-left: 10px;
+}
+
+.imgIcon:last-child {
+    margin-right: 10px;
+}
+
+.imgIcon.selected {
+    height: 100%;
+    border: 2px solid red;
+}
+
+.iconsButtons {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    border-bottom: 4px solid black;
+}
+
+.iconsButtons >* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.iconsButtons > :first-child {
+    border-right: 2px solid black;
+}
+
+.iconsButtons > :last-child {
+    border-left: 2px solid black;
+}
+
+.idxCtrl {
+    position: relative;
+    display: flex;
+    height: 30px;
+    width: 80%;
+    border: 3px solid black;
+    border-radius: 15px;
+    margin: 0 0 10px;
+}
+
+.idxCtrl >* {
+    width: 50%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.idxCtrl_before {
+    background: url(https://www.svgrepo.com/show/509012/action-undo.svg) center / contain no-repeat;
+}
+
+.idxCtrl_after {
+    background: url(https://www.svgrepo.com/show/509011/action-redo.svg) center / contain no-repeat;
+}
+
+.inputTextBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+input[type="text"] {
+    width: 80%;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    border: 0px;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+input[type="number"] {
+    width: 80%;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    border: 0px;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.fontSizeBox {
+    position: relative;
+    display: flex;
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 0.3rem;
+    margin-top: .5rem;
+}
+
+.fontSizeBox > *, .fontSizeBox::before {
+    height: 3rem;
+    aspect-ratio: 1/1;
+}
+
+.fontSizeBox::before {
+    content: '';
+    margin-right: 1rem;
+    background: url(https://www.svgrepo.com/show/332385/font-size.svg) center / contain no-repeat;
+}
+
+.addIcon {
+    background: url(https://www.svgrepo.com/show/521942/add-ellipse.svg) center / contain no-repeat white;
+}
+
+.deleteIcon {
+    background: url(https://www.svgrepo.com/show/533024/trash-xmark.svg) center / contain no-repeat white;
+}
+
+.plusIcon {
+    background: url(https://www.svgrepo.com/show/532997/plus-large.svg) center / contain no-repeat;
+}
+
+.lessIcon {
+    background: url(https://www.svgrepo.com/show/532178/horizontal-rule.svg) center / contain no-repeat;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.alertBox {
+    position: fixed; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    top: 0; 
+    left: 0; 
+    height: 100%; 
+    width: 100%; 
+    background: #000000b8; 
+    z-index: 9999;
+}
+
+.alertBox div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    width: 80%;
+    padding: 3%;
+    border-radius: 1rem;
+    font-family: sans-serif;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.alertBox span {
+    margin: 0 0 5%;
+}
+
+.alertBox button {
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: 3px solid black;
+    padding: 1% 5%;
+    border-radius: 1rem;
+    cursor: pointer;
+}

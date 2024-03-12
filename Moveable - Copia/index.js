@@ -1,4 +1,4 @@
-const Tshirt = document.querySelector('.Tshirt');
+const ProductBox = document.querySelector('.ProductBox');
 const Preview = document.querySelector('.Preview');
 var PreviewScale = 1;
 var ImgWrap = document.querySelector('.ImgWrap');
@@ -29,7 +29,7 @@ function loadImage(input) {
             ImgPreview.style.height = this.offsetHeight + 'px';
             ImgPreview.style.width = this.offsetWidth + 'px';
             ImgPreview.style.position = 'absolute';
-            dragOn();
+            dragOn(imgIcon, ImgPreviewBox);
             idxCtrl_(true);
         }
         ImgPreview.src = e.target.result;
@@ -55,7 +55,7 @@ function selectIcon() {
         imgIcon = null;
         ImgPreviewBox = null;
         ImgPreview = null;
-        dragOn();
+        dragOn(imgIcon, ImgPreviewBox);
         idxCtrl_(false);
     } else {
         Icons.forEach((icon, index) => {
@@ -67,7 +67,7 @@ function selectIcon() {
         ImgPreviewBox = Box[index];
         ImgPreview = ImgPreviewBox.firstElementChild;
         imgIcon.classList.add('selected');
-        dragOn();
+        dragOn(imgIcon, ImgPreviewBox);
         idxCtrl_(true);
     }
 }
@@ -82,7 +82,7 @@ function deselectIcon() {
     imgIcon = null;
     ImgPreviewBox = null;
     ImgPreview = null;
-    dragOn();
+    dragOn(imgIcon, ImgPreviewBox);
     idxCtrl_(false);
 }
 
@@ -110,7 +110,6 @@ Array.from(idxCtrl.children).forEach(function(btn, index) {
     })
 });
 
-var imgIconBox = document.querySelector('.imgIconBox');
 function deleteImg() {
     if (imgIcon) {
         imgIcon.remove();
@@ -118,32 +117,31 @@ function deleteImg() {
         imgIcon = null;
         ImgPreviewBox = null;
         IconCount();
-        dragOn();
+        dragOn(imgIcon, ImgPreviewBox);
     }
 }
 
-var addImgEmpty = document.querySelector('.addImage.empty');
 function IconCount() {
+    var addImgEmpty = document.querySelector('.addImage.empty');
+    var imgIconBox = document.querySelector('.imgIconBox');
     if (imgSlider.childElementCount === 0) {
-        imgIconBox.style.display = '';
-        addImgEmpty.style.display = '';
+        imgIconBox.classList.add('hidden');
+        addImgEmpty.classList.remove('hidden');
     } else {
-        imgIconBox.style.display = 'flex';
-        addImgEmpty.style.display = 'none';
+        imgIconBox.classList.remove('hidden');
+        addImgEmpty.classList.add('hidden');
     }
 }
 
-var namePlace = document.querySelector('.name');
-var iconsBox = document.querySelector('.iconsBox');
 var nameBox = document.querySelector('.nameBox');
-
 function resize() {
-    var value = Tshirt.offsetWidth / window.innerWidth;
-    Tshirt.style.setProperty('--resize', value);
+    var value = ProductBox.offsetWidth / window.innerWidth;
+    ProductBox.style.setProperty('--resize', value);
     nameBox.style.fontSize = nameBox.offsetHeight + 'px';
 }
 resize();
 
+var iconsBox = document.querySelector('.iconsBox');
 function creatIcons() {
     iconsBox.innerHTML = '';
     var value = Math.floor(iconsBox.offsetWidth / iconsBox.offsetHeight);
@@ -157,28 +155,13 @@ creatIcons();
 
 window.addEventListener('resize', resize, creatIcons);
 
-var inputText = document.querySelector('.inputText');
-inputText.addEventListener('input', ()=> {
-    namePlace.textContent = inputText.value;
-    creatIcons();
-});
-
-var ImgSelector = document.querySelector('.ImgSelector');
-var ImgSizeList = ['T', 'B', 'L', 'R', 'T-L', 'T-R', 'B-L', 'B-R'];
-for (let i = 0; i < 8; i++) {
-    var div = document.createElement('div');
-    div.classList.add('imgSize');
-    div.classList.add(ImgSizeList[i]);
-    ImgSelector.appendChild(div);
-}
-
-function dragOn() {
-    if (imgIcon) {
+function dragOn(verify, targetName) {
+    if (verify) {
         ImgSelector.style = '';
         ImgSelector.classList.add('selected');
-        ImgSelector.style.height = ImgPreviewBox.clientHeight + 'px';
-        ImgSelector.style.width = ImgPreviewBox.clientWidth + 'px';
-        const Target = ImgPreviewBox.getBoundingClientRect();
+        ImgSelector.style.height = targetName.clientHeight + 'px';
+        ImgSelector.style.width = targetName.clientWidth + 'px';
+        const Target = targetName.getBoundingClientRect();
         const Selector = ImgSelector.getBoundingClientRect();
         const X = (Target.left - Selector.left) / PreviewScale;
         const Y = (Target.top - Selector.top) / PreviewScale;
@@ -358,145 +341,3 @@ imgSizeAll.forEach((element) => {
         });
     });
 });
-
-const pinchElement = document.querySelector('.Tshirt');
-const MoveExmp = document.querySelector('.MoveExmp');
-
-let initialDistance = 0;
-let initialScale = 1;
-
-pinchElement.addEventListener('touchstart', (e) => {
-    const touches = e.touches;
-    if (touches.length === 2) {
-        initialDistance = getDistance(touches[0], touches[1]);
-        initialScale = pinchElement.style.transform ? parseFloat(pinchElement.style.transform.split('(')[1]) : 1;
-    }
-});
-
-pinchElement.addEventListener('touchmove', (e) => {
-    const touches = e.touches;
-    if (touches.length === 2 && !isElementClicked(e.target, ['ImgSelector', 'ImgPreview'])) {
-        e.preventDefault();
-        MoveExmp.classList.add('hidden');
-        const currentDistance = getDistance(touches[0], touches[1]);
-        const scale = Math.min(3, Math.max(1, initialScale * (currentDistance / initialDistance)));
-        pinchElement.style.transform = `scale(${scale})`;
-        imgSizeAll.forEach(element => {
-            element.style.transform = `scale(${1 / scale})`;
-        });
-        ImgSelector.style.boxShadow = `0 0 0 ${1 / scale}px blue`;
-        PreviewScale = scale;
-    }
-});
-
-function getDistance(touch1, touch2) {
-    const dx = touch1.clientX - touch2.clientX;
-    const dy = touch1.clientY - touch2.clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-let scale = 1;
-let isHovered = false;
-
-pinchElement.addEventListener('mouseenter', () => {
-    isHovered = true;
-});
-
-pinchElement.addEventListener('mouseleave', () => {
-    isHovered = false;
-});
-
-document.addEventListener('wheel', (e) => {
-    if (isHovered) {
-        e.preventDefault();
-        MoveExmp.classList.add('hidden');
-        const direction = e.deltaY > 0 ? -1 : 1;
-        scale = Math.min(3, Math.max(1, scale + direction * 0.1));
-        pinchElement.style.transform = `scale(${scale})`;
-        imgSizeAll.forEach(element => {
-            element.style.transform = `scale(${1 / scale})`;
-        })
-        ImgSelector.style.boxShadow = `0 0 0 ${1 / scale}px blue`;
-        PreviewScale = scale;
-    }
-}, { passive: false });
-
-pinchElement.addEventListener('mousedown', (e) => {
-    if (isHovered && !isElementClicked(e.target, ['ImgSelector', 'ImgPreview'])) {
-        MoveExmp.classList.add('hidden');
-        onClick = true;
-        isDragging = true;
-        initialX = e.clientX - offsetX;
-        initialY = e.clientY - offsetY;
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                e.preventDefault();
-                onClick = false;
-                size = pinchElement.offsetHeight / 2;
-                offsetX = Math.min(size, Math.max(-size, e.clientX - initialX));
-                offsetY = Math.min(size, Math.max(-size, e.clientY - initialY));
-                pinchElement.style.translate = `${offsetX}px ${offsetY}px`;
-            }
-        });
-        pinchElement.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false;
-                if (onClick) {
-                    deselectIcon();
-                }
-            }
-        });
-    }
-});
-  
-let isDragging = false;
-let initialX, initialY, offsetX = 0, offsetY = 0;
-
-pinchElement.addEventListener('touchstart', function (event) {
-    if (!isElementClicked(event.target, ['ImgSelector', 'ImgPreview'])) {
-        onClick = true;
-        isDragging = true;
-        initialX = event.touches[0].clientX - offsetX;
-        initialY = event.touches[0].clientY - offsetY;
-        pinchElement.addEventListener('touchmove', (e) => {
-            const touches = e.touches;
-            if (isDragging) {
-                onClick = false;
-                e.preventDefault();
-                MoveExmp.classList.add('hidden');
-                size = pinchElement.offsetHeight / 2;
-                offsetX = Math.min(size, Math.max(-size, touches[0].clientX - initialX));
-                offsetY = Math.min(size, Math.max(-size, touches[0].clientY - initialY));
-                pinchElement.style.translate = `${offsetX}px ${offsetY}px`;
-            }
-        });
-        pinchElement.addEventListener('touchend', () => {
-            if (isDragging) {
-                isDragging = false;
-                if (onClick) {
-                    deselectIcon();
-                }
-            }
-        });
-    }
-});
-
-function isElementClicked(target, elementClasses) {
-    for (const elementClass of elementClasses) {
-        if (target.classList.contains(elementClass) || target.closest(`.${elementClass}`) !== null) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function isTouchDevice() {
-    return 'ontouchstart' in window || navigator.maxTouchPoints;
-}
-  
-if (isTouchDevice()) {
-    MoveExmp.style.background = 'url(https://www.svgrepo.com/show/443837/gui-gesture-pinch-close.svg) center / contain';
-} else {
-    MoveExmp.style.background = 'url(https://www.svgrepo.com/show/325415/mouse-scroll-wheel.svg) center / contain';
-}
-  
