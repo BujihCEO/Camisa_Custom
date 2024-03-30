@@ -13,61 +13,79 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
+                        <div class="ImgWrap grid_1 display_1"></div>
                         <div class="ImgWrap"></div>
                         <div class="nameBox">
-                            <div class="name textReplace">Nome</div>
+                            <div class="name textRepeat textReplace">Nome</div>
                             <div class="iconsBox"></div>
                         </div>
                         <div class="textBox">
                             <div class="textPlace textReplace">Texto</div>
                         </div>
                     </div>
-                    <div class="ImgSelector">
-                        <div class="ImgDragMove"></div>
+                    <div class="dragSelector hidden">
+                        <div class="dragMove"></div>
                     </div>
                 </div>
                 <div class="MoveExmp"></div>
             </div>
         </div>
         <div class="Personalization">
-            <div class="tittle">Fotos:</div>
-            <div class="imgSliderBox">
-                <label class="addImage empty" for="InputImage"></label>
-                <div class="imgIconBox hidden">
-                    <div class="iconsButtons">
-                        <label class="addIcon" for="InputImage"></label>
-                        <div class="deleteIcon" onclick="deleteImg()"></div>
-                    </div>
-                    <div class="imgSlider"></div>
-                    <div class="idxCtrl hidden">
-                        <div class="idxCtrl_before"></div>
-                        <div class="orderIcon"></div>
-                        <div class="idxCtrl_after"></div>
-                    </div>
-                    <input class="InputImage" id="InputImage" type="file" accept="image/*" onchange="loadImage(this)" style="display: none;">
-                </div>
-            </div>
+            
+            <div class="addOptionsBox"
+                tittle="Template"
+                optionBox="qty={2} class={bgTemplate slider} att={--bg_color}"
+                colorBox="class={colorModeBox} color={#ff0101} att={--bg_color}"
+            ></div>
 
-            <div class="tittle">Nome:</div>
-            <div class="inputTextBox" 
+            <div class="addImgBox"
+                tittle="Fotos"
+                grid="qty={6} display={5}"
+                process="
+                    normal 
+                    colorMode={#ff0101} 
+                    dropShadow={color='#ff0101' value='0.5' min='-0.5' max=''}
+                    "
+                colorMode="switch color={#ff0101}"
+            ></div>
+
+            <div class="addImgBox"
+                tittle="Fotos"
+                slider="3"
+                process="
+                    normal
+                    colorMode={#ff0101}
+                    dropShadow={color='#ff0101' value='0.5' min='-0.5' max=''}
+                    "
+                colorMode="switch color={#ff0101}"
+            ></div>
+
+            <div class="inputTextBox"
+                tittle="Nome"
                 type="text" 
                 data-XYlimited="true" 
                 data-scaleX="false"
                 addFunction="creatIcons"
             ></div>
 
-            <div class="tittle">Texto:</div>
-            <div class="inputTextBox" 
+            <div class="inputTextBox"
+                tittle="Texto"
                 type="text"
+                repeat="textRepeat"
                 data-XYlimited="true"
                 data-scaleX="false"
-                fontSize="true"
-                font-size-value="1"
+                fontSize="value={1} min={5} max={}"
+                fontFamily="fontList1"
+                color="#ffffff"
+                textStroke="value={0.5} min={0} max={}"
+                strokeColor="#ff0101"
+                letterSpacing="value={0.1} min={0.1} max={}"
             ></div>
         </div>
     </div>
 </body>
 <script src="potrace.js"></script>
-<script src="custom_base.js"></script>
+<script src="jscolor.js"></script>
 <script src="index.js"></script>
+<script src="custom_base.js"></script>
 </html>
