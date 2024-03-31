@@ -1090,6 +1090,8 @@ function createAddImgBox() {
             iconsBox.className = 'imgIconBox';
             var gridBox = document.createElement('div');
             gridBox.className = `gridIconsBox grid_${grid !== undefined ? grid : 1} display_1`;
+            Imgwrap[index].classList.add(`grid_${grid !== undefined ? grid : 1}`);
+            Imgwrap[index].classList.add('display_1');
             box.appendChild(iconsBox);
             iconsBox.appendChild(gridBox);
             var icons = [];

@@ -1,5 +1,5 @@
 .ProductEdit {
-    --bg-color: black;
+    --color: black;
 }
 
 .ProductEdit::before {
@@ -8,11 +8,7 @@
     height: 100%;
     width: 100%;
     mask: url(assents/Fundo.svg) center / contain;
-    background-color: var(--bg-color);
-}
-
-.colorMode::after {
-    background-color: var(--bg-color);
+    background-color: var(--color);
 }
 
 .textGroup {
@@ -23,7 +19,7 @@
     top: 9%;
     height: 69%;
     width: 86%;
-    color: var(--bg-color);
+    color: var(--color);
 }
 
 .textGroup > * {
@@ -35,6 +31,7 @@
     line-height: 0;
     text-transform: uppercase;
     align-items: center;
+    white-space: nowrap;
 }
 
 .textGroup > :nth-child(1) {
@@ -43,7 +40,7 @@
 
 .textGroup > :nth-child(n + 2):nth-child(-n + 4) {
     color: transparent;
-    -webkit-text-stroke: 0.1em var(--bg-color);
+    -webkit-text-stroke: 0.1em var(--color);
 }
 
 .imgWrapGroup {
@@ -61,7 +58,7 @@
 
 .ImgWrap:nth-child(1) {
     position: relative;
-    --color: var(--bg-color);
+    --color: var(--color);
 }
 
 .grid_1 {

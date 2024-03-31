@@ -81,16 +81,20 @@
     user-select: none;
 }
 
-.colorMode {
+.colorMode > .imgContainer, .ImgPreviewBox.colorMode {
     contain: content;
 }
 
-.colorMode::after {
+.colorMode > .imgContainer::after, .ImgPreviewBox.colorMode::after {
     content: '';
     position: absolute;
     height: 100%;
     width: 100%;
     mix-blend-mode: color;
+    background-color: var(--color);
+}
+
+.ImgPreviewBox.colorMode::after {
     mask: var(--mask) center / contain no-repeat;
 }
 
@@ -236,6 +240,7 @@
 .Personalization >* >* {
     box-shadow: 0px 2px 4px black;
     margin: 1rem 0;
+    border-radius: 1rem;
 }
 
 .tittle {
@@ -776,7 +781,6 @@ label {
 
 .jscolor {
     aspect-ratio: 3 / 1;
-    margin: 0 1rem;
 }
 
 .jscolor-wrap {
