@@ -476,6 +476,7 @@ for (let i = 0; i < 8; i++) {
     div.classList.add(dragSizeList[i]);
     dragSelector.appendChild(div);
 }
+var showLimits = document.querySelector('.showLimits');
 var dragMove = document.querySelector('.dragMove');
 var dragTarget = null;
 function getPositions() {
@@ -485,8 +486,7 @@ function getPositions() {
     var selector = window.getComputedStyle(dragSelector);
     dragCurrentTop = parseFloat(selector.top) * PreviewScale;
     dragCurrentLeft = parseFloat(selector.left) * PreviewScale;
-    parentTarget = dragTarget.parentNode;
-    parentTarget.classList.add('showLimits');
+    showLimits.classList.add('on');
 }
 function moveElement() {
     dragTarget.style.top = ((movimentY + currentTop) / PreviewScale) + 'px';
@@ -506,7 +506,7 @@ dragMove.addEventListener('mousedown', function (event) {
     document.onmouseup = function () {
         document.onmousemove = null;
         document.onmouseup = null;
-        parentTarget.classList.remove('showLimits');
+        showLimits.classList.remove('on');
     };
     dragMove.ondragstart = function () {
         return false;
@@ -530,7 +530,7 @@ dragMove.addEventListener('touchstart', function (event) {
     dragMove.addEventListener('touchmove', TouchMove);
     dragMove.addEventListener('touchend', function () {
         dragMove.removeEventListener('touchmove', TouchMove);
-        parentTarget.classList.remove('showLimits');
+        showLimits.classList.remove('on');
     });
 });
 
@@ -552,8 +552,7 @@ imgSizeAll.forEach((element) => {
         var selector = window.getComputedStyle(dragSelector);
         DragCurrentTop = parseFloat(selector.top) * PreviewScale;
         DragCurrentLeft = parseFloat(selector.left) * PreviewScale;
-        parentTarget = dragTarget.parentNode;
-        parentTarget.classList.add('showLimits');
+        showLimits.classList.add('on');
     }
     function onMoviment() {
         function applyStyles() {
@@ -632,7 +631,7 @@ imgSizeAll.forEach((element) => {
         document.onmouseup = function () {
             document.onmousemove = null;
             document.onmouseup = null;
-            parentTarget.classList.remove('showLimits');
+            showLimits.classList.remove('on');
         };
         element.ondragstart = function () {
             return false;
@@ -655,7 +654,7 @@ imgSizeAll.forEach((element) => {
         element.addEventListener('touchmove', touchMove);
         element.addEventListener('touchend', function () {
             element.removeEventListener('touchmove', touchMove);
-            parentTarget.classList.remove('showLimits');
+            showLimits.classList.remove('on');
         });
     });
 });
@@ -793,15 +792,25 @@ function dragOn(verify, target) {
     if (verify) {
         dragTarget = target;
         dragSelector.style = '';
+        showLimits.style = '';
         dragSelector.classList.remove('hidden');
+        var Target = target.getBoundingClientRect();
+        var Selector = dragSelector.getBoundingClientRect();
+        var TargetParent = target.parentNode.getBoundingClientRect();
+        var limites = showLimits.getBoundingClientRect();
+        var X = (Target.left - Selector.left) / PreviewScale;
+        var Y = (Target.top - Selector.top) / PreviewScale;
         dragSelector.style.height = target.clientHeight + 'px';
         dragSelector.style.width = target.clientWidth + 'px';
-        const Target = target.getBoundingClientRect();
-        const Selector = dragSelector.getBoundingClientRect();
-        const X = (Target.left - Selector.left) / PreviewScale;
-        const Y = (Target.top - Selector.top) / PreviewScale;
         dragSelector.style.left = X + 'px';
         dragSelector.style.top = Y + 'px';
+        var pX = (TargetParent.left - limites.left) / PreviewScale;
+        var pY = (TargetParent.top - limites.top) / PreviewScale;
+        showLimits.style.height = TargetParent.height / PreviewScale + 'px';
+        showLimits.style.width = TargetParent.width / PreviewScale + 'px';
+        showLimits.style.left = pX + 'px';
+        showLimits.style.top = pY + 'px';
+
     } else {
         dragSelector.classList.add('hidden');
     }
@@ -814,6 +823,7 @@ function updateOptions() {
 let previewBoxTarget = null;
 let iconTarget = null;
 let previewTarget = null;
+let imgGroup = [];
 
 function selectIcon(clicked, icon, previewBox, imgOptions) {
     if (clicked.classList.contains('selected')) {
@@ -917,7 +927,6 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
 
 function createAddImgBox() {
     var boxes = document.querySelectorAll('.addImgBox');
-    imgGroup = [];
     boxes.forEach((box, index) => {
         if (box.hasAttribute('tittle')) {
             var tittle = document.createElement('div');

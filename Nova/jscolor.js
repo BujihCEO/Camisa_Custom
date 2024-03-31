@@ -581,7 +581,7 @@ var jsc = {
 				'.jscolor-wrap .jscolor-border { position:relative; }',
 				'.jscolor-wrap .jscolor-palette { position:absolute; }',
 				'.jscolor-wrap .jscolor-palette-sw { position:absolute; display:block; cursor:pointer; }',
-				'.jscolor-wrap .jscolor-btn { position:absolute; overflow:hidden; white-space:nowrap; font:100px sans-serif; text-align:center; cursor:pointer; }',
+				'.jscolor-wrap .jscolor-btn { position:absolute; overflow:hidden; white-space:nowrap; font:50px sans-serif; text-align:center; cursor:pointer; }',
 			].join('\n')
 		);
 	},
@@ -1730,7 +1730,7 @@ var jsc = {
 		this.closeButton = false; // whether to display the Close button
 		this.closeText = 'Close';
 		this.buttonColor = 'rgba(0,0,0,1)'; // CSS color
-		this.buttonHeight = 100; // px
+		this.buttonHeight = 30; // px
 		this.padding = 12; // px
 		this.backgroundColor = 'rgba(255,255,255,1)'; // CSS color
 		this.borderWidth = 1; // px
@@ -2859,10 +2859,6 @@ var jsc = {
 			p.btnT.style.display = 'inline';
 			p.btnT.style.lineHeight = THIS.buttonHeight + 'px';
 			p.btnT.innerText = THIS.closeText;
-			var closesvg = document.createElement('img');
-			closesvg.style.height = '100%';
-			closesvg.src = 'https://www.svgrepo.com/show/521564/close.svg';
-			p.btnT.appendChild(closesvg);
 
 			// reposition the pointers
 			redrawPad();

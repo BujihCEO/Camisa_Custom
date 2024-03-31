@@ -1,404 +1,92 @@
-.Bg_Tshirt {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    overflow: hidden;
-    z-index: 3;
+.ProductEdit {
+    --bg-color: black;
 }
 
-.Tshirt {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 50vh;
-    aspect-ratio: 1/1;
-    background-image: url(assents/Preto.png);
-    background-size: cover;
-    background-position: center;
-    margin: auto;
-    overflow: hidden;
-}
-
-.Preview {
-    position: absolute;
-    width: 35%;
-    aspect-ratio: 29/42;
-}
-
-.Pr_Drag {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.Pr_Background {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background: url(assents/Fundo.svg) center / contain no-repeat;
-}
-
-.TextWrap {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    top: 10%;
-    height: 64%;
-    width: 82%;
-    color: white;
-    font-family: font_1;
-    font-size: calc(5vw * var(--resize));
-    text-transform: uppercase;
-    font-weight: 600;
-    line-height: 1;
-    text-align: center;
-}
-
-.textPreview {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    white-space: nowrap;
-}
-
-.textPreview:nth-child(1) {
-    z-index: 2;
-}
-
-.textPreview:nth-child(n+2):nth-child(-n+4) {
-    color: transparent;
-    -webkit-text-stroke: calc(0.2vw * var(--resize)) white;
-}
-
-.GridImg {
-    position: absolute;
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    grid-template-rows: repeat(2, auto);
-    top: 17%;
-    height: 50%;
-    width: 60%;
-    contain: content;
-    --color: red;
-}
-
-.GridImg::after {
+.ProductEdit::before {
     content: '';
     position: absolute;
     height: 100%;
     width: 100%;
-    background: var(--color);
-    mix-blend-mode: color;
+    mask: url(assents/Fundo.svg) center / contain;
+    background-color: var(--bg-color);
 }
 
-.centerImg {
+.colorMode::after {
+    background-color: var(--bg-color);
+}
+
+.textGroup {
     position: absolute;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    top: 17%;
-    height: 50%;
-    width: 60%;
+    top: 9%;
+    height: 69%;
+    width: 86%;
+    color: var(--bg-color);
 }
 
-.ImgWrap {
+.textGroup > * {
     position: relative;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
     height: 100%;
-    overflow: hidden;
+    font-size: 6%;
+    font-family: font_1;
+    line-height: 0;
+    text-transform: uppercase;
+    align-items: center;
 }
 
-.ImgWrap.border {
-    box-shadow: 0 0 0 1px blue;
+.textGroup > :nth-child(1) {
     z-index: 2;
 }
 
-.ImgPreviewBox {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    overflow: hidden;
-    cursor: pointer;
-    pointer-events: auto;
+.textGroup > :nth-child(n + 2):nth-child(-n + 4) {
+    color: transparent;
+    -webkit-text-stroke: 0.1em var(--bg-color);
 }
 
-.ImgPreview {
-    position: relative;
+.imgWrapGroup {
+    position: absolute;
+    top: 18%;
+    width: 62%;
+}
+
+.ImgWrap {
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    user-select: none;
 }
 
-.centerImg .ImgPreview {
-    filter: drop-shadow(0 0 1px white);
-}
-
-.ImgSelector {
-    position: absolute;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 0 1px blue;
-    z-index: 3;
-    --border: 1px;
-    --positons: -4px;
-    --size: 7px;
-}
-
-.ImgSelector.selected {
-    display: flex;
-}
-
-.ImgDragMove {
-    height: 100%;
-    width: 100%;
-    cursor: move;
-}
-
-.imgSize {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: var(--size);
-    width: var(--size);
-    background-color: white;
-    border: var(--border) solid black;
-    border-radius: 50%;
-    box-sizing: border-box;
-}
-
-.imgSize.Zoom {
-    scale: .6;
-}
-
-.imgSize::after {
-    content: '';
-    position: absolute;
-    height: 300%;
-    width: 300%;
-}
-
-.T, .T-L, .T-R {
-    top: var(--positons);
-}
-.B, .B-L, .B-R {
-    bottom: var(--positons);
-}
-.L, .T-L, .B-L {
-    left: var(--positons);
-}
-.R, .T-R, .B-R {
-    right: var(--positons);
-}
-.T-R, .B-L {
-    cursor: nesw-resize;
-}
-.T-L, .B-R {
-    cursor: nwse-resize;
-}
-.T, .B {
-    cursor: ns-resize;
-}
-.R, .L {
-    cursor: ew-resize;
-}
-
-.MoveExmp {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 19%;
-    aspect-ratio: 1/1;
-    bottom: 6%;
-    right: 1%;
-}
-
-.MoveExmp::before {
-    content: '';
-    height: 50%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    animation: pulse-animation .5s infinite;
-}
-
-@keyframes pulse-animation {
-    0% {
-        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.3);
-    }
-    100% {
-        box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
-    }
-}
-
-.hidden {
-    display: none !important;
-}
-
-.Personalization {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    background-color: aqua;
-    padding: 0 0 20px;
-}
-
-.BtnCustomWrap {
+.ImgWrap:nth-child(1) {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+    --color: var(--bg-color);
 }
 
-.BtnCustom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 20px;
-    font-size: 30px;
-    font-family: sans-serif;
-    font-weight: 700;
-    padding: 10px 20px;
-    border: 6px solid black;
-    background-color: #fff;
-    color: black;
-}
-
-.BtnCustom.selected {
-    background-color: #000;
-    color: white;
-    font-size: 35px;
-}
-
-.CustomContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.Grid-Upload {
+.grid_1 {
     display: grid;
-    grid-template-columns: repeat(2, auto);
-    grid-template-rows: repeat(2, auto);
-    width: 60%;
+    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+    aspect-ratio: 1 / 1.2;
 }
 
-.addImage {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    aspect-ratio: 1/1;
-    border: 2px solid black;
-    border-radius: 30px;
-    box-sizing: border-box;
-    margin: 0 auto;
-    background: url(assents/Upload.svg) center / contain no-repeat white;
-    transition: .5s;
-    overflow: hidden;
-}
-
-.addImage.selected {
-    border-color: red;
-    scale: 1.1;
-    z-index: 2;
-}
-
-.changeImg {
-    position: absolute;
-    height: 40%;
-    aspect-ratio: 1;
-    bottom: 0;
-    background: url(https://www.svgrepo.com/show/487723/reload-ui-2.svg) center / 60% no-repeat white;
-    border: 1px solid;
-    box-sizing: border-box;
-    border-radius: 50%;
-}
-
-.centerUpload {
-    position: relative;
-    display: flex;
-    width: 40%;
-}
-
-.imgIcon {
-    position: absolute;
+.grid_1.display_1 > *{
     height: 100%;
     width: 100%;
-    object-fit: cover;
-    background-color: white;
 }
 
-input[type="text"] {
-    width: 80%;
-    font-size: 3em;
-    font-weight: 700;
-    text-align: center;
-    border: 0px;
-    border-radius: 1rem;
-    padding: 1rem;
-}
-
-.ColorWrap {
+.grid_2 {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    aspect-ratio: 1 / 1.2;
 }
 
-.tittle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4rem;
-    font-family: sans-serif;
-    font-weight: 600;
-    background: white;
-    margin: 20px 0px;
-    padding: 10px;
-    border-radius: 20px;
-}
-
-.jscolor {
-    height: 50px;
-    aspect-ratio: 2/1.5;
-    margin: 0 20px;
-    border: 3px solid black;
-    border-radius: 10px;
-}
-
-.jscolor-wrap {
-    left: calc(50% - 156px) !important;
-}
-
-.jscolor-wrap .jscolor-btn {
+.grid_2 > * {
+    height: 100%;
     width: 100%;
-    border: none !important;
+}
+
+.gridIconsBox.grid_2 {
+    max-width: 50%;
 }
 
 @font-face {

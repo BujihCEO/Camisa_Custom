@@ -1,0 +1,793 @@
+.Bg_Product {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+    overflow: hidden;
+    z-index: 2;
+    font-size: var(--boxSize);
+}
+
+.ProductBox {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 50vh;
+    aspect-ratio: 1 / 1;
+    background-blend-mode: multiply;
+    --box-color: #FFD59A;
+    background: url(assents/branco-bg.png) center / cover no-repeat var(--box-color);
+    mask: url(assents/branco-bg.png) center / cover no-repeat;
+    margin: auto;
+}
+
+.Preview {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 29/42;
+    user-select: none;
+}
+
+.ProductEdit {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.ImgWrap {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.imgContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ImgPreviewBox {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.ImgPreview {
+    position: relative;
+    display: flex;
+    top: 0;
+    left: 0;
+    height: 100%;
+    user-select: none;
+}
+
+.ImgPreview svg {
+    height: 100%;
+    width: auto;
+    user-select: none;
+}
+
+.colorMode {
+    contain: content;
+}
+
+.colorMode::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mix-blend-mode: color;
+    mask: var(--mask) center / contain no-repeat;
+}
+
+.dragSelector {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 0 1px blue;
+    z-index: 3;
+    --border: 1px;
+    --positons: -4px;
+    --size: 7px;
+}
+
+.dragMove {
+    height: 100%;
+    width: 100%;
+    cursor: move;
+}
+
+.imgSize {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--size);
+    width: var(--size);
+    background-color: white;
+    border: var(--border) solid black;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.imgSize.Zoom {
+    scale: .6;
+}
+
+.imgSize::after {
+    content: '';
+    position: absolute;
+    height: 300%;
+    width: 300%;
+}
+
+.T, .T-L, .T-R {
+    top: var(--positons);
+}
+.B, .B-L, .B-R {
+    bottom: var(--positons);
+}
+.L, .T-L, .B-L {
+    left: var(--positons);
+}
+.R, .T-R, .B-R {
+    right: var(--positons);
+}
+.T-R, .B-L {
+    cursor: nesw-resize;
+}
+.T-L, .B-R {
+    cursor: nwse-resize;
+}
+.T, .B {
+    cursor: ns-resize;
+}
+.R, .L {
+    cursor: ew-resize;
+}
+
+.showLimits {
+    position: absolute;
+    box-shadow: 0 0 0 1px red;
+    opacity: 0%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 3;
+}
+
+.showLimits.on {
+    opacity: 100%;
+}
+
+.MoveExmp {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 19%;
+    aspect-ratio: 1/1;
+    bottom: 6%;
+    right: 1%;
+}
+
+.MoveExmp::before {
+    content: '';
+    height: 50%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    animation: pulse-animation .5s infinite;
+}
+
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.Personalization {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: aqua;
+    width: 100%;
+    padding: 20px 0;
+    z-index: 1;
+}
+
+.Personalization > :first-child {
+    margin-top: 0;
+}
+
+.Personalization >* {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    background: linear-gradient(to right, transparent 0% 49%, black 49% 51%, transparent 51% 100%);
+    background: white;
+    margin: 1rem 0;
+    border-radius: 1rem;
+}
+
+.Personalization >* >* {
+    box-shadow: 0px 2px 4px black;
+    margin: 1rem 0;
+}
+
+.tittle {
+    position: sticky;
+    top: var(--boxSize);
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.7rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    margin: 0.5rem 0;
+    box-shadow: 0 0 0 !important;
+    background: white;
+    z-index: 2;
+}
+
+.imgSliderBox {
+    display: flex;
+}
+
+.addImage {
+    position: relative;
+    background: url(assents/Upload.svg) center / contain no-repeat white;
+    overflow: hidden;
+}
+
+.addImage.empty {
+    width: 30%;
+    aspect-ratio: 1/1;
+    border-radius: 1rem;
+}
+
+.imgIconBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    background-color: white;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.imgSlider {
+    width: 100%;
+    height: 8rem;
+    padding: 0.4rem 0;
+    margin: 0.5rem 0;
+    background-color: lightgray;
+    border-radius: 1rem;
+}
+
+.imgIcon {
+    position: relative;
+    object-fit: contain;
+    background-color: white;
+}
+
+.iconsButtons {
+    display: flex;
+    width: 100%;
+    height: 2.5rem;
+    border-bottom: 3px solid black;
+}
+
+.iconsButtons >* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.iconsButtons > :first-child {
+    border-right: 1.5px solid black;
+}
+
+.iconsButtons > :last-child {
+    border-left: 1.5px solid black;
+}
+
+.iconsButtons.full > * {
+    border: none;
+}
+
+.iconsButtons.full > :first-child {
+    display: none;
+}
+
+.displayBox  {
+    height: 7rem;
+    width: 90%;
+    padding: 1rem 0;
+    border-radius: 1rem;
+}
+
+.displayBox > div {
+    height: calc(90% - 1rem) !important;
+    padding: 0.5rem;
+}
+
+.displayBox > div.selected {
+    height: calc(100% - 1rem) !important;
+    border: none !important;
+}
+
+.displayBox > div > * {
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+.gridIconsBox  {
+    width: inherit !important;
+    max-width: 100%;
+    padding: 0.5rem;
+    z-index: 1;
+}
+
+.gridIconsBox > label {
+    background: url(assents/Upload.svg) center / contain no-repeat white;
+}
+
+.gridIconsBox > * {
+    width: 100%;
+    height: 100%;
+    border: 3px solid black;
+    border-radius: 1rem;
+    box-sizing: border-box;
+}
+
+.gridIconsBox > .selected {
+    border: 3px solid red;
+    scale: 1.1;
+    z-index: 2;
+}
+
+.imgOptionsBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.imgOptionsBox > * {
+    margin: 0.5rem 0;
+}
+
+.replaceImgIcon {
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    filter: invert();
+}
+
+.replaceImgIcon::after {
+    content: '';
+    aspect-ratio: 1/1;
+    padding-left: 0.5rem;
+    background: url(assents/Upload.svg) center / contain no-repeat;
+}
+
+.idxChange {
+    position: relative;
+    display: flex;
+    height: 2rem;
+    width: 80%;
+    border: 3px solid black;
+    border-radius: 2rem;
+}
+
+.idxChange >* {
+    width: 100%;
+    height: 100%;
+}
+
+.idxBefore {
+    background: url(https://www.svgrepo.com/show/509012/action-undo.svg) center / contain no-repeat;
+}
+
+.idxAfter {
+    background: url(https://www.svgrepo.com/show/509011/action-redo.svg) center / contain no-repeat;
+}
+
+input[type="text"] {
+    height: 3rem;
+    width: 80%;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    border: 0px;
+}
+
+input[type="number"] {
+    height: 3rem;
+    width: 80%;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    border: 0px;
+}
+
+.inputRangeBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.inputRangeBox > div {
+    padding: 0.3rem 1rem 0;
+    font-size: 1.3rem;
+    background: #000;
+    color: #fff;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90%;
+    height: 3rem;
+    background-color: #ddd;
+    border-radius: 3rem;
+    margin: 0;
+    border: 3px solid black;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 3rem;
+    border-radius: 1rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.5rem;
+    height: 3rem;
+    background: #fff;
+    border-radius: 0px;
+    border: 3px solid #000;
+    margin: 0 -1.4rem 0 0;
+}
+
+.fontSizeBox::before {
+    background: url(https://www.svgrepo.com/show/332385/font-size.svg) center / contain no-repeat;
+}
+
+.textStrokeBox::before {
+    background: url(https://static.thenounproject.com/png/5035765-200.png) center / contain no-repeat;
+}
+
+.strokeColorBox::before {
+    mask: url(https://static.thenounproject.com/png/5035765-200.png) center / contain no-repeat;
+    background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet,
+     red, orange, yellow, green, blue, indigo, violet);
+}
+
+.textColorBox::before {
+    background: url(https://www.svgrepo.com/show/444520/gui-text-color.svg) center / contain no-repeat;
+}
+
+.letterSpacingBox::before {
+    background: url(https://www.svgrepo.com/show/361532/letter-spacing.svg) center / contain no-repeat;
+}
+
+.fontIcon {
+    aspect-ratio: 1/1;
+    font-size: 1.8rem;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.slider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.slider >* {
+    height: 80%;
+    margin: 0 .4rem;
+    box-shadow: 0 0 3px 1px black;
+}
+
+.slider > :first-child {
+    margin-left: 0.8rem;
+}
+
+.slider > :last-child {
+    margin-right: 0.8rem;
+}
+
+.slider > .selected {
+    height: 100%;
+    box-shadow: 0 0 0 3px red;
+}
+
+.addIcon {
+    background: url(https://www.svgrepo.com/show/521942/add-ellipse.svg) center / contain no-repeat white;
+}
+
+.deleteIcon {
+    background: url(https://www.svgrepo.com/show/533024/trash-xmark.svg) center / contain no-repeat white;
+}
+
+.plusIcon {
+    background: url(https://www.svgrepo.com/show/532997/plus-large.svg) center / contain no-repeat;
+}
+
+.lessIcon {
+    background: url(https://www.svgrepo.com/show/532178/horizontal-rule.svg) center / contain no-repeat;
+}
+
+.orderIcon {
+    background: url(https://www.svgrepo.com/show/521722/layers-1.svg) center / contain no-repeat;
+}
+
+label {
+    cursor: pointer;
+}
+
+.btn {
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 1rem;
+}
+
+.sizeBox > div {
+    aspect-ratio: 1 / 1;
+    padding: 0 0.4rem;
+}
+
+.sizeBox::before {
+    content: '';
+    aspect-ratio: 1 / 1;
+}
+
+.switchDisplay {
+    display: flex;
+    flex-direction: column;
+}
+
+.switchDisplay > div {
+    height: inherit;
+    margin: 1rem 0 0 0;
+}
+
+.switchDisplay > :nth-child(1) {
+    margin-top: 0;
+}
+
+.switchBox > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 4 / 1;
+    border: 3px solid black;
+    border-radius: 3rem;
+    box-sizing: border-box;
+    contain: content;
+    z-index: 1;
+}
+
+.switchBtn {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    background: red;
+    mix-blend-mode: color;
+    border-radius: 3rem;
+    transition: 0.2s;
+    z-index: 2;
+}
+
+.switchBtn.onLeft {
+    translate: -50%;
+}
+
+.switchBtn.onRight {
+    translate: 50%;
+}
+
+.switchBox > div::before, .switchBox > div::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    aspect-ratio: 1/1;
+}
+
+.switchBox > div::before {
+    translate: -100%;
+}
+
+.switchBox.potrace > div::after {
+    translate: 100%;
+}
+
+.switchBox.potrace > div::before {
+    background: url(https://www.svgrepo.com/show/522670/sound-volume-2.svg) center / contain no-repeat;
+}
+
+.switchBox.potrace > div::after {
+    background: url(https://www.svgrepo.com/show/522667/sound-off.svg) center / contain no-repeat;
+}
+
+.switchBox.colorModeBox > div::before {
+    background: url(https://www.svgrepo.com/show/488310/paint-brush.svg) center / contain no-repeat;
+}
+
+.colorBox.colorModeBox::before {
+    background: url(https://www.svgrepo.com/show/488310/paint-brush.svg) center / contain no-repeat;
+}
+
+.box_1 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 1rem;
+    padding: 0.4rem;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px black;
+}
+
+.box_1 > .box_1 {
+    box-shadow: none;
+    padding: 0;
+}
+
+.box_1 > *, .box_1::before, .box_1::after {
+    height: 3rem;
+}
+
+.box_1::before{
+    margin-right: 0.5rem;
+}
+
+.box_1.before::before{
+    margin-right: 0.5rem;
+}
+
+.btn.onClick {
+    box-shadow: 0 0 3px 1px red;
+}
+
+.alertBox {
+    position: fixed; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    top: 0; 
+    left: 0; 
+    height: 100%; 
+    width: 100%; 
+    background: #000000b8; 
+    z-index: 9999;
+}
+
+.alertBox div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    width: 80%;
+    padding: 3%;
+    border-radius: 1rem;
+    font-family: sans-serif;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.alertBox span {
+    margin: 0 0 5%;
+}
+
+.alertBox button {
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: 3px solid black;
+    padding: 1% 5%;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.colorBox {
+    display: flex;
+}
+
+.colorBox::before {
+    content: '';
+    aspect-ratio: 1/1;
+}
+
+.JsColorBox {
+    display: flex;
+}
+
+.JsColorBox > * {
+    height: 100%;
+    border: 3px solid black;
+    border-radius: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.JsColorBox > div > div {
+    position: relative;
+    top: 0;
+    width: 5rem;
+    border-bottom: 2px solid black;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    background: #fff;
+}
+
+.JsColorBox.grid {
+    display: grid;
+    grid-template: repeat(2, 1fr) / repeat(2 ,1fr);
+    height: 5rem;
+}
+
+.JsColorBox.grid > .jscolor {
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
+    width: 100%;
+    margin: 0px;
+    aspect-ratio: unset;
+}
+
+.jscolor {
+    aspect-ratio: 3 / 1;
+    margin: 0 1rem;
+}
+
+.jscolor-wrap {
+    left: calc(50% - 156px) !important;
+}
+
+.jscolor-wrap .jscolor-btn {
+    width: 100%;
+    border: none !important;
+}
+
+.jscolor-btn-close {
+    background: url(https://www.svgrepo.com/show/521564/close.svg) center / contain no-repeat !important;
+}
