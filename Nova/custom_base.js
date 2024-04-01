@@ -661,19 +661,24 @@ imgSizeAll.forEach((element) => {
 
 //  //  //  //
 
-function createInputRange(parent, minValue, maxValue, stepValue, value, ftc, tittleText, attUpdate) {
+function createInputRange(parent, className, minValue, maxValue, stepValue, value, ftc, tittleText, attUpdate, oninput = true) {
     var inputBox = document.createElement('div');
-    inputBox.className = 'inputRangeBox';
-    var tittle = document.createElement('div');
-    tittle.textContent = tittleText;
+    inputBox.className = `inputRangeBox ${className}  ${tittle ? '' : 'box_1'}`;
+    parent.appendChild(inputBox);
+    if (tittleText) {
+        var tittle = document.createElement('div');
+        tittle.textContent = tittleText;
+        inputBox.appendChild(tittle);
+    }
     var input = document.createElement('input');
     input.type = 'range';
     input.min = minValue;
     input.max = maxValue;
     input.step = stepValue;
     input.value = value;
+    inputBox.appendChild(input);
     input.onchange = ()=> {
-        ftc(input);
+        oninput == true ? '' : ftc(input);
     };
     function updateStyle() {
         var percentage = (input.value - input.min) / (input.max - input.min) * 100;
@@ -682,12 +687,11 @@ function createInputRange(parent, minValue, maxValue, stepValue, value, ftc, tit
         var gradient = 'linear-gradient(to right, ' + colorBefore + ' 0%, ' + colorBefore + ' ' + percentage + '%, ' + colorAfter + ' ' + percentage + '%, ' + colorAfter + ' 100%)';
         input.style.background = gradient;
     }
-    input.oninput = ()=> {
+    input.oninput = (event)=> {
+        event.preventDefault();
+        oninput == true ? ftc(input) : '';
         updateStyle();
     };
-    parent.appendChild(inputBox);
-    inputBox.appendChild(tittle);
-    inputBox.appendChild(input);
     updateOptionsFunctions.push(() => {
         input.value = previewTarget.getAttribute(attUpdate);
         updateStyle();
@@ -1029,7 +1033,7 @@ function createAddImgBox() {
             var process = box.getAttribute('process');
             if (process.includes('potrace')) {
                 createSwitchBox(imgOptionsBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-                createInputRange(imgOptionsBox, '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold');
+                createInputRange(imgOptionsBox, '', '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold');
                 if (process.includes('color=')) {
                     var value = process.match(/color={([^}]*)}/)?.[1];
                     createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
@@ -1114,10 +1118,16 @@ function createAddImgBox() {
             var imgOptionsBox = document.createElement('div');
             imgOptionsBox.className = 'imgOptionsBox hidden';
             iconsBox.appendChild(imgOptionsBox);
+            var optionBtnBox = document.createElement('div');
+            optionBtnBox.className = 'optionBtnBox';
+            imgOptionsBox.appendChild(optionBtnBox);
+            var optionsBox = document.createElement('div');
+            optionsBox.className = 'optionsBox';
+            imgOptionsBox.appendChild(optionsBox);
             var process = box.getAttribute('process');
             if (process.includes('potrace')) {
                 createSwitchBox(imgOptionsBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-                createInputRange(imgOptionsBox, '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold');
+                createInputRange(imgOptionsBox, '', '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold', false);
                 if (process.includes('color=')) {
                     var value = process.match(/color={([^}]*)}/)?.[1];
                     createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
@@ -1125,8 +1135,11 @@ function createAddImgBox() {
             }
             if (process.includes('normal')) {
                 if (process.includes('colorMode')) {
+                    const colorMode = document.createElement('div');
+                    colorMode.className = 'colorModeBox';
+                    optionsBox.appendChild(colorMode);
                     var value = process.match(/colorMode={([^}]*)}/)?.[1];
-                    createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
+                    createJsColorBox(colorMode, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
                 }
                 if (process.includes('dropShadow')) {
                     var color = process.match(/dropShadow.*?color=['"]([^'"]+)['"]/)?.[1];
@@ -1138,7 +1151,35 @@ function createAddImgBox() {
                         createJsColorBox(imgOptionsBox, 'dropShadowColor', ()=> previewTarget, '--dropShadowColor', color, 'dropShadowColor');
                     }
                 }
+                var filterBox = document.createElement('div');
+                filterBox.className = 'filterBox';
+                optionsBox.appendChild(filterBox);
+                const filterName = ['brightness', 'contrast', 'saturate'];
+                for (let i = 0; i < filterName.length; i++) {
+                    createInputRange(filterBox, `${filterName[i]}Box`, '0', '2', '0.1', '1', (input)=>{
+                        previewTarget.style.setProperty(`--${filterName[i]}`, input.value);
+                        previewTarget.setAttribute(filterName[i], input.value);
+                    }, '', filterName[i]);
+                }
+
             }
+            Array.from(optionsBox.children).forEach((e, i) => {
+                var btn = document.createElement('div')
+                btn.className = `${e.className}Icon btn ${i == 0 ? 'selected':''}`;
+                optionBtnBox.appendChild(btn);
+                i == 0 ? '': e.classList.add('hidden');
+                btn.onclick = ()=> {
+                    if (btn.classList.contains('selected')) {
+                        btn.classList.remove('selected');
+                        e.classList.add('hidden');
+                    } else {
+                        Array.from(optionBtnBox.children).forEach(e=>e.classList.remove('selected'));
+                        Array.from(optionsBox.children).forEach(e=>e.classList.add('hidden'));
+                        btn.classList.add('selected');
+                        e.classList.remove('hidden');
+                    }
+                };
+            });
             if (box.hasAttribute('colorMode')) {
                 var colorMode = box.getAttribute('colorMode');
                 var color = colorMode.match(/color={([^}]*)}/)?.[1];

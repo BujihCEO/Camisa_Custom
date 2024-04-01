@@ -72,6 +72,12 @@
     top: 0;
     left: 0;
     height: 100%;
+    --shadowSize: 1px;
+    --shadowColor: var(--color);
+    --brightness: 1;
+    --contrast: 1;
+    --saturate: 1;
+    filter: brightness(var(--brightness)) contrast(var(--contrast)) saturate(var(--saturate));
     user-select: none;
 }
 
@@ -386,10 +392,62 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin: 1rem 0;
 }
 
-.imgOptionsBox > * {
+.optionBtnBox {
+    display: flex;
+    max-width: 100%;
+    overflow: auto;
+    margin-bottom: 0.5rem;
+    padding: 6px 0.5rem;
+    box-sizing: border-box;
+}
+
+.optionBtnBox > * {
+    height: 3rem;
+    padding: 0rem 2rem;
+    background-color: white;
+    border: 3px solid transparent;
+    margin: 0 0.5rem;
+    box-shadow: 0 2px 4px black;
+}
+
+.optionBtnBox > .selected {
+    border: 3px solid red;
+}
+
+.filterBoxIcon {
+    background: url(https://www.svgrepo.com/show/498931/settings2.svg) center / contain no-repeat;
+}
+
+.colorModeBoxIcon {
+    background: url(https://www.svgrepo.com/show/488310/paint-brush.svg) center / contain no-repeat;
+}
+
+.optionsBox {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.optionsBox > * {
+    padding: 0 0.5rem;
+}
+
+.optionsBox > * > * {
     margin: 0.5rem 0;
+}
+
+.brightnessBox::before  {
+    background: url(https://www.svgrepo.com/show/521520/brightness.svg) center / contain no-repeat;
+}
+
+.contrastBox::before  {
+    background: url(https://www.svgrepo.com/show/475953/contrast-2.svg) center / contain no-repeat;
+}
+
+.saturateBox::before  {
+    background: url(https://www.svgrepo.com/show/475988/saturate.svg) center / contain no-repeat;
 }
 
 .replaceImgIcon {
@@ -446,12 +504,10 @@ input[type="number"] {
     border: 0px;
 }
 
-.inputRangeBox {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
+.inputRangeBox::before {
+    content: '';
+    aspect-ratio: 1/1;
+} 
 
 .inputRangeBox > div {
     padding: 0.3rem 1rem 0;
@@ -484,7 +540,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 1.5rem;
     height: 3rem;
     background: #fff;
-    border-radius: 0px;
+    border-radius: 0.5rem;
     border: 3px solid #000;
     margin: 0 -1.4rem 0 0;
 }
@@ -729,10 +785,6 @@ label {
     padding: 1% 5%;
     border-radius: 1rem;
     cursor: pointer;
-}
-
-.colorBox {
-    display: flex;
 }
 
 .colorBox::before {
