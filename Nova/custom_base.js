@@ -887,9 +887,9 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
             var ImgPreview = new Image();
             ImgPreview.className = 'ImgPreview';
             previewTarget = ImgPreview;
-            if (process.includes('colorMode=')) {
+            if (process.includes('colorMode')) {
                 var color = process.match(/colorMode={([^}]*)}/)?.[1]
-                previewBoxTarget.setAttribute('color', color);
+                color ? previewBoxTarget.setAttribute('color', color) : '';
                 previewBoxTarget.classList.add('colorMode');
             }
             if (process.includes('dropShadow')) {
@@ -1118,6 +1118,11 @@ function createAddImgBox() {
             var imgOptionsBox = document.createElement('div');
             imgOptionsBox.className = 'imgOptionsBox hidden';
             iconsBox.appendChild(imgOptionsBox);
+            var replaceLabel = document.createElement('label');
+            replaceLabel.className = 'replaceImgIcon box_1';
+            replaceLabel.htmlFor = `inputImg${index}`;
+            replaceLabel.textContent = 'Mudar imagem';
+            imgOptionsBox.appendChild(replaceLabel);
             var optionBtnBox = document.createElement('div');
             optionBtnBox.className = 'optionBtnBox';
             imgOptionsBox.appendChild(optionBtnBox);
@@ -1126,20 +1131,25 @@ function createAddImgBox() {
             imgOptionsBox.appendChild(optionsBox);
             var process = box.getAttribute('process');
             if (process.includes('potrace')) {
-                createSwitchBox(imgOptionsBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-                createInputRange(imgOptionsBox, '', '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold', false);
+                const potraceBox = document.createElement('div');
+                potraceBox.className = 'potraceBox';
+                optionsBox.appendChild(potraceBox);
+                createSwitchBox(potraceBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
+                createInputRange(potraceBox, 'potrace', '0.5', '2', '0.1', '1', upadatePotrace, '', 'threshold', false);
                 if (process.includes('color=')) {
                     var value = process.match(/color={([^}]*)}/)?.[1];
-                    createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
+                    createJsColorBox(potraceBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
                 } 
             }
             if (process.includes('normal')) {
                 if (process.includes('colorMode')) {
-                    const colorMode = document.createElement('div');
-                    colorMode.className = 'colorModeBox';
-                    optionsBox.appendChild(colorMode);
                     var value = process.match(/colorMode={([^}]*)}/)?.[1];
-                    createJsColorBox(colorMode, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
+                    if (value) {
+                        const colorMode = document.createElement('div');
+                        colorMode.className = 'colorModeBox';
+                        optionsBox.appendChild(colorMode);
+                        createJsColorBox(colorMode, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
+                    }
                 }
                 if (process.includes('dropShadow')) {
                     var color = process.match(/dropShadow.*?color=['"]([^'"]+)['"]/)?.[1];
@@ -1202,11 +1212,7 @@ function createAddImgBox() {
                     createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color');
                 }
             }
-            var replaceLabel = document.createElement('label');
-            replaceLabel.className = 'replaceImgIcon box_1';
-            replaceLabel.htmlFor = `inputImg${index}`;
-            replaceLabel.textContent = 'Mudar imagem';
-            imgOptionsBox.appendChild(replaceLabel);
+            
             input.addEventListener('input', ()=> {
                 let indexChild = null;
                 let target = document.createElement('div');
@@ -1278,7 +1284,7 @@ function createOptionBox() {
             var className = colorBox.match(/class={([^}]*)}/)?.[1];
             var color = colorBox.match(/color={([^}]*)}/)?.[1];
             var att = colorBox.match(/att={([^}]*)}/)?.[1];
-            createJsColorBox(box, `${className} box_1`, ()=> ProductEdit, att, color, false);
+            createJsColorBox(box, `${className} box_1`, ()=> ProductEdit, att ? att: '--color', color, false);
         }
         if (box.hasAttribute('optionBox')) {
             var optionBox = box.getAttribute('optionBox');

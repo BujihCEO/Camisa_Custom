@@ -58,7 +58,6 @@
 
 .ImgWrap:nth-child(1) {
     position: relative;
-    --color: var(--color);
 }
 
 .grid_1 {
