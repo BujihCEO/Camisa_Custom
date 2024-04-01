@@ -51,7 +51,7 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    z-index: 1;
+    z-index: 0;
 }
 
 .ImgWrap {
@@ -125,7 +125,6 @@
     justify-content: center;
     align-items: center;
     box-shadow: 0 0 0 1px blue;
-    z-index: 3;
     --border: 1px;
     --positons: -4px;
     --size: 7px;
@@ -192,7 +191,6 @@
     opacity: 0%;
     pointer-events: none;
     user-select: none;
-    z-index: 3;
 }
 
 .showLimits.on {
