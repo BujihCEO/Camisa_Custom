@@ -288,7 +288,7 @@
 
 .addImage {
     position: relative;
-    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / contain no-repeat white;
     overflow: hidden;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .gridIconsBox > label {
-    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / contain no-repeat white;
 }
 
 .gridIconsBox > * {
@@ -473,6 +473,7 @@
 .replaceImgIcon {
     justify-content: center;
     flex-wrap: wrap;
+    text-align: center;
     font-size: 1.4rem;
     font-weight: 600;
     filter: invert();
@@ -482,7 +483,7 @@
     content: '';
     aspect-ratio: 1/1;
     padding-left: 0.5rem;
-    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / contain no-repeat;
 }
 
 .idxChange {
@@ -553,6 +554,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .inputRangeBox {
+    flex-wrap: nowrap !important;
     width: 100%;
 }
 
@@ -743,6 +745,8 @@ label {
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     border-radius: 1rem;
     padding: 0.4rem;
     background-color: #fff;
