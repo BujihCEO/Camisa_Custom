@@ -229,22 +229,18 @@
     display: none !important;
 }
 
-.Personalization {
+.customBox {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: aqua;
-    padding: 1rem;
+    padding: 0 1rem;
     z-index: 1;
 }
 
-.Personalization > :first-child {
-    margin-top: 0;
-}
-
-.Personalization >* {
+.customBox >* {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -257,7 +253,7 @@
     box-sizing: border-box;
 }
 
-.Personalization >* >* {
+.customBox >* >* {
     box-shadow: 0px 2px 4px black;
     margin: 1rem 0;
     padding: 0.5rem;
@@ -276,8 +272,8 @@
     font-family: sans-serif;
     font-weight: 600;
     padding: 0.5rem 0;
-    margin: 0.5rem 0;
-    box-shadow: 0 0 0 !important;
+    margin: 0;
+    box-shadow: none;
     background: white;
     z-index: 2;
 }
@@ -287,9 +283,7 @@
 }
 
 .addImage {
-    position: relative;
-    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / contain no-repeat white;
-    overflow: hidden;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / 60% no-repeat white;
 }
 
 .addImage.empty {
@@ -382,10 +376,6 @@
     z-index: 1;
 }
 
-.gridIconsBox > label {
-    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / contain no-repeat white;
-}
-
 .gridIconsBox > * {
     width: 100%;
     height: 100%;
@@ -425,6 +415,7 @@
     border: 3px solid transparent;
     margin: 0 0.5rem;
     box-shadow: 0 2px 4px black;
+    background-size: 60% !important;
 }
 
 .optionBtnBox > .selected {
@@ -432,15 +423,15 @@
 }
 
 .filterBoxIcon {
-    background: url(https://www.svgrepo.com/show/498931/settings2.svg) center / contain no-repeat;
+    background: url(https://www.svgrepo.com/show/498931/settings2.svg) center no-repeat;
 }
 
 .colorModeBoxIcon {
-    background: url(https://www.svgrepo.com/show/488310/paint-brush.svg) center / contain no-repeat;
+    background: url(https://www.svgrepo.com/show/488310/paint-brush.svg) center no-repeat;
 }
 
 .potraceBoxIcon {
-    background: url(https://www.svgrepo.com/show/372460/half-star.svg) center / contain no-repeat;
+    background: url(https://www.svgrepo.com/show/372460/half-star.svg) center no-repeat;
 }
 
 .optionsBox {
@@ -510,7 +501,8 @@
 
 input[type="text"] {
     height: 3rem;
-    width: 80%;
+    width: 100%;
+    max-width: 20rem;
     font-size: 1.6rem;
     font-weight: 700;
     text-align: center;
@@ -519,7 +511,8 @@ input[type="text"] {
 
 input[type="number"] {
     height: 3rem;
-    width: 80%;
+    width: 100%;
+    max-width: 20rem;
     font-size: 1.6rem;
     font-weight: 700;
     text-align: center;
@@ -530,7 +523,7 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 3rem;
+    height: 2rem;
     background-color: #ddd;
     border-radius: 3rem;
     margin: 0;
@@ -554,13 +547,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .inputRangeBox {
-    flex-wrap: nowrap !important;
     width: 100%;
 }
 
 .inputRangeBox::before {
     content: '';
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
+    margin: 0 0 1rem !important;
 } 
 
 .inputRangeBox > div {
@@ -759,16 +752,13 @@ label {
     padding: 0;
 }
 
-.box_1 > *, .box_1::before, .box_1::after {
+.box_1 > * {
     height: 3rem;
 }
 
-.box_1::before{
-    margin-right: 0.5rem;
-}
-
-.box_1.before::before{
-    margin-right: 0.5rem;
+.box_1::before, .box_1::after{
+    height: 2rem;
+    margin: 0.5rem;
 }
 
 .btn.onClick {

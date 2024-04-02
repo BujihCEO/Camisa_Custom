@@ -1,4 +1,5 @@
 const ProductEdit = document.querySelector('.ProductEdit');
+let updateOptionsFunctions = [];
 
 let btnOnFocus = false;
 function btnHold(element, action) {
@@ -198,8 +199,6 @@ function createFontFamilyBox(parent, target, listName, XYlimited, scaleX) {
     });
 }
 
-let updateOptionsFunctions = [];
-
 function createJsColorBox(parent, newBox, target, style, value, setAtt) {
     var box = document.createElement('div');
     var jscolor = document.createElement('button');
@@ -322,30 +321,30 @@ jscolor.presets.default = {
     width:250, height:165, closeButton:true, closeText:'', sliderSize:20
 };
 //  //
-
-const pinchElement = document.querySelector('.ProductBox');
+const Bg_Product = document.querySelector('.Bg_Product');
+const ProductBox = document.querySelector('.ProductBox');
 const MoveExmp = document.querySelector('.MoveExmp');
-var PreviewScale = 1;
+let PreviewScale = 1;
 
 let initialDistance = 0;
 let initialScale = 1;
 
-pinchElement.addEventListener('touchstart', (e) => {
+Bg_Product.addEventListener('touchstart', (e) => {
     const touches = e.touches;
     if (touches.length === 2) {
         initialDistance = getDistance(touches[0], touches[1]);
-        initialScale = pinchElement.style.transform ? parseFloat(pinchElement.style.transform.split('(')[1]) : 1;
+        initialScale = ProductBox.style.transform ? parseFloat(ProductBox.style.transform.split('(')[1]) : 1;
     }
 });
 
-pinchElement.addEventListener('touchmove', (e) => {
+Bg_Product.addEventListener('touchmove', (e) => {
     const touches = e.touches;
     if (touches.length === 2) {
             e.preventDefault();
             MoveExmp.classList.add('hidden');
             const currentDistance = getDistance(touches[0], touches[1]);
             const scale = Math.min(3, Math.max(1, initialScale * (currentDistance / initialDistance)));
-            pinchElement.style.transform = `scale(${scale})`;
+            ProductBox.style.transform = `scale(${scale})`;
             imgSizeAll.forEach(element => {
                 element.style.transform = `scale(${1 / scale})`;
             });
@@ -363,11 +362,11 @@ function getDistance(touch1, touch2) {
 let scale = 1;
 let isHovered = false;
 
-pinchElement.addEventListener('mouseenter', () => {
+Bg_Product.addEventListener('mouseenter', () => {
     isHovered = true;
 });
 
-pinchElement.addEventListener('mouseleave', () => {
+Bg_Product.addEventListener('mouseleave', () => {
     isHovered = false;
 });
 
@@ -377,7 +376,7 @@ document.addEventListener('wheel', (e) => {
         MoveExmp.classList.add('hidden');
         const direction = e.deltaY > 0 ? -1 : 1;
         scale = Math.min(3, Math.max(1, scale + direction * 0.1));
-        pinchElement.style.transform = `scale(${scale})`;
+        ProductBox.style.transform = `scale(${scale})`;
         imgSizeAll.forEach(element => {
             element.style.transform = `scale(${1 / scale})`;
         })
@@ -386,7 +385,7 @@ document.addEventListener('wheel', (e) => {
     }
 }, { passive: false });
 
-pinchElement.addEventListener('mousedown', (e) => {
+Bg_Product.addEventListener('mousedown', (e) => {
     if (isHovered && !isElementClicked(e.target, ['dragSelector', 'ImgPreviewBox'])) {
         MoveExmp.classList.add('hidden');
         onClick = true;
@@ -397,13 +396,13 @@ pinchElement.addEventListener('mousedown', (e) => {
             if (isDragging) {
                 e.preventDefault();
                 onClick = false;
-                size = pinchElement.offsetHeight / 2;
+                size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, e.clientX - initialX));
                 offsetY = Math.min(size, Math.max(-size, e.clientY - initialY));
-                pinchElement.style.translate = `${offsetX}px ${offsetY}px`;
+                ProductBox.style.translate = `${offsetX}px ${offsetY}px`;
             }
         });
-        pinchElement.addEventListener('mouseup', () => {
+        Bg_Product.addEventListener('mouseup', () => {
             if (isDragging) {
                 isDragging = false;
                 if (onClick) {
@@ -417,25 +416,25 @@ pinchElement.addEventListener('mousedown', (e) => {
 let isDragging = false;
 let initialX, initialY, offsetX = 0, offsetY = 0;
 
-pinchElement.addEventListener('touchstart', function (event) {
+Bg_Product.addEventListener('touchstart', function (event) {
     if (!isElementClicked(event.target, ['dragSelector'])) {
         onClick = true;
         isDragging = true;
         initialX = event.touches[0].clientX - offsetX;
         initialY = event.touches[0].clientY - offsetY;
-        pinchElement.addEventListener('touchmove', (e) => {
+        Bg_Product.addEventListener('touchmove', (e) => {
             const touches = e.touches;
             if (isDragging) {
                 onClick = false;
                 e.preventDefault();
                 MoveExmp.classList.add('hidden');
-                size = pinchElement.offsetHeight / 2;
+                size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, touches[0].clientX - initialX));
                 offsetY = Math.min(size, Math.max(-size, touches[0].clientY - initialY));
-                pinchElement.style.translate = `${offsetX}px ${offsetY}px`;
+                ProductBox.style.translate = `${offsetX}px ${offsetY}px`;
             }
         });
-        pinchElement.addEventListener('touchend', () => {
+        Bg_Product.addEventListener('touchend', () => {
             if (isDragging) {
                 isDragging = false;
                 if (onClick) {
@@ -1053,6 +1052,7 @@ function createAddImgBox() {
             var icons = [];
             for (let i = 0; i < n; i++) {
                 var label = document.createElement('label');
+                label.className = 'addImage';
                 label.htmlFor = `inputImg${index}`;
                 gridBox.appendChild(label);
                 icons.push(label);
@@ -1316,7 +1316,6 @@ if (document.querySelector('.JsColorBox')) {
     }
 }
 
-var ProductBox = document.querySelector('.ProductBox');
 var Preview = document.querySelector('.Preview');
 function resize() {
     document.body.style.setProperty('--boxSize', `${ProductBox.offsetWidth}px`);
