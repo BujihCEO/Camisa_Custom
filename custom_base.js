@@ -945,6 +945,8 @@ function createAddImgBox() {
         input.accept = 'image/*';
         box.appendChild(input);
         Imgwrap = document.querySelectorAll('.ImgWrap');
+        var imgOptionsBox = document.createElement('div');
+        imgOptionsBox.className = 'imgOptionsBox hidden';
         if (box.hasAttribute('slider')) {
             if (box.getAttribute('slider').includes('0')) {
                 var limit = null;
@@ -971,9 +973,6 @@ function createAddImgBox() {
             var imgSlider = document.createElement('div');
             imgSlider.className = 'imgSlider slider'; 
             imgIconBox.appendChild(imgSlider);
-            var imgOptionsBox = document.createElement('div');
-            imgOptionsBox.className = 'imgOptionsBox hidden';
-            imgIconBox.appendChild(imgOptionsBox);
             var idxChange = document.createElement('div');
             idxChange.className = 'idxChange';
             imgOptionsBox.appendChild(idxChange);
@@ -1030,53 +1029,6 @@ function createAddImgBox() {
                 deleteImg(); 
                 IconCount();
             };
-            var process = box.getAttribute('process');
-            if (process.includes('potrace')) {
-                createSwitchBox(imgOptionsBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-                createInputRange(imgOptionsBox, '', '0.5', '2', '0.1', '1', upadatePotrace, 'Efeito', 'threshold');
-                if (process.includes('color=')) {
-                    var value = process.match(/color={([^}]*)}/)?.[1];
-                    createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
-                } 
-            }
-            if (process.includes('normal')) {
-                if (process.includes('colorMode')) {
-                    var value = process.match(/colorMode={([^}]*)}/)?.[1];
-                    createJsColorBox(imgOptionsBox, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
-                }
-                if (process.includes('dropShadow')) {
-                    var color = process.match(/dropShadow.*?color=['"]([^'"]+)['"]/)?.[1];
-                    var value = process.match(/dropShadow.*?value=['"]([^'"]+)['"]/)?.[1];
-                    var min = process.match(/dropShadow.*?min=['"]([^'"]+)['"]/)?.[1];
-                    var max = process.match(/dropShadow.*?max=['"]([^'"]+)['"]/)?.[1];
-                    createChangeSizeBox(imgOptionsBox, 'dropShadowSize', ()=> previewTarget, 0.5, '--dropShadowSize', min, max);
-                    if (color) {
-                        createJsColorBox(imgOptionsBox, 'dropShadowColor', ()=> previewTarget, '--dropShadowColor', color, 'dropShadowColor');
-                    }
-                }
-            }
-            if (box.hasAttribute('colorMode')) {
-                var colorMode = box.getAttribute('colorMode');
-                var color = colorMode.match(/color={([^}]*)}/)?.[1];
-                Imgwrap[index].classList.add('colorMode');
-                if (colorMode.includes('switch')) {
-                    var switchBox = document.createElement('div');
-                    switchBox.className = 'switchDisplay box_1'
-                    box.appendChild(switchBox);
-                    function code1() {
-                        Imgwrap[index].classList.add('colorMode');
-                        switchBox.children[1].classList.remove('hidden');
-                    }
-                    function code2() {
-                        Imgwrap[index].classList.remove('colorMode');
-                        switchBox.children[1].classList.add('hidden');
-                    }
-                    createSwitchBox(switchBox, 'colorModeBox', code1, code2, '');
-                    createJsColorBox(switchBox, 'colorModeBox', ()=> Imgwrap[index], '--color', color, 'color');
-                } else {
-                    createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color');
-                }
-            }
             input.addEventListener('input', ()=> {
                 loadImage(input, Imgwrap[index], imgSlider, imgGroup, process, imgOptionsBox);
                 IconCount();
@@ -1090,14 +1042,14 @@ function createAddImgBox() {
             if (att.includes('grid')) {
                 var grid = att.match(/grid={([^}]*)}/)?.[1];
             }
-            var iconsBox = document.createElement('div');
-            iconsBox.className = 'imgIconBox';
+            var imgIconBox = document.createElement('div');
+            imgIconBox.className = 'imgIconBox';
             var gridBox = document.createElement('div');
             gridBox.className = `gridIconsBox grid_${grid !== undefined ? grid : 1} display_1`;
             Imgwrap[index].classList.add(`grid_${grid !== undefined ? grid : 1}`);
             Imgwrap[index].classList.add('display_1');
-            box.appendChild(iconsBox);
-            iconsBox.appendChild(gridBox);
+            box.appendChild(imgIconBox);
+            imgIconBox.appendChild(gridBox);
             var icons = [];
             for (let i = 0; i < n; i++) {
                 var label = document.createElement('label');
@@ -1115,117 +1067,25 @@ function createAddImgBox() {
                     e.classList.add('selected');
                 });
             });
-            var imgOptionsBox = document.createElement('div');
-            imgOptionsBox.className = 'imgOptionsBox hidden';
-            iconsBox.appendChild(imgOptionsBox);
             var replaceLabel = document.createElement('label');
             replaceLabel.className = 'replaceImgIcon box_1';
             replaceLabel.htmlFor = `inputImg${index}`;
             replaceLabel.textContent = 'Mudar imagem';
             imgOptionsBox.appendChild(replaceLabel);
-            var optionBtnBox = document.createElement('div');
-            optionBtnBox.className = 'optionBtnBox';
-            imgOptionsBox.appendChild(optionBtnBox);
-            var optionsBox = document.createElement('div');
-            optionsBox.className = 'optionsBox';
-            imgOptionsBox.appendChild(optionsBox);
-            var process = box.getAttribute('process');
-            if (process.includes('potrace')) {
-                const potraceBox = document.createElement('div');
-                potraceBox.className = 'potraceBox';
-                optionsBox.appendChild(potraceBox);
-                createSwitchBox(potraceBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-                createInputRange(potraceBox, 'potrace', '0.5', '2', '0.1', '1', upadatePotrace, '', 'threshold', false);
-                if (process.includes('color=')) {
-                    var value = process.match(/color={([^}]*)}/)?.[1];
-                    createJsColorBox(potraceBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
-                } 
-            }
-            if (process.includes('normal')) {
-                if (process.includes('colorMode')) {
-                    var value = process.match(/colorMode={([^}]*)}/)?.[1];
-                    if (value) {
-                        const colorMode = document.createElement('div');
-                        colorMode.className = 'colorModeBox';
-                        optionsBox.appendChild(colorMode);
-                        createJsColorBox(colorMode, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
-                    }
-                }
-                if (process.includes('dropShadow')) {
-                    var color = process.match(/dropShadow.*?color=['"]([^'"]+)['"]/)?.[1];
-                    var value = process.match(/dropShadow.*?value=['"]([^'"]+)['"]/)?.[1];
-                    var min = process.match(/dropShadow.*?min=['"]([^'"]+)['"]/)?.[1];
-                    var max = process.match(/dropShadow.*?max=['"]([^'"]+)['"]/)?.[1];
-                    createChangeSizeBox(imgOptionsBox, 'dropShadowSize', ()=> previewTarget, 0.5, '--dropShadowSize', min, max);
-                    if (color) {
-                        createJsColorBox(imgOptionsBox, 'dropShadowColor', ()=> previewTarget, '--dropShadowColor', color, 'dropShadowColor');
-                    }
-                }
-                var filterBox = document.createElement('div');
-                filterBox.className = 'filterBox';
-                optionsBox.appendChild(filterBox);
-                const filterName = ['brightness', 'contrast', 'saturate'];
-                for (let i = 0; i < filterName.length; i++) {
-                    createInputRange(filterBox, `${filterName[i]}Box`, '0', '2', '0.1', '1', (input)=>{
-                        previewTarget.style.setProperty(`--${filterName[i]}`, input.value);
-                        previewTarget.setAttribute(filterName[i], input.value);
-                    }, '', filterName[i]);
-                }
-
-            }
-            Array.from(optionsBox.children).forEach((e, i) => {
-                var btn = document.createElement('div')
-                btn.className = `${e.className}Icon btn ${i == 0 ? 'selected':''}`;
-                optionBtnBox.appendChild(btn);
-                i == 0 ? '': e.classList.add('hidden');
-                btn.onclick = ()=> {
-                    if (btn.classList.contains('selected')) {
-                        btn.classList.remove('selected');
-                        e.classList.add('hidden');
-                    } else {
-                        Array.from(optionBtnBox.children).forEach(e=>e.classList.remove('selected'));
-                        Array.from(optionsBox.children).forEach(e=>e.classList.add('hidden'));
-                        btn.classList.add('selected');
-                        e.classList.remove('hidden');
-                    }
-                };
-            });
-            if (box.hasAttribute('colorMode')) {
-                var colorMode = box.getAttribute('colorMode');
-                var color = colorMode.match(/color={([^}]*)}/)?.[1];
-                Imgwrap[index].classList.add('colorMode');
-                if (colorMode.includes('switch')) {
-                    var switchBox = document.createElement('div');
-                    switchBox.className = 'switchDisplay box_1'
-                    box.appendChild(switchBox);
-                    function code1() {
-                        Imgwrap[index].classList.add('colorMode');
-                        switchBox.children[1].classList.remove('hidden');
-                    }
-                    function code2() {
-                        Imgwrap[index].classList.remove('colorMode');
-                        switchBox.children[1].classList.add('hidden');
-                    }
-                    createSwitchBox(switchBox, 'colorModeBox', code1, code2, '');
-                    createJsColorBox(switchBox, 'colorModeBox', ()=> Imgwrap[index], '--color', color, 'color');
-                } else {
-                    createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color');
-                }
-            }
             
             input.addEventListener('input', ()=> {
-                let indexChild = null;
-                let target = document.createElement('div');
-                icons.forEach((e, i) => {
-                    if (e.classList.contains('selected')) {
-                        indexChild = i;
-                        gridBox.replaceChild(target, e);
-                    }
-                });
-                Imgwrap[index].children[indexChild].innerHTML = '';
-                loadImage(input, Imgwrap[index].children[indexChild], target, imgGroup, process, imgOptionsBox);
-                icons[indexChild] = iconTarget;
-                gridBox.replaceChild(iconTarget, target);
+            let indexChild = null;
+            let target = document.createElement('div');
+            icons.forEach((e, i) => {
+                if (e.classList.contains('selected')) {
+                    indexChild = i;
+                    gridBox.replaceChild(target, e);
+                }
+            });
+            Imgwrap[index].children[indexChild].innerHTML = '';
+            loadImage(input, Imgwrap[index].children[indexChild], target, imgGroup, process, imgOptionsBox);
+            icons[indexChild] = iconTarget;
+            gridBox.replaceChild(iconTarget, target);
             });
             if (att.includes('display')) {
                 var dpyN = att.match(/display={([^}]*)}/)?.[1];
@@ -1266,6 +1126,96 @@ function createAddImgBox() {
                 });
             }
         }
+        var optionBtnBox = document.createElement('div');
+        optionBtnBox.className = 'optionBtnBox';
+        imgOptionsBox.appendChild(optionBtnBox);
+        var optionsBox = document.createElement('div');
+        optionsBox.className = 'optionsBox';
+        imgOptionsBox.appendChild(optionsBox);
+        var process = box.getAttribute('process');
+        if (process.includes('potrace')) {
+            const potraceBox = document.createElement('div');
+            potraceBox.className = 'potraceBox';
+            optionsBox.appendChild(potraceBox);
+            createSwitchBox(potraceBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
+            createInputRange(potraceBox, 'potrace', '0.5', '2', '0.1', '1', upadatePotrace, '', 'threshold', false);
+            if (process.includes('color=')) {
+                var value = process.match(/color={([^}]*)}/)?.[1];
+                createJsColorBox(potraceBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
+            } 
+        }
+        if (process.includes('normal')) {
+            if (process.includes('colorMode')) {
+                var value = process.match(/colorMode={([^}]*)}/)?.[1];
+                if (value) {
+                    const colorMode = document.createElement('div');
+                    colorMode.className = 'colorModeBox';
+                    optionsBox.appendChild(colorMode);
+                    createJsColorBox(colorMode, 'colorModeBox', ()=> previewBoxTarget, '--color', value, 'color');
+                }
+            }
+            if (process.includes('dropShadow')) {
+                var color = process.match(/dropShadow.*?color=['"]([^'"]+)['"]/)?.[1];
+                var value = process.match(/dropShadow.*?value=['"]([^'"]+)['"]/)?.[1];
+                var min = process.match(/dropShadow.*?min=['"]([^'"]+)['"]/)?.[1];
+                var max = process.match(/dropShadow.*?max=['"]([^'"]+)['"]/)?.[1];
+                createChangeSizeBox(imgOptionsBox, 'dropShadowSize', ()=> previewTarget, 0.5, '--dropShadowSize', min, max);
+                if (color) {
+                    createJsColorBox(imgOptionsBox, 'dropShadowColor', ()=> previewTarget, '--dropShadowColor', color, 'dropShadowColor');
+                }
+            }
+            var filterBox = document.createElement('div');
+            filterBox.className = 'filterBox';
+            optionsBox.appendChild(filterBox);
+            const filterName = ['brightness', 'contrast', 'saturate'];
+            for (let i = 0; i < filterName.length; i++) {
+                createInputRange(filterBox, `${filterName[i]}Box`, '0', '2', '0.1', '1', (input)=>{
+                    previewTarget.style.setProperty(`--${filterName[i]}`, input.value);
+                    previewTarget.setAttribute(filterName[i], input.value);
+                }, '', filterName[i]);
+            }
+
+        }
+        Array.from(optionsBox.children).forEach((e, i) => {
+            var btn = document.createElement('div')
+            btn.className = `${e.className}Icon btn ${i == 0 ? 'selected':''}`;
+            optionBtnBox.appendChild(btn);
+            i == 0 ? '': e.classList.add('hidden');
+            btn.onclick = ()=> {
+                if (btn.classList.contains('selected')) {
+                    btn.classList.remove('selected');
+                    e.classList.add('hidden');
+                } else {
+                    Array.from(optionBtnBox.children).forEach(e=>e.classList.remove('selected'));
+                    Array.from(optionsBox.children).forEach(e=>e.classList.add('hidden'));
+                    btn.classList.add('selected');
+                    e.classList.remove('hidden');
+                }
+            };
+        });
+        if (box.hasAttribute('colorMode')) {
+            var colorMode = box.getAttribute('colorMode');
+            var color = colorMode.match(/color={([^}]*)}/)?.[1];
+            Imgwrap[index].classList.add('colorMode');
+            if (colorMode.includes('switch')) {
+                var switchBox = document.createElement('div');
+                switchBox.className = 'switchDisplay box_1'
+                box.appendChild(switchBox);
+                function code1() {
+                    Imgwrap[index].classList.add('colorMode');
+                    switchBox.children[1].classList.remove('hidden');
+                }
+                function code2() {
+                    Imgwrap[index].classList.remove('colorMode');
+                    switchBox.children[1].classList.add('hidden');
+                }
+                createSwitchBox(switchBox, 'colorModeBox', code1, code2, '');
+                createJsColorBox(switchBox, 'colorModeBox', ()=> Imgwrap[index], '--color', color, 'color');
+            } else {
+                createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color');
+            }
+        }
+        imgIconBox.appendChild(imgOptionsBox);
     });
 }
 document.querySelector('.addImgBox') && createAddImgBox();

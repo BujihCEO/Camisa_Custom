@@ -25,7 +25,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    mask: url(assents/Camisa.png) center / cover no-repeat;
+    mask: url(assents/branco-bg.png) center / cover no-repeat;
     background: var(--box-color);
     pointer-events: none;
     user-select: none;
@@ -33,7 +33,7 @@
 }
 
 .ProductBox::after {
-    background: url(assents/Camisa.png) center / cover;
+    background: url(assents/branco-bg.png) center / cover;
     mix-blend-mode: multiply;
 }
 
@@ -236,8 +236,7 @@
     justify-content: center;
     align-items: center;
     background-color: aqua;
-    width: 100%;
-    padding: 20px 0;
+    padding: 1rem;
     z-index: 1;
 }
 
@@ -249,16 +248,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90%;
-    background: linear-gradient(to right, transparent 0% 49%, black 49% 51%, transparent 51% 100%);
+    padding: 0.5rem;
+    width: 100%;
+    max-width: var(--boxSize);
     background: white;
     margin: 1rem 0;
     border-radius: 1rem;
+    box-sizing: border-box;
 }
 
 .Personalization >* >* {
     box-shadow: 0px 2px 4px black;
     margin: 1rem 0;
+    padding: 0.5rem;
     border-radius: 1rem;
 }
 
@@ -269,6 +271,7 @@
     width: 100%;
     justify-content: center;
     align-items: center;
+    text-align: center;
     font-size: 1.7rem;
     font-family: sans-serif;
     font-weight: 600;
@@ -285,7 +288,7 @@
 
 .addImage {
     position: relative;
-    background: url(assents/Upload.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat white;
     overflow: hidden;
 }
 
@@ -306,7 +309,7 @@
 }
 
 .imgSlider {
-    width: 100%;
+    max-width: 100%;
     height: 8rem;
     padding: 0.4rem 0;
     margin: 0.5rem 0;
@@ -375,14 +378,12 @@
 }
 
 .gridIconsBox  {
-    width: inherit !important;
-    max-width: 100%;
-    padding: 0.5rem;
+    width: 80%;
     z-index: 1;
 }
 
 .gridIconsBox > label {
-    background: url(assents/Upload.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat white;
 }
 
 .gridIconsBox > * {
@@ -470,7 +471,8 @@
 }
 
 .replaceImgIcon {
-    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     font-size: 1.4rem;
     font-weight: 600;
     filter: invert();
@@ -480,7 +482,7 @@
     content: '';
     aspect-ratio: 1/1;
     padding-left: 0.5rem;
-    background: url(assents/Upload.svg) center / contain no-repeat;
+    background: url(https://www.svgrepo.com/show/502892/upload-photo.svg) center / contain no-repeat;
 }
 
 .idxChange {
