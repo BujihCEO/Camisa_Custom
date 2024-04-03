@@ -1041,52 +1041,6 @@ function createAddImgBox() {
             if (att.includes('grid')) {
                 var grid = att.match(/grid={([^}]*)}/)?.[1];
             }
-            var imgIconBox = document.createElement('div');
-            imgIconBox.className = 'imgIconBox';
-            var gridBox = document.createElement('div');
-            gridBox.className = `gridIconsBox grid_${grid !== undefined ? grid : 1} display_1`;
-            Imgwrap[index].classList.add(`grid_${grid !== undefined ? grid : 1}`);
-            Imgwrap[index].classList.add('display_1');
-            box.appendChild(imgIconBox);
-            imgIconBox.appendChild(gridBox);
-            var icons = [];
-            for (let i = 0; i < n; i++) {
-                var label = document.createElement('label');
-                label.className = 'addImage';
-                label.htmlFor = `inputImg${index}`;
-                gridBox.appendChild(label);
-                icons.push(label);
-                imgGroup.push(label);
-                var imgContainer = document.createElement('div');
-                imgContainer.classList = 'imgContainer';
-                Imgwrap[index].appendChild(imgContainer);
-            }
-            icons.forEach(e => {
-                e.addEventListener('click', ()=> {
-                    deselectIcon();
-                    e.classList.add('selected');
-                });
-            });
-            var replaceLabel = document.createElement('label');
-            replaceLabel.className = 'replaceImgIcon box_1';
-            replaceLabel.htmlFor = `inputImg${index}`;
-            replaceLabel.textContent = 'Mudar imagem';
-            imgOptionsBox.appendChild(replaceLabel);
-            
-            input.addEventListener('input', ()=> {
-            let indexChild = null;
-            let target = document.createElement('div');
-            icons.forEach((e, i) => {
-                if (e.classList.contains('selected')) {
-                    indexChild = i;
-                    gridBox.replaceChild(target, e);
-                }
-            });
-            Imgwrap[index].children[indexChild].innerHTML = '';
-            loadImage(input, Imgwrap[index].children[indexChild], target, imgGroup, process, imgOptionsBox);
-            icons[indexChild] = iconTarget;
-            gridBox.replaceChild(iconTarget, target);
-            });
             if (att.includes('display')) {
                 var dpyN = att.match(/display={([^}]*)}/)?.[1];
                 var displayBox = document.createElement('div');
@@ -1125,6 +1079,52 @@ function createAddImgBox() {
                     });
                 });
             }
+            var imgIconBox = document.createElement('div');
+            imgIconBox.className = 'imgIconBox';
+            var gridBox = document.createElement('div');
+            gridBox.className = `gridIconsBox grid_${grid !== undefined ? grid : 1} display_1`;
+            Imgwrap[index].classList.add(`grid_${grid !== undefined ? grid : 1}`);
+            Imgwrap[index].classList.add('display_1');
+            box.appendChild(imgIconBox);
+            imgIconBox.appendChild(gridBox);
+            var icons = [];
+            for (let i = 0; i < n; i++) {
+                var label = document.createElement('label');
+                label.className = 'addImage';
+                label.htmlFor = `inputImg${index}`;
+                gridBox.appendChild(label);
+                icons.push(label);
+                imgGroup.push(label);
+                var imgContainer = document.createElement('div');
+                imgContainer.classList = 'imgContainer';
+                Imgwrap[index].appendChild(imgContainer);
+            }
+            icons.forEach(e => {
+                e.addEventListener('click', ()=> {
+                    deselectIcon();
+                    e.classList.add('selected');
+                });
+            });
+            var replaceLabel = document.createElement('label');
+            replaceLabel.className = 'replaceImgIcon box_1';
+            replaceLabel.htmlFor = `inputImg${index}`;
+            replaceLabel.textContent = 'Mudar imagem';
+            imgOptionsBox.appendChild(replaceLabel);            
+            input.addEventListener('input', ()=> {
+            let indexChild = null;
+            let target = document.createElement('div');
+            icons.forEach((e, i) => {
+                if (e.classList.contains('selected')) {
+                    indexChild = i;
+                    gridBox.replaceChild(target, e);
+                }
+            });
+            Imgwrap[index].children[indexChild].innerHTML = '';
+            loadImage(input, Imgwrap[index].children[indexChild], target, imgGroup, process, imgOptionsBox);
+            icons[indexChild] = iconTarget;
+            gridBox.replaceChild(iconTarget, target);
+            });
+            
         }
         var optionBtnBox = document.createElement('div');
         optionBtnBox.className = 'optionBtnBox';
@@ -1203,16 +1203,16 @@ function createAddImgBox() {
                 box.appendChild(switchBox);
                 function code1() {
                     Imgwrap[index].classList.add('colorMode');
-                    switchBox.children[1].classList.remove('hidden');
+                    color ? switchBox.children[1].classList.remove('hidden') : '';
                 }
                 function code2() {
                     Imgwrap[index].classList.remove('colorMode');
-                    switchBox.children[1].classList.add('hidden');
+                    color ? switchBox.children[1].classList.add('hidden'): '';
                 }
                 createSwitchBox(switchBox, 'colorModeBox', code1, code2, '');
-                createJsColorBox(switchBox, 'colorModeBox', ()=> Imgwrap[index], '--color', color, 'color');
+                color ? createJsColorBox(switchBox, 'colorModeBox', ()=> Imgwrap[index], '--color', color, 'color') : '';
             } else {
-                createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color');
+                color ? createJsColorBox(box, 'colorModeBox box_1', ()=> Imgwrap[index], '--color', color, 'color') : '';
             }
         }
         imgIconBox.appendChild(imgOptionsBox);

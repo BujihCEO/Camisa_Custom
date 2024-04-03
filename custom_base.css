@@ -104,11 +104,11 @@
     user-select: none;
 }
 
-.colorMode > .imgContainer, .ImgPreviewBox.colorMode {
+.colorMode > * > .ImgPreviewBox, .ImgPreviewBox.colorMode {
     contain: content;
 }
 
-.colorMode > .imgContainer::after, .ImgPreviewBox.colorMode::after {
+.colorMode > * > .ImgPreviewBox::after, .ImgPreviewBox.colorMode::after {
     content: '';
     position: absolute;
     height: 100%;
@@ -298,10 +298,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90%;
+    width: 100%;
     background-color: white;
     border-radius: 1rem;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .imgSlider {
@@ -352,9 +353,9 @@
 }
 
 .displayBox  {
-    height: 7rem;
-    width: 90%;
-    padding: 1rem 0;
+    height: 6rem;
+    width: 100%;
+    padding: 0.5rem 0;
     border-radius: 1rem;
 }
 
@@ -388,7 +389,6 @@
 
 .gridIconsBox > .selected {
     border: 3px solid red;
-    scale: 1.1;
     z-index: 2;
 }
 
