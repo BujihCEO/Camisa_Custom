@@ -660,7 +660,7 @@ imgSizeAll.forEach((element) => {
 
 //  //  //  //
 
-function createInputRange(parent, className, minValue, maxValue, stepValue, value, ftc, tittleText, attUpdate, oninput = true) {
+function createInputRange(parent, className, minValue, maxValue, stepValue, value, onInput, onChange, tittleText, attUpdate) {
     var inputBox = document.createElement('div');
     inputBox.className = `inputRangeBox ${className}  ${tittle ? '' : 'box_1'}`;
     parent.appendChild(inputBox);
@@ -677,7 +677,7 @@ function createInputRange(parent, className, minValue, maxValue, stepValue, valu
     input.value = value;
     inputBox.appendChild(input);
     input.onchange = ()=> {
-        oninput == true ? '' : ftc(input);
+        onChange ? onChange(input): '';
     };
     function updateStyle() {
         var percentage = (input.value - input.min) / (input.max - input.min) * 100;
@@ -688,7 +688,7 @@ function createInputRange(parent, className, minValue, maxValue, stepValue, valu
     }
     input.oninput = (event)=> {
         event.preventDefault();
-        oninput == true ? ftc(input) : '';
+        onInput ? onInput(input) : '';
         updateStyle();
     };
     updateOptionsFunctions.push(() => {
@@ -766,6 +766,7 @@ function potrace(target, append, conclusion = ()=>{}) {
 }
 
 function upadatePotrace(input, invert) {
+    loadOn(0);
     if (iconTarget) {
         if (input) {
             var threshold = input.value;
@@ -786,7 +787,49 @@ function upadatePotrace(input, invert) {
             ctx.filter = `brightness(${threshold}) invert(${invert})`;
             ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
             var imgCanvas = canvas.toDataURL();
-            potrace(imgCanvas, previewTarget);
+            potrace(imgCanvas, previewTarget, loadOff);
+        }
+    }
+}
+
+function previewPotrace(input, invert) {
+    if (iconTarget) {
+        if (input) {
+            var threshold = input.value;
+            previewTarget.setAttribute('Threshold', threshold);
+            invert = parseInt(previewTarget.getAttribute('invert'));
+        } else {
+            var threshold = previewTarget.getAttribute('Threshold');
+            previewTarget.setAttribute('invert', invert);
+        }
+        var Src = iconTarget.src;
+        var newImage = new Image();
+        newImage.src = Src;
+        var color = window.getComputedStyle(previewTarget).getPropertyValue('--canvaColor');
+        console.log(true);
+        newImage.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = newImage.width;
+            canvas.height = newImage.height;
+            var ctx = canvas.getContext('2d');
+            ctx.filter = `brightness(${threshold}) invert(${invert}) grayscale(100%) contrast(1000%)`;
+            ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
+        
+            // Removendo pixels brancos do canvas
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var pixels = imageData.data;
+            for (var i = 0; i < pixels.length; i += 4) {
+                // Verificando se o pixel é branco
+                if (pixels[i] === 255 && pixels[i + 1] === 255 && pixels[i + 2] === 255) {
+                    // Definindo o pixel como transparente
+                    pixels[i + 3] = 0;
+                }
+            }
+            ctx.putImageData(imageData, 0, 0);
+        
+            var imgCanvas = canvas.toDataURL();
+            previewTarget.innerHTML = '';
+            previewTarget.style.background = `url(${imgCanvas}) center / contain no-repeat`;
         }
     }
 }
@@ -859,6 +902,7 @@ function deselectIcon() {
 }
 
 function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
+    process.includes('potrace') ? loadOn(0): '';
     deselectIcon();
     const file = input.files[0];
     const reader = new FileReader();
@@ -901,6 +945,7 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
                 dragOn(true, ImgPreviewBox);
                 updateOptions();
                 optionBox.classList.remove('hidden');
+                loadOff();
             };
             ImgPreview.src = e.target.result;
         }
@@ -920,6 +965,7 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
                 dragOn(true, ImgPreviewBox);
                 updateOptions();
                 optionBox.classList.remove('hidden');
+                loadOff();
             });
         }
         imgIcon.src = e.target.result;
@@ -1138,7 +1184,7 @@ function createAddImgBox() {
             potraceBox.className = 'potraceBox';
             optionsBox.appendChild(potraceBox);
             createSwitchBox(potraceBox, 'potrace', 'upadatePotrace(false, 0)', 'upadatePotrace(false, 1)', 'invert');
-            createInputRange(potraceBox, 'potrace', '0.5', '2', '0.1', '1', upadatePotrace, '', 'threshold', false);
+            createInputRange(potraceBox, 'potrace', '0.5', '2', '0.1', '1', false, upadatePotrace, '', 'threshold');
             if (process.includes('color=')) {
                 var value = process.match(/color={([^}]*)}/)?.[1];
                 createJsColorBox(potraceBox, 'colorModeBox', ()=> previewTarget, '--color', value, 'svg-fill');
@@ -1172,7 +1218,7 @@ function createAddImgBox() {
                 createInputRange(filterBox, `${filterName[i]}Box`, '0', '2', '0.1', '1', (input)=>{
                     previewTarget.style.setProperty(`--${filterName[i]}`, input.value);
                     previewTarget.setAttribute(filterName[i], input.value);
-                }, '', filterName[i]);
+                }, false, '', filterName[i]);
             }
 
         }
@@ -1277,6 +1323,50 @@ function createAlert() {
     };
 }
 createAlert();
+
+function createLoading() {
+    var loadingContainer = document.createElement('div');
+    loadingContainer.className = "LoadingCustom hidden ProductLoad";
+    var loadGif = document.createElement('div');
+    loadGif.className = "loadGif";
+    var loadMessage_1 = document.createElement('div');
+    loadMessage_1.className = "loadMessage";
+    loadMessage_1.innerText = "Criando sua obra de arte";
+    var loadMessage_2 = document.createElement('div');
+    loadMessage_2.className = "loadMessage";
+    loadMessage_2.innerText = "Enviando para o carrinho";
+    var loaderDots = document.createElement('div');
+    loaderDots.className = "loaderDots";
+    Array.from({length: 3}, () => {
+        var dot = document.createElement('div');
+        dot.className = "dot";
+        loaderDots.appendChild(dot);
+    });
+    loadingContainer.appendChild(loadGif);
+    loadingContainer.appendChild(loadMessage_1);
+    loadingContainer.appendChild(loadMessage_2);
+    loadingContainer.appendChild(loaderDots);
+    document.body.appendChild(loadingContainer);
+    window.loadOn = function(type) {
+        if (type === 0) {
+            loadingContainer.classList.remove('message1', 'message2');
+            loadingContainer.classList.add('ProductLoad');
+        };
+        if (type === 1) {
+            loadingContainer.classList.remove('ProductLoad', 'message2');
+            loadingContainer.classList.add('message1');
+        };
+        if (type === 2) {
+            loadingContainer.classList.remove('ProductLoad', 'message1');
+            loadingContainer.classList.add('message2');
+        };
+        loadingContainer.classList.remove('hidden');
+    };
+    window.loadOff = function() {
+        loadingContainer.classList.add('hidden');
+    }
+}
+createLoading();
 
 if (document.querySelector('.JsColorBox')) {
     var boxes = document.querySelectorAll('.JsColorBox');

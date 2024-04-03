@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <title>Document</title>
+</head>
+<style>
+
+.ProductEdit::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mask: url(assents/fundo-sometimes.webp) center / contain no-repeat;
+    background-color: var(--color);
+}
+
+.grid_1 {
+    display: grid;
+    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+    aspect-ratio: 1 / 1;
+}
+
+.ImgWrap {
+    width: 71%;
+    top: 25.5%;
+}
+
+</style>
+<body>
+    <div class="productWrap">
+        <div class="Bg_Product">
+            <div class="ProductBox">
+                <div class="Preview">
+                    <div class="ProductEdit">
+                        <div class="ImgWrap"></div>
+                    </div>
+                    <div class="showLimits"></div>
+                    <div class="dragSelector hidden">
+                        <div class="dragMove"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="MoveExmp"></div>
+        </div>
+        <div class="customBox">
+
+            <div class="addOptionsBox"
+                tittle="Cor Principal"
+                colorBox="class={colorModeBox} color={#C841E5}"
+            ></div>
+
+            <div class="addImgBox"
+                tittle="Fotos"
+                grid="qty={4}"
+                process="potrace"
+            ></div>
+
+        </div>
+    </div>
+</body>
+<script>
+</script>
+<script src="jscolor.js"></script>
+<script src="potrace.js"></script>
+<script src="custom_base.js"></script>
+</html>

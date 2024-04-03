@@ -89,6 +89,8 @@
     top: 0;
     left: 0;
     height: 100%;
+    background-blend-mode: color;
+    --canvaColor: var(--color);
     --shadowSize: 1px;
     --shadowColor: var(--color);
     --brightness: 1;
@@ -867,4 +869,87 @@ label {
 
 .jscolor-btn-close {
     background: url(https://www.svgrepo.com/show/521564/close.svg) center / contain no-repeat !important;
+}
+
+.LoadingCustom {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    background-color: #000000e6;
+}
+
+.LoadingCustom.message1 {
+    > div:nth-child(2) {
+        display: block;
+    }
+    > div:nth-child(3) {
+        display: none;
+    }
+}
+
+.LoadingCustom.message2 {
+    > div:nth-child(2) {
+        display: none;
+    }
+    > div:nth-child(3) {
+        display: block;
+    }
+}
+
+.LoadingCustom.ProductLoad {
+    > div:nth-child(-n+3) {
+        display: none !important;
+    }
+}
+
+.loadGif {
+    height: 189px;
+    width: 189px;
+    max-width: 50vw;
+    max-height: 50vw;
+    border-radius: 10%;
+    background: url(cat-working.gif) center / contain no-repeat;
+}
+
+.loadMessage {
+    text-align: center;
+    color: white;
+    font-size: 3rem;
+    margin: 10px 0 0;
+}
+
+.loaderDots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0 0;
+}
+
+.loaderDots > div {
+    width: 20px;
+    height: 20px;
+    background: aqua;
+    border-radius: 50%;
+    margin : 3px;
+    animation: loaderDots 0.6s infinite alternate;
+}
+
+.loaderDots > div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loaderDots > div:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loaderDots {
+    to {
+        transform: translateY(-20px);
+    }
 }

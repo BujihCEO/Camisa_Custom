@@ -16,6 +16,14 @@
     background-color: var(--color);
 }
 
+.grid_1 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-gap: 3%;
+    aspect-ratio: 2 / 1.47;
+}
+
 .ImgWrap {
     top: 26%;
     width: 100%;
@@ -25,13 +33,7 @@
     overflow: hidden;
 }
 
-.grid_1 {
-    display: grid !important;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    grid-gap: 3%;
-    aspect-ratio: 2 / 1.47;
-}
+
 
 .display_1 {
     > :nth-child(1) {
