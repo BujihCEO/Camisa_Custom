@@ -285,7 +285,7 @@
 }
 
 .addImage {
-    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / 60% no-repeat white;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / 3rem no-repeat white;
 }
 
 .addImage.empty {
@@ -375,7 +375,8 @@
 }
 
 .gridIconsBox  {
-    width: 80%;
+    width: 100%;
+    max-width: 15rem;
     z-index: 1;
 }
 
