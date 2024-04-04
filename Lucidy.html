@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <title>Document</title>
+</head>
+<style>
+
+.productWrap {
+    --bg_1: url(assents/Lucidy_Bg_Botton_1.svg);
+    --bg_2: url(assents/Lucidy_Bg_Botton_2.svg);
+    --bg: var(--bg_1);
+}
+
+.ProductEdit::before, .ProductEdit::after {
+    content: '';
+    position: absolute;
+    background-color: var(--color);
+}
+
+.ProductEdit::before {
+    top: 5%;
+    height: 83%;
+    width: 100%;
+    mask: url(assents//Lucidy_Bg_Top.svg) center / contain no-repeat;
+}
+
+.ProductEdit::after {
+    top: 89%;
+    height: 8%;
+    width: 100%;
+    mask: var(--bg) center / contain no-repeat;
+}
+
+.textWrap.nome {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 68.5%;
+    height: 18%;
+    width: 72%;
+    font-size: 10%;
+    line-height: 0;
+    font-family: font_1;
+    -webkit-text-stroke-width: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ImgWrap {
+    top: 5.7%;
+    width: 75%;
+}
+
+.grid_1 {
+    display: flex;
+    aspect-ratio: 1 / 1.581;
+}
+
+.display_1 > * {
+    height: 100%;
+    width: 100%;
+}
+
+.gridIconsBox {
+    width: 50%;
+}
+
+.bgTemplate > * {
+    height: 3rem;
+    width: 7rem;
+    border-radius: 1rem;
+    background: var(--bg) right center / 430% no-repeat;
+}
+
+@font-face {
+    font-family: font_1;
+    src: url(assents/Lucidity_Psych.ttf) format('truetype');
+}
+
+</style>
+<body>
+    <div class="productWrap">
+        <div class="Bg_Product">
+            <div class="ProductBox">
+                <div class="Preview">
+                    <div class="ProductEdit">
+                        <div class="textWrap nome">
+                            <div class="textReplace">Nome</div>
+                        </div>
+                        <div class="ImgWrap"></div>
+                    </div>
+                    <div class="showLimits"></div>
+                    <div class="dragSelector hidden">
+                        <div class="dragMove"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="MoveExmp"></div>
+        </div>
+        <div class="customBox">
+
+            <div class="addOptionsBox"
+                tittle="Cor Principal"
+                colorBox="class={colorModeBox} color={#C841E5}"
+            ></div>
+
+            <div class="addOptionsBox"
+                tittle="Fundo"
+                optionBox="qty={2} class={bgTemplate slider} att={--bg}"
+            ></div>
+
+            <div class="addImgBox"
+                tittle="Foto"
+                grid="qty={1}"
+                process="potrace"
+            ></div>
+
+            <div class="inputTextBox"
+                tittle="Nome"
+                type="text" 
+                data-XYlimited=""
+                data-scaleX="true"
+                color="#C841E5"
+                strokeColor="#F753FF"
+            ></div>
+
+        </div>
+    </div>
+</body>
+<script>
+</script>
+<script src="jscolor.js"></script>
+<script src="potrace.js"></script>
+<script src="custom_base.js"></script>
+</html>

@@ -1292,9 +1292,9 @@ function createOptionBox() {
             var att = optionBox.match(/att={([^}]*)}/)?.[1];
             for (let i = 0; i < qty; i++) {
                 var btn = document.createElement('div');
-                btn.style.setProperty(att, `var(${att}-${i+1})`);
+                btn.style.setProperty(att, `var(${att}_${i+1})`);
                 btn.onclick = ()=> {
-                    ProductEdit.style.setProperty(att, `var(${att}-${i+1})`);
+                    ProductEdit.style.setProperty(att, `var(${att}_${i+1})`);
                 };
                 divBox.appendChild(btn);
             }
