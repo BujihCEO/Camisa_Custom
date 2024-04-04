@@ -17,7 +17,7 @@
 .ProductEdit::before, .ProductEdit::after {
     content: '';
     position: absolute;
-    background-color: var(--color);
+    background-color: var(--color_2);
 }
 
 .ProductEdit::before {
@@ -25,6 +25,10 @@
     height: 83%;
     width: 100%;
     mask: url(assents//Lucidy_Bg_Top.svg) center / contain no-repeat;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+    touch-action: none;
 }
 
 .ProductEdit::after {
@@ -45,14 +49,20 @@
     font-size: 10%;
     line-height: 0;
     font-family: font_1;
-    -webkit-text-stroke-width: 0.04em;
+    -webkit-text-stroke: 0.04em var(--color_2);
     text-transform: uppercase;
     white-space: nowrap;
+    color: var(--color);
+}
+
+.ImgPreviewBox {
+
 }
 
 .ImgWrap {
     top: 5.7%;
     width: 75%;
+    z-index: 0;
 }
 
 .grid_1 {
@@ -87,10 +97,10 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
+                        <div class="ImgWrap"></div>
                         <div class="textWrap nome">
                             <div class="textReplace">Nome</div>
                         </div>
-                        <div class="ImgWrap"></div>
                     </div>
                     <div class="showLimits"></div>
                     <div class="dragSelector hidden">
@@ -103,8 +113,13 @@
         <div class="customBox">
 
             <div class="addOptionsBox"
-                tittle="Cor Principal"
+                tittle="Cor 1"
                 colorBox="class={colorModeBox} color={#C841E5}"
+            ></div>
+
+            <div class="addOptionsBox"
+                tittle="Cor 2"
+                colorBox="class={colorModeBox} color={#F753FF} att={--color_2}"
             ></div>
 
             <div class="addOptionsBox"
@@ -123,8 +138,6 @@
                 type="text" 
                 data-XYlimited=""
                 data-scaleX="true"
-                color="#C841E5"
-                strokeColor="#F753FF"
             ></div>
 
         </div>
