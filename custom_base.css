@@ -89,7 +89,6 @@
     top: 0;
     left: 0;
     height: 100%;
-    background-blend-mode: color;
     --canvaColor: var(--color);
     --shadowSize: 1px;
     --shadowColor: var(--color);
