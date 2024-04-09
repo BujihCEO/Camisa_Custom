@@ -330,6 +330,7 @@ let initialDistance = 0;
 let initialScale = 1;
 
 Bg_Product.addEventListener('touchstart', (e) => {
+    e.preventDefault();
     const touches = e.touches;
     if (touches.length === 2) {
         initialDistance = getDistance(touches[0], touches[1]);
@@ -416,17 +417,17 @@ Bg_Product.addEventListener('mousedown', (e) => {
 let isDragging = false;
 let initialX, initialY, offsetX = 0, offsetY = 0;
 
-Bg_Product.addEventListener('touchstart', function (event) {
-    if (!isElementClicked(event.target, ['dragSelector'])) {
+Bg_Product.addEventListener('touchstart', function (e) {
+    if (!isElementClicked(e.target, ['dragSelector'])) {
+        e.preventDefault();
         onClick = true;
         isDragging = true;
-        initialX = event.touches[0].clientX - offsetX;
-        initialY = event.touches[0].clientY - offsetY;
+        initialX = e.touches[0].clientX - offsetX;
+        initialY = e.touches[0].clientY - offsetY;
         Bg_Product.addEventListener('touchmove', (e) => {
             const touches = e.touches;
             if (isDragging) {
                 onClick = false;
-                e.preventDefault();
                 MoveExmp.classList.add('hidden');
                 size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, touches[0].clientX - initialX));
@@ -1290,14 +1291,21 @@ function createOptionBox() {
             box.appendChild(divBox);
             var qty = optionBox.match(/qty={([^}]*)}/)?.[1];
             var att = optionBox.match(/att={([^}]*)}/)?.[1];
+            var allBtn = [];
             for (let i = 0; i < qty; i++) {
                 var btn = document.createElement('div');
+                i == 0 ? btn.className = 'selected' : '';
                 btn.style.setProperty(att, `var(${att}_${i+1})`);
-                btn.onclick = ()=> {
-                    ProductEdit.style.setProperty(att, `var(${att}_${i+1})`);
-                };
                 divBox.appendChild(btn);
+                allBtn.push(btn);
             }
+            allBtn.forEach((e, i) => {
+                e.onclick = ()=> {
+                    allBtn.forEach(e => {e.classList.remove('selected');});
+                    ProductEdit.style.setProperty(att, `var(${att}_${i+1})`);
+                    e.classList.add('selected');
+                }
+            });
         }
     });
 }

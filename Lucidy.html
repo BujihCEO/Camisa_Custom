@@ -1,41 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: calc(1 * 62.5%);">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <title>Document</title>
 </head>
 <style>
 
 .productWrap {
-    --bg_1: url(assents/Lucidy_Bg_Botton_1.svg);
-    --bg_2: url(assents/Lucidy_Bg_Botton_2.svg);
+    --bg_1: url(assets/Lucidy_Bg_Botton_1.svg);
+    --bg_2: url(assets/Lucidy_Bg_Botton_2.svg);
     --bg: var(--bg_1);
 }
 
-.ProductEdit::before, .ProductEdit::after {
-    content: '';
+.GroupWrap {
     position: absolute;
-    background-color: var(--color_2);
+    top: 7%;
+    width: 72%;
+    height: 65%;
 }
 
-.ProductEdit::before {
-    top: 5%;
-    height: 83%;
-    width: 100%;
-    mask: url(assents//Lucidy_Bg_Top.svg) center / contain no-repeat;
-    z-index: 1;
-    pointer-events: none;
-    user-select: none;
-    touch-action: none;
+.starIcon {
+    position: absolute;
+    height: 0.07em;
+    aspect-ratio: 913 / 1073;
+    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat;
 }
 
-.ProductEdit::after {
-    top: 89%;
+.GroupWrap > :nth-child(3) {
+    left: 6%;
+    top: -1.5%;
+    transform: translateX(-50%);
+}
+
+.GroupWrap > :nth-child(4) {
+    top: 53%;
+    right: 8%;
+    transform: translateX(50%);
+}
+
+.bg_2 {
+    position: absolute;
+    top: 75%;
     height: 8%;
     width: 100%;
     mask: var(--bg) center / contain no-repeat;
+}
+
+.bg_2::before, .starIcon::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color_2);
 }
 
 .textWrap.nome {
@@ -43,36 +61,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 68.5%;
-    height: 18%;
-    width: 72%;
+    bottom: 0;
+    width: calc(100% - 0.04em);
     font-size: 10%;
-    line-height: 0;
+    line-height: 1;
     font-family: font_1;
     -webkit-text-stroke: 0.04em var(--color_2);
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--color);
-}
-
-.ImgPreviewBox {
-
+    color: white;
 }
 
 .ImgWrap {
-    top: 5.7%;
-    width: 75%;
-    z-index: 0;
+    height: calc(100% - 0.01em);
+    width: calc(100% - 0.01em);
+    border: 0.005em solid var(--color_2);
+    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat, url(assets/Lucidy_Star.svg) center / contain no-repeat, linear-gradient(#000 0 0);
+    mask-size: 0.1em, 0.1em;
+    mask-position: -23% -15%, 123% 72%;
+    mask-composite: exclude;
 }
 
 .grid_1 {
     display: flex;
-    aspect-ratio: 1 / 1.581;
-}
-
-.display_1 > * {
-    height: 100%;
-    width: 100%;
+    aspect-ratio: 1 / 1.4;
 }
 
 .gridIconsBox {
@@ -80,14 +92,15 @@
 }
 
 .bgTemplate > * {
-    height: 3rem;
-    width: 7rem;
+    width: 10rem;
+    aspect-ratio: 2 / 1;
+    margin: 0.5rem;
     background: var(--bg) right center / 430% no-repeat;
 }
 
 @font-face {
     font-family: font_1;
-    src: url(assents/Lucidity_Psych.ttf) format('truetype');
+    src: url(assets/Lucidity_Psych.ttf) format('truetype');
 }
 
 </style>
@@ -97,10 +110,15 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
-                        <div class="ImgWrap"></div>
-                        <div class="textWrap nome">
-                            <div class="textReplace">Nome</div>
+                        <div class="GroupWrap">
+                            <div class="ImgWrap"></div>
+                            <div class="textWrap nome">
+                                <div class="textReplace">Nome</div>
+                            </div>
+                            <div class="starIcon"></div>
+                            <div class="starIcon"></div>
                         </div>
+                        <div class="bg_2"></div>
                     </div>
                     <div class="showLimits"></div>
                     <div class="dragSelector hidden">
@@ -122,30 +140,33 @@
                 colorBox="class={colorModeBox} color={#F753FF} att={--color_2}"
             ></div>
 
+            <div class="addImgBox"
+            tittle="Foto"
+            grid="qty={1}"
+            process="potrace"
+            ></div>
+            
+            <div class="inputTextBox"
+            tittle="Nome"
+            type="text" 
+            data-XYlimited=""
+            data-scaleX="true"
+            ></div>
+
             <div class="addOptionsBox"
                 tittle="Texto"
                 optionBox="qty={2} class={bgTemplate slider} att={--bg}"
-            ></div>
-
-            <div class="addImgBox"
-                tittle="Foto"
-                grid="qty={1}"
-                process="potrace"
-            ></div>
-
-            <div class="inputTextBox"
-                tittle="Nome"
-                type="text" 
-                data-XYlimited=""
-                data-scaleX="true"
             ></div>
 
         </div>
     </div>
 </body>
 <script>
+
 </script>
-<script src="jscolor.js"></script>
-<script src="potrace.js"></script>
-<script src="custom_base.js"></script>
+<script src="assets/print.js"></script>
+<script src="assets/jscolor.js"></script>
+<script src="assets/potrace.js"></script>
+<script src="assets/custom_base.js"></script>
+<script src="assets/print_Estampa.js"></script>
 </html>

@@ -1,19 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: calc(1 * 62.5%);">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <title>Document</title>
 </head>
 <style>
 
-.ProductEdit::before {
+.Bg_1 {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mask: url(assets/BG_My_Heart.svg) center / contain;
+}
+
+.Bg_1::before {
     content: '';
     position: absolute;
     height: 100%;
     width: 100%;
-    mask: url(assents/Fundo.svg) center / contain;
     background-color: var(--color);
 }
 
@@ -22,9 +28,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    top: 9%;
-    height: 69%;
-    width: 86%;
+    top: 11%;
+    height: 67%;
+    width: 82%;
     color: var(--color);
 }
 
@@ -46,12 +52,12 @@
 
 .textGroup > :nth-child(n + 2):nth-child(-n + 4) {
     color: transparent;
-    -webkit-text-stroke: 0.1em var(--color);
+    -webkit-text-stroke: 0.05em var(--color);
 }
 
 .imgWrapGroup {
     position: absolute;
-    top: 18%;
+    top: 19%;
     width: 62%;
 }
 
@@ -107,7 +113,7 @@
 
 @font-face {
     font-family: font_1;
-    src: url(assents/ArchivoBlack-Regular.ttf) format('truetype');
+    src: url(assets/ArchivoBlack-Regular.ttf) format('truetype');
 }
 
 </style>
@@ -117,12 +123,13 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
+                        <div class="Bg_1"></div>
                         <div class="textGroup">
-                            <div class="textReplace">Alisson</div>
-                            <div class="textRepeat">Alisson</div>
-                            <div class="textRepeat">Alisson</div>
-                            <div class="textRepeat">Alisson</div>
-                            <div class="textRepeat">Alisson</div>
+                            <div class="textReplace">nome</div>
+                            <div class="textRepeat">nome</div>
+                            <div class="textRepeat">nome</div>
+                            <div class="textRepeat">nome</div>
+                            <div class="textRepeat">nome</div>
                         </div>
                         <div class="imgWrapGroup">
                             <div class="ImgWrap"></div>
@@ -167,9 +174,9 @@
         </div>
     </div>
 </body>
-<script>
-</script>
-<script src="jscolor.js"></script>
-<script src="potrace.js"></script>
-<script src="custom_base.js"></script>
+<script src="assets/print.js"></script>
+<script src="assets/jscolor.js"></script>
+<script src="assets/potrace.js"></script>
+<script src="assets/custom_base.js"></script>
+<script src="assets/print_Estampa.js"></script>
 </html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+.ProductEdit {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4961px;
+    width: 3508px;
+    z-index: 0;
+}
+
+.productWrap {
+    --bg_1: url(assets/Lucidy_Bg_Botton_1.svg);
+    --bg_2: url(assets/Lucidy_Bg_Botton_2.svg);
+    --bg: var(--bg_1);
+}
+
+.GroupWrap {
+    position: absolute;
+    top: 7%;
+    width: 72%;
+    height: 65%;
+}
+
+.starIcon {
+    position: absolute;
+    height: 0.07em;
+    aspect-ratio: 913 / 1073;
+    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat;
+}
+
+.GroupWrap > :nth-child(3) {
+    left: 5%;
+    top: -2%;
+    transform: translateX(-50%);
+}
+
+.GroupWrap > :nth-child(4) {
+    top: 57.5%;
+    right: 2%;
+    transform: translateX(50%);
+}
+
+.bg_2 {
+    position: absolute;
+    top: 75%;
+    height: 8%;
+    width: 100%;
+    mask: var(--bg) center / contain no-repeat;
+}
+
+.bg_2::before, .starIcon::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color_2);
+}
+
+.textWrap.nome {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    width: calc(100% - 0.04em);
+    font-size: 10%;
+    line-height: 1;
+    font-family: font_1;
+    -webkit-text-stroke: 0.04em var(--color_2);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: white;
+}
+
+.ImgWrap {
+    height: 100%;
+    width: 100%;
+    border: 0.005em solid var(--color_2);
+    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat, url(assets/Lucidy_Star.svg) center / contain no-repeat, linear-gradient(#000 0 0);
+    mask-size: 0.1em, 0.1em;
+    mask-position: -23% -15%, 123% 75%;
+    mask-composite: exclude;
+}
+
+.grid_1 {
+    display: flex;
+    aspect-ratio: 1 / 1.4;
+}
+
+.gridIconsBox {
+    width: 50%;
+}
+
+.bgTemplate > * {
+    height: 3rem;
+    width: 7rem;
+    background: var(--bg) right center / 430% no-repeat;
+}
+
+@font-face {
+    font-family: font_1;
+    src: url(assets/Lucidity_Psych.ttf) format('truetype');
+}
+    
+</style>
+<body>
+    <div class="ProductEdit">
+        <div class="GroupWrap">
+            <div class="ImgWrap"></div>
+            <div class="textWrap nome">
+                <div class="textReplace">Nome</div>
+            </div>
+            <div class="starIcon"></div>
+            <div class="starIcon"></div>
+        </div>
+        <div class="bg_2"></div>
+    </div>
+</body>
+</html>

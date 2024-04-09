@@ -1,39 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: calc(1 * 62.5%);">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <title>Document</title>
 </head>
 <style>
-.ProductEdit::before {
+
+.productWrap {
+    --bg_1: url(assets/BG_My_Love_Top_1.svg);
+    --bg_2: url(assets/BG_My_Love_Top_2.svg);
+    --bg: var(--bg_1);
+}
+
+.Bg_1 {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mask: var(--bg) center / contain no-repeat;
+}
+
+.Bg_1::before {
     content: '';
     position: absolute;
     height: 100%;
     width: 100%;
-    mask: url(assents/Fundo_1.svg) center / contain no-repeat;
     background-color: var(--color);
+}
+
+.bgTemplate {
+    justify-content: center;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    > * {
+        width: 100%;
+        aspect-ratio: 2 / 1;
+        min-width: 12rem;
+        max-width: 15rem;
+        background: var(--bg) 0 -4% / cover no-repeat;
+        margin: 0.5rem;
+    }
 }
 
 .grid_1 {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    grid-gap: 3%;
-    aspect-ratio: 2 / 1.47;
+    grid-gap: 2%;
+    aspect-ratio: 2 / 1.44;
+}
+
+.ImgWrap.grid_1 {
+    grid-gap: 0.003em;
 }
 
 .ImgWrap {
-    top: 26%;
+    top: 26.5%;
     width: 100%;
 }
 
 .ImgWrap:nth-child(2) {
     overflow: hidden;
 }
-
-
 
 .display_1 {
     > :nth-child(1) {
@@ -169,7 +198,7 @@
 .iconName {
     height: 100%;
     aspect-ratio: 1/1;
-    mask: url(assents/bar.svg) center / cover no-repeat;
+    mask: url(assets/bar.svg) center / cover no-repeat;
     background: var(--color);
 }
 
@@ -194,7 +223,7 @@
 
 @font-face {
     font-family: font_1;
-    src: url(assents/ArchivoBlack-Regular.ttf) format('truetype');
+    src: url(assets/ArchivoBlack-Regular.ttf) format('truetype');
 }
 
 </style>
@@ -204,6 +233,7 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
+                        <div class="Bg_1"></div>
                         <div class="ImgWrap"></div>
                         <div class="nameBox">
                             <div class="name textReplace">Nome</div>
@@ -226,6 +256,11 @@
             <div class="addOptionsBox"
                 tittle="Cor Principal"
                 colorBox="class={colorModeBox} color={#C841E5}"
+            ></div>
+
+            <div class="addOptionsBox"
+                tittle="Texto Superior"
+                optionBox="qty={2} class={bgTemplate slider} att={--bg}"
             ></div>
 
             <div class="addImgBox"
@@ -274,7 +309,9 @@ function resizeBefore() {
 }
 
 </script>
-<script src="jscolor.js"></script>
-<script src="potrace.js"></script>
-<script src="custom_base.js"></script>
+<script src="assets/print.js"></script>
+<script src="assets/jscolor.js"></script>
+<script src="assets/potrace.js"></script>
+<script src="assets/custom_base.js"></script>
+<script src="assets/print_Estampa.js"></script>
 </html>

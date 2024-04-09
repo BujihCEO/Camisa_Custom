@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: calc(1 * 62.5%);">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="custom_base.css">
+    <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <title>Document</title>
 </head>
 <style>
@@ -13,11 +13,6 @@
     grid-template: repeat(6, 1fr) / repeat(6, 1fr);
     grid-gap: 4%;
     aspect-ratio: 1/1;
-}
-    
-.grid_1 > .imgContainer {
-    border: 0.006em solid var(--color);
-    box-sizing: border-box;
 }
 
 .ImgWrap {
@@ -257,23 +252,18 @@
         </div>
         <div class="customBox">
 
-            <div class="addOptionsBox"
-                tittle="Cor Principal"
-                colorBox="class={colorModeBox} color={#C841E5}"
-            ></div>
-
             <div class="addImgBox"
                 tittle="Fotos"
                 grid="qty={6} display={10}"
-                process="potrace"
+                process="normal colorMode={#C841E5}"
             ></div>
             
         </div>
     </div>
 </body>
-<script>
-</script>
-<script src="jscolor.js"></script>
-<script src="potrace.js"></script>
-<script src="custom_base.js"></script>
+<script src="assets/print.js"></script>
+<script src="assets/jscolor.js"></script>
+<script src="assets/potrace.js"></script>
+<script src="assets/custom_base.js"></script>
+<script src="assets/print_Estampa.js"></script>
 </html>
