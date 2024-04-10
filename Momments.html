@@ -6,6 +6,9 @@
     <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <title>Document</title>
 </head>
+<script src="assets/print.js"></script>
+<script src="assets/jscolor.js"></script>
+<script src="assets/potrace.js"></script>
 <style>
 
 .grid_1 {
@@ -20,9 +23,18 @@
     width: 100%;
 }
 
+.ImgPreviewBox.colorMode::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: var(--urlFilter) center / contain;
+    mix-blend-mode: multiply;
+    z-index: 1;
+}
+
 .ImgPreviewBox.colorMode::after {
-    background-blend-mode: multiply;
-    background: linear-gradient(var(--color) 0 0), url(assets/Noise.svg);
+    z-index: 3;
 }
 
 .display_1 {
@@ -260,15 +272,43 @@
             <div class="addImgBox"
                 tittle="Fotos"
                 grid="qty={6} display={10}"
-                process="normal colorMode={#C841E5}"
+                process="normal colorMode={#4d5ebe}"
             ></div>
             
         </div>
     </div>
 </body>
-<script src="assets/print.js"></script>
-<script src="assets/jscolor.js"></script>
-<script src="assets/potrace.js"></script>
+<script>
+
+function noiseFilter() {
+    var ProductEdit = document.querySelector('.ProductEdit');
+    svgCode = `
+        <svg
+        xmlns='http://www.w3.org/2000/svg'
+        xmlns:xlink='http://www.w3.org/1999/xlink'
+        width='3508' height='4961'>
+        <filter id='n' x='0' y='0'>
+                <feTurbulence
+                    type='fractalNoise'
+                    baseFrequency='6.29'
+                    numOctaves='6'
+                    stitchTiles='stitch'/>
+        </filter>
+        <rect width='3508' height='4961' fill='#fff'/>
+        <rect width='3508' height='4961' filter="url(#n)" opacity='0.8'/>
+        </svg>`
+    ;
+
+    var base64SVG = btoa(svgCode);
+
+    var url = "data:image/svg+xml;base64," + base64SVG;
+
+    ProductEdit.style.setProperty('--urlFilter', `url(${url})`);
+}
+
+noiseFilter();
+
+</script>
 <script src="assets/custom_base.js"></script>
 <script src="assets/print_Estampa.js"></script>
 </html>

@@ -62,6 +62,7 @@
         var(--textMask) center var(--textMask-top) / auto var(--textMask-height) no-repeat,
         linear-gradient(#000 0 0);
     mask-composite: exclude;
+    background: red;
 }
 
 .imgContainer {
@@ -181,7 +182,7 @@ function createTextMask() {
     ctx.textBaseline = 'middle';
 
     ctx.scale(scaleX, 1);
-    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2) + 70);
+    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2));
     GroupWrap.style.setProperty('--textMask', `url(${canvas.toDataURL()})`);
     GroupWrap.style.setProperty('--textMask-top', textStyle.top);
     GroupWrap.style.setProperty('--textMask-height', textStyle.height);
