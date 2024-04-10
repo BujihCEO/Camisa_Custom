@@ -16,70 +16,60 @@
 
 .GroupWrap {
     position: absolute;
-    top: 7%;
-    width: 72%;
-    height: 65%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
 }
 
 .starIcon {
     position: absolute;
-    height: 0.07em;
-    aspect-ratio: 913 / 1073;
-    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat;
-}
-
-.GroupWrap > :nth-child(3) {
-    left: 6%;
-    top: -1.5%;
-    transform: translateX(-50%);
-}
-
-.GroupWrap > :nth-child(4) {
-    top: 53%;
-    right: 8%;
-    transform: translateX(50%);
+    height: 100%;
+    width: 100%;
+    mask: url(assets/BG_Lucidy_Stars.svg) center/ cover no-repeat;
+    background-color: var(--color);
 }
 
 .bg_2 {
     position: absolute;
-    top: 75%;
-    height: 8%;
+    top: 79%;
     width: 100%;
+    aspect-ratio: 52 / 5;
     mask: var(--bg) center / contain no-repeat;
-}
-
-.bg_2::before, .starIcon::before {
-    content: '';
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-color: var(--color_2);
+    background: var(--color);
 }
 
 .textWrap.nome {
     position: absolute;
     display: flex;
     justify-content: center;
-    align-items: center;
-    bottom: 0;
-    width: calc(100% - 0.04em);
-    font-size: 10%;
-    line-height: 1;
+    top: 59%;
+    width: 65%;
+    font-size: 8%;
+    line-height: initial;
     font-family: font_1;
-    -webkit-text-stroke: 0.04em var(--color_2);
+    -webkit-text-stroke: 0.04em var(--color);
     text-transform: uppercase;
     white-space: nowrap;
-    color: white;
+    color: transparent;
 }
 
 .ImgWrap {
-    height: calc(100% - 0.01em);
-    width: calc(100% - 0.01em);
-    border: 0.005em solid var(--color_2);
-    mask: url(assets/Lucidy_Star.svg) center / contain no-repeat, url(assets/Lucidy_Star.svg) center / contain no-repeat, linear-gradient(#000 0 0);
-    mask-size: 0.1em, 0.1em;
-    mask-position: -23% -15%, 123% 72%;
+    height: 100%;
+    width: 100%;
+    mask: url(assets/BG_Lucidy_Stars_Mask.svg) center / cover,
+        var(--textMask) center var(--textMask-top) / auto var(--textMask-height) no-repeat,
+        linear-gradient(#000 0 0);
     mask-composite: exclude;
+}
+
+.imgContainer {
+    position: absolute;
+    top: 20%;
+    height: 56%;
+    width: 68%;
+    border: 0.1rem solid var(--color);
 }
 
 .grid_1 {
@@ -112,13 +102,12 @@
                     <div class="ProductEdit">
                         <div class="GroupWrap">
                             <div class="ImgWrap"></div>
+                            <div class="bg_2"></div>
+                            <div class="starIcon"></div>
                             <div class="textWrap nome">
                                 <div class="textReplace">Nome</div>
                             </div>
-                            <div class="starIcon"></div>
-                            <div class="starIcon"></div>
                         </div>
-                        <div class="bg_2"></div>
                     </div>
                     <div class="showLimits"></div>
                     <div class="dragSelector hidden">
@@ -131,13 +120,8 @@
         <div class="customBox">
 
             <div class="addOptionsBox"
-                tittle="Cor 1"
+                tittle="Cor Principal"
                 colorBox="class={colorModeBox} color={#C841E5}"
-            ></div>
-
-            <div class="addOptionsBox"
-                tittle="Cor 2"
-                colorBox="class={colorModeBox} color={#F753FF} att={--color_2}"
             ></div>
 
             <div class="addImgBox"
@@ -151,6 +135,7 @@
             type="text" 
             data-XYlimited=""
             data-scaleX="true"
+            addFunction="createTextMask"
             ></div>
 
             <div class="addOptionsBox"
@@ -161,12 +146,53 @@
         </div>
     </div>
 </body>
-<script>
-
-</script>
 <script src="assets/print.js"></script>
 <script src="assets/jscolor.js"></script>
 <script src="assets/potrace.js"></script>
+<script>
+
+var GroupWrap = document.querySelector('.GroupWrap');
+var textWrap = document.querySelector('.textWrap.nome');
+var textReplace = document.querySelector('.textReplace');
+var editStyle = window.getComputedStyle(document.querySelector('.ProductEdit'));
+
+function createTextMask() {
+    var textStyle = window.getComputedStyle(textWrap);
+    var replaceStyle = window.getComputedStyle(textReplace);
+    
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var scale = 4961 / parseFloat(editStyle.height);
+    var transform = replaceStyle.getPropertyValue('transform');
+    var scaleX = transform == 'none' ? 1 : transform.match(/matrix\(([^\s]*),/)[1];
+    
+    var textWidth = parseFloat(textStyle.width) * scale;
+    var textHeight = parseFloat(textStyle.height) * scale;
+    canvas.width = textWidth;
+    canvas.height = textHeight;
+    
+    var fontSize = parseInt(replaceStyle.fontSize);
+    var newFontSize = fontSize * scale;
+    var font = replaceStyle.font.replace(/\d+px/, newFontSize + 'px');
+    ctx.font = font;
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.scale(scaleX, 1);
+    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2) + 70);
+    GroupWrap.style.setProperty('--textMask', `url(${canvas.toDataURL()})`);
+    GroupWrap.style.setProperty('--textMask-top', textStyle.top);
+    GroupWrap.style.setProperty('--textMask-height', textStyle.height);
+}
+
+function resizeBefore() {
+    editStyle = window.getComputedStyle(document.querySelector('.ProductEdit'));
+    createTextMask();
+}
+
+</script>
 <script src="assets/custom_base.js"></script>
 <script src="assets/print_Estampa.js"></script>
 </html>

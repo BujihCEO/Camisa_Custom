@@ -20,6 +20,11 @@
     width: 100%;
 }
 
+.ImgPreviewBox.colorMode::after {
+    background-blend-mode: multiply;
+    background: linear-gradient(var(--color) 0 0), url(assets/Noise.svg);
+}
+
 .display_1 {
     > :nth-child(n+4) {
         display: none;

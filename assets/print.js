@@ -764,9 +764,14 @@
 
         function inlineAll(node) {
             if (!(node instanceof Element)) return Promise.resolve(node);
-			
-			
+        
             return inlineWebkitMaskImage(node)
+                .then(function () {
+                    return inlineMaskImage(node);
+                })
+                .then(function () {
+                    return inlineBackground(node);
+                })
                 .then(function () {
                     if (node instanceof HTMLImageElement)
                         return newImage(node).inline();
@@ -777,12 +782,12 @@
                             })
                         );
                 });
-
+        
             function inlineWebkitMaskImage(node) {
                 var webkitMaskImage = node.style.getPropertyValue('-webkit-mask-image');
-
-                if (!webkitMaskImage) return Promise.resolve(node);
-
+        
+                if (!webkitMaskImage) return Promise.resolve();
+        
                 return inliner.inlineAll(webkitMaskImage)
                     .then(function (inlined) {
                         node.style.setProperty(
@@ -790,59 +795,28 @@
                             inlined,
                             node.style.getPropertyPriority('-webkit-mask-image')
                         );
-                    })
-                    .then(function () {
-                        return inlineMaskImage(node); //Ora cerco se ha un mask image..
                     });
             }
-			
-			return inlineMaskImage(node)
-                .then(function () {
-                    if (node instanceof HTMLImageElement)
-                        return newImage(node).inline();
-                    else
-                        return Promise.all(
-                            util.asArray(node.childNodes).map(function (child) {
-                                return inlineAll(child);
-                            })
-                        );
-                });
-
+        
             function inlineMaskImage(node) {
-                var MaskImage = node.style.getPropertyValue('-webkit-mask-image');
-
-                if (!MaskImage) return Promise.resolve(node);
-
-                return inliner.inlineAll(MaskImage)
+                var maskImage = node.style.getPropertyValue('mask-image');
+                
+                if (!maskImage) return Promise.resolve();
+                return inliner.inlineAll(maskImage)
                     .then(function (inlined) {
                         node.style.setProperty(
-                            '-webkit-mask-image',
+                            'mask-image',
                             inlined,
-                            node.style.getPropertyPriority('-webkit-mask-image')
+                            node.style.getPropertyPriority('mask-image')
                         );
-                    })
-                    .then(function () {
-                        return inlineBackground(node); //Ora cerco se ha background..
                     });
             }
-			
-            return inlineBackground(node)
-                .then(function () {
-                    if (node instanceof HTMLImageElement)
-                        return newImage(node).inline();
-                    else
-                        return Promise.all(
-                            util.asArray(node.childNodes).map(function (child) {
-                                return inlineAll(child);
-                            })
-                        );
-                });
-
+        
             function inlineBackground(node) {
                 var background = node.style.getPropertyValue('background');
-
-                if (!background) return Promise.resolve(node);
-
+        
+                if (!background) return Promise.resolve();
+        
                 return inliner.inlineAll(background)
                     .then(function (inlined) {
                         node.style.setProperty(
@@ -850,11 +824,9 @@
                             inlined,
                             node.style.getPropertyPriority('background')
                         );
-                    })
-                    .then(function () {
-                        return node;
                     });
             }
-        }
+        }        
+        
     }
 })(this);
