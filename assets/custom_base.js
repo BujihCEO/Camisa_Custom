@@ -389,14 +389,12 @@ document.addEventListener('wheel', (e) => {
 Bg_Product.addEventListener('mousedown', (e) => {
     if (isHovered && !isElementClicked(e.target, ['dragSelector', 'ImgPreviewBox'])) {
         MoveExmp.classList.add('hidden');
-        onClick = true;
         isDragging = true;
         initialX = e.clientX - offsetX;
         initialY = e.clientY - offsetY;
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
                 e.preventDefault();
-                onClick = false;
                 size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, e.clientX - initialX));
                 offsetY = Math.min(size, Math.max(-size, e.clientY - initialY));
@@ -406,9 +404,6 @@ Bg_Product.addEventListener('mousedown', (e) => {
         Bg_Product.addEventListener('mouseup', () => {
             if (isDragging) {
                 isDragging = false;
-                if (onClick) {
-                    deselectIcon();
-                }
             }
         });
     }
@@ -420,14 +415,12 @@ let initialX, initialY, offsetX = 0, offsetY = 0;
 Bg_Product.addEventListener('touchstart', function (e) {
     if (!isElementClicked(e.target, ['dragSelector'])) {
         e.preventDefault();
-        onClick = true;
         isDragging = true;
         initialX = e.touches[0].clientX - offsetX;
         initialY = e.touches[0].clientY - offsetY;
         Bg_Product.addEventListener('touchmove', (e) => {
             const touches = e.touches;
             if (isDragging) {
-                onClick = false;
                 MoveExmp.classList.add('hidden');
                 size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, touches[0].clientX - initialX));
@@ -438,11 +431,14 @@ Bg_Product.addEventListener('touchstart', function (e) {
         Bg_Product.addEventListener('touchend', () => {
             if (isDragging) {
                 isDragging = false;
-                if (onClick) {
-                    deselectIcon();
-                }
             }
         });
+    }
+});
+
+Bg_Product.addEventListener('click', ()=> {
+    if (!isElementClicked(e.target, ['dragSelector'])) {
+        deselectIcon();
     }
 });
 
