@@ -8,12 +8,6 @@
 </head>
 <style>
 
-.productWrap {
-    --bg_1: url(assets/Lucidy_Bg_Botton_1.svg);
-    --bg_2: url(assets/Lucidy_Bg_Botton_2.svg);
-    --bg: var(--bg_1);
-}
-
 .GroupWrap {
     position: absolute;
     display: flex;
@@ -21,6 +15,32 @@
     align-items: center;
     height: 100%;
     width: 100%;
+}
+
+.ImgWrap {
+    height: 100%;
+    width: 100%;
+    mask: url(assets/BG_Lucidy_Stars_Mask.svg) center / cover,
+    var(--textMask) center var(--textMask-top) / auto var(--textMask-height) no-repeat,
+    linear-gradient(#000 0 0);
+    mask-composite: exclude;
+}
+
+.imgContainer {
+    position: absolute;
+    top: 11%;
+    height: 56%;
+    width: 67%;
+    border: 0.1rem solid var(--color);
+}
+
+.bg_Bottom {
+    position: absolute;
+    top: 69%;
+    width: 94%;
+    aspect-ratio: 548 / 61;
+    mask: url(assets/Lucidy_Bg_Botton.svg) center / contain no-repeat;
+    background: var(--color);
 }
 
 .starIcon {
@@ -31,51 +51,25 @@
     background-color: var(--color);
 }
 
-.bg_2 {
-    position: absolute;
-    top: 79%;
-    width: 100%;
-    aspect-ratio: 52 / 5;
-    mask: var(--bg) center / contain no-repeat;
-    background: var(--color);
-}
-
 .textWrap.nome {
     position: absolute;
     display: flex;
     justify-content: center;
-    top: 59%;
+    top: 52%;
     width: 65%;
     font-size: 8%;
     line-height: initial;
     font-family: font_1;
-    -webkit-text-stroke: 0.04em var(--color);
     text-transform: uppercase;
     white-space: nowrap;
+    mask: var(--textMask-stroke) center / auto var(--textMask-height) no-repeat;
+    background: var(--color);
     color: transparent;
-}
-
-.ImgWrap {
-    height: 100%;
-    width: 100%;
-    mask: url(assets/BG_Lucidy_Stars_Mask.svg) center / cover,
-        var(--textMask) center var(--textMask-top) / auto var(--textMask-height) no-repeat,
-        linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    background: red;
-}
-
-.imgContainer {
-    position: absolute;
-    top: 20%;
-    height: 56%;
-    width: 68%;
-    border: 0.1rem solid var(--color);
 }
 
 .grid_1 {
     display: flex;
-    aspect-ratio: 1 / 1.4;
+    aspect-ratio: 29 / 34;
 }
 
 .gridIconsBox {
@@ -103,7 +97,7 @@
                     <div class="ProductEdit">
                         <div class="GroupWrap">
                             <div class="ImgWrap"></div>
-                            <div class="bg_2"></div>
+                            <div class="bg_Bottom"></div>
                             <div class="starIcon"></div>
                             <div class="textWrap nome">
                                 <div class="textReplace">Nome</div>
@@ -139,11 +133,6 @@
             addFunction="createTextMask"
             ></div>
 
-            <div class="addOptionsBox"
-                tittle="Texto"
-                optionBox="qty={2} class={bgTemplate slider} att={--bg}"
-            ></div>
-
         </div>
     </div>
 </body>
@@ -158,60 +147,46 @@ var textReplace = document.querySelector('.textReplace');
 var editStyle = window.getComputedStyle(document.querySelector('.ProductEdit'));
 
 function createTextMask() {
-    /*var textStyle = window.getComputedStyle(textWrap);
-    var replaceStyle = window.getComputedStyle(textReplace);
-    
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-
-    var scale = 4961 / parseFloat(editStyle.height);
-    var transform = replaceStyle.getPropertyValue('transform');
-    var scaleX = transform == 'none' ? 1 : transform.match(/matrix\(([^\s]*),/)[1];
-    
-    var textWidth = parseFloat(textStyle.width) * scale;
-    var textHeight = parseFloat(textStyle.height) * scale;
-    canvas.width = textWidth;
-    canvas.height = textHeight;
-    
-    var fontSize = parseInt(replaceStyle.fontSize);
-    var newFontSize = fontSize * scale;
-    console.log(newFontSize);
-    var font = replaceStyle.font.replace(/\d+px/, newFontSize + 'px');
-    ctx.font = font;
-    ctx.fillStyle = '#000';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    ctx.scale(scaleX, 1);
-    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2));*/
-
-
     var textStyle = window.getComputedStyle(textWrap);
     var replaceStyle = window.getComputedStyle(textReplace);
     
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+    var canvasFill = document.createElement('canvas');
+    var ctxFill = canvasFill.getContext('2d');
+
+    var canvasStroke = document.createElement('canvas');
+    var ctxStroke = canvasStroke.getContext('2d');
 
     var scale = 4961 / parseFloat(editStyle.height);
 
     var textWidth = parseFloat(textStyle.width) * scale;
     var textHeight = parseFloat(textStyle.height) * scale;
-    canvas.width = textWidth;
-    canvas.height = textHeight;
+    canvasFill.width = textWidth;
+    canvasFill.height = textHeight;
 
-    ctx.font = `${parseInt(textStyle.fontSize) * scale}px ${textStyle.fontFamily}` ;
-    ctx.fillStyle = '#000';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    canvasStroke.width = textWidth;
+    canvasStroke.height = textHeight;
+
+    ctxFill.font = `${parseInt(textStyle.fontSize) * scale}px ${textStyle.fontFamily}` ;
+    ctxFill.fillStyle = '#000';
+    ctxFill.textAlign = 'center';
+    ctxFill.textBaseline = 'middle';
+
+    ctxStroke.font = ctxFill.font ;
+    ctxStroke.strokeStyle = '#000';
+    ctxStroke.lineWidth = 30;
+    ctxStroke.textAlign = 'center';
+    ctxStroke.textBaseline = 'middle';
 
     var transform = replaceStyle.transform.match(/matrix\(([^\s]*),/);
     var scaleX = transform ? transform[1] : 1;
-    console.log(scaleX);
-    ctx.scale(scaleX, 1);
+    ctxFill.scale(scaleX, 1);
+    ctxStroke.scale(scaleX, 1);
 
-    ctx.fillText(textWrap.innerText, (textWidth / 2) * scaleX, (textHeight / 2) + 100);
+    ctxFill.fillText(textWrap.innerText, (textWidth / (2 * scaleX)), (textHeight / 2));
+    ctxStroke.strokeText(textWrap.innerText, (textWidth / (2 * scaleX)), (textHeight / 2));
 
-    GroupWrap.style.setProperty('--textMask', `url(${canvas.toDataURL()})`);
+    GroupWrap.style.setProperty('--textMask', `url(${canvasFill.toDataURL()})`);
+    GroupWrap.style.setProperty('--textMask-stroke', `url(${canvasStroke.toDataURL()})`);
     GroupWrap.style.setProperty('--textMask-top', textStyle.top);
     GroupWrap.style.setProperty('--textMask-height', textStyle.height);
 }
