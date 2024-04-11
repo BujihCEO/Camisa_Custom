@@ -158,7 +158,7 @@ var textReplace = document.querySelector('.textReplace');
 var editStyle = window.getComputedStyle(document.querySelector('.ProductEdit'));
 
 function createTextMask() {
-    var textStyle = window.getComputedStyle(textWrap);
+    /*var textStyle = window.getComputedStyle(textWrap);
     var replaceStyle = window.getComputedStyle(textReplace);
     
     var canvas = document.createElement('canvas');
@@ -175,6 +175,7 @@ function createTextMask() {
     
     var fontSize = parseInt(replaceStyle.fontSize);
     var newFontSize = fontSize * scale;
+    console.log(newFontSize);
     var font = replaceStyle.font.replace(/\d+px/, newFontSize + 'px');
     ctx.font = font;
     ctx.fillStyle = '#000';
@@ -182,7 +183,34 @@ function createTextMask() {
     ctx.textBaseline = 'middle';
 
     ctx.scale(scaleX, 1);
-    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2));
+    ctx.fillText(textWrap.innerText, textWidth / (2 * scaleX), (textHeight / 2));*/
+
+
+    var textStyle = window.getComputedStyle(textWrap);
+    var replaceStyle = window.getComputedStyle(textReplace);
+    
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var scale = 4961 / parseFloat(editStyle.height);
+
+    var textWidth = parseFloat(textStyle.width) * scale;
+    var textHeight = parseFloat(textStyle.height) * scale;
+    canvas.width = textWidth;
+    canvas.height = textHeight;
+
+    ctx.font = `${parseInt(textStyle.fontSize) * scale}px ${textStyle.fontFamily}` ;
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    var transform = replaceStyle.transform.match(/matrix\(([^\s]*),/);
+    var scaleX = transform ? transform[1] : 1;
+    console.log(scaleX);
+    ctx.scale(scaleX, 1);
+
+    ctx.fillText(textWrap.innerText, (textWidth / 2) * scaleX, (textHeight / 2) + 100);
+
     GroupWrap.style.setProperty('--textMask', `url(${canvas.toDataURL()})`);
     GroupWrap.style.setProperty('--textMask-top', textStyle.top);
     GroupWrap.style.setProperty('--textMask-height', textStyle.height);
