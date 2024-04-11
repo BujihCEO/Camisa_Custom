@@ -2,7 +2,7 @@
     xmlns='http://www.w3.org/2000/svg'
     xmlns:xlink='http://www.w3.org/1999/xlink'
     width='3508' height='4961'>
-    <filter id='n' x='0' y='0'>
+    <filter id='noise' x='0' y='0'>
             <feTurbulence
                 type='fractalNoise'
                 baseFrequency='6.29'
@@ -11,5 +11,5 @@
             />
     </filter>
     <rect width='3508' height='4961' fill='#fff'/>
-    <rect width='3508' height='4961' filter="url(#n)" opacity='0.8'/>
+    <rect width='3508' height='4961' filter="url(#noise)" opacity='0.3'/>
 </svg>

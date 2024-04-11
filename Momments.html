@@ -14,13 +14,14 @@
 .grid_1 {
     display: grid;
     grid-template: repeat(6, 1fr) / repeat(6, 1fr);
-    grid-gap: 4%;
+    grid-gap: 3%;
     aspect-ratio: 1/1;
 }
 
 .ImgWrap {
     top: 10%;
     width: 100%;
+    grid-gap: 0.01em;
 }
 
 .ImgPreviewBox.colorMode::before {
@@ -28,7 +29,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background: var(--urlFilter) center / contain;
+    background: var(--urlFilter) center / auto 100%;
     mix-blend-mode: multiply;
     z-index: 1;
 }
@@ -290,8 +291,8 @@ function noiseFilter() {
         <filter id='n' x='0' y='0'>
                 <feTurbulence
                     type='fractalNoise'
-                    baseFrequency='6.29'
-                    numOctaves='6'
+                    baseFrequency='6'
+                    numOctaves='15'
                     stitchTiles='stitch'/>
         </filter>
         <rect width='3508' height='4961' fill='#fff'/>
@@ -300,13 +301,17 @@ function noiseFilter() {
     ;
 
     var base64SVG = btoa(svgCode);
-
     var url = "data:image/svg+xml;base64," + base64SVG;
 
     ProductEdit.style.setProperty('--urlFilter', `url(${url})`);
+    ProductEdit.style.setProperty('--urlFilter-height', ProductEdit.offsetHeight + 'px');
 }
 
 noiseFilter();
+
+function resizeBefore() {
+    console.log(document.querySelector('.ImgPreviewBox.colorMode::before'));
+}
 
 </script>
 <script src="assets/custom_base.js"></script>
