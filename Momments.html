@@ -29,7 +29,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background: var(--urlFilter) center / auto 100%;
+    background: var(--urlFilter) center / auto var(--urlFilter-height);
     mix-blend-mode: multiply;
     z-index: 1;
 }
@@ -287,24 +287,24 @@ function noiseFilter() {
         <svg
         xmlns='http://www.w3.org/2000/svg'
         xmlns:xlink='http://www.w3.org/1999/xlink'
-        width='3508' height='4961'>
+        width='100' height='100'>
         <filter id='n' x='0' y='0'>
                 <feTurbulence
                     type='fractalNoise'
-                    baseFrequency='6'
-                    numOctaves='15'
+                    baseFrequency='2'
+                    numOctaves='6'
                     stitchTiles='stitch'/>
         </filter>
-        <rect width='3508' height='4961' fill='#fff'/>
-        <rect width='3508' height='4961' filter="url(#n)" opacity='0.8'/>
+        <rect width='100%' height='100%' fill='#fff'/>
+        <rect width='100%' height='100%' filter="url(#n)" opacity='0.8'/>
         </svg>`
     ;
 
     var base64SVG = btoa(svgCode);
     var url = "data:image/svg+xml;base64," + base64SVG;
-
+    var scale = ProductEdit.offsetHeight;
     ProductEdit.style.setProperty('--urlFilter', `url(${url})`);
-    ProductEdit.style.setProperty('--urlFilter-height', ProductEdit.offsetHeight + 'px');
+    ProductEdit.style.setProperty('--urlFilter-height', ProductEdit.offsetHeight / 3 + 'px');
 }
 
 noiseFilter();
