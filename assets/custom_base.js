@@ -66,15 +66,11 @@ function elementScaleX(target, repeat) {
     }
 }
 
-function elementXYlimited(target, type, returnStyle) {
-    if (target.offsetHeight > target.parentNode.offsetHeight || 
-        target.offsetWidth > target.parentNode.offsetWidth) {
-            returnStyle();
-            if (type.includes('text')) {
-                message = 'Texto grande demais. Diminua o tamanho da fonte e tente novamente.';
-            }
-            callAlert(message);
-        }
+function elementXYlimited(target, parent, action) {
+    while (target.offsetHeight > parent.offsetHeight ||
+     target.offsetWidth > parent.offsetWidth) {
+        action();
+    }
 }
 
 function inputText(input, target, repeat, maxLength, XYlimited, scaleX) {
@@ -86,12 +82,18 @@ function inputText(input, target, repeat, maxLength, XYlimited, scaleX) {
         e.textContent = input.value;
     })));
     if (XYlimited) {
-        elementXYlimited(target, 'text', ()=> {
-            input.blur();
-            input.value = input.value.slice(0, -1);
-            target.textContent = input.value;
-            repeat && (repeat.forEach((e => {e.textContent = input.value})));
-        });
+        if (XYlimited.includes('resize')) {
+            elementXYlimited(target, target.parentNode, ()=>{
+                target.style.fontSize = (parseFloat(window.getComputedStyle(target).fontSize) - 1) + 'px';
+            });
+        }
+        if (XYlimited.includes('stop')) {
+            elementXYlimited(target, target.parentNode, ()=>{
+                input.value = input.value.slice(0, -1);
+                target.textContent = input.value;
+                repeat && (repeat.forEach((e => {e.textContent = input.value})));
+            });
+        }
     }
     if (scaleX) {
         elementScaleX(target, repeat);
@@ -111,10 +113,7 @@ function changeSize(tgt, value, signal, style, min, max, XYlimited = false, scal
         tgt.style[style] = result + 'px';
     }
     if (XYlimited) {
-        if (style.includes('fontSize') || style.includes('webkitTextStrokeWidth')) {
-        }
-        var type = 'text';
-        elementXYlimited(tgt, type, ()=> {
+        elementXYlimited(tgt, tgt.parentNode, ()=> {
             if (style.includes('--')) {
                 tgt.style.setProperty(style, actualSize + 'px');
             } else {
@@ -1343,13 +1342,7 @@ function createAlert() {
     alertBox.classList.add('alertBox', 'hidden');
     var alertDiv = document.createElement('div');
     var text = document.createElement('span');
-    var button = document.createElement('button');
-    button.textContent = 'Ok';
-    button.addEventListener('click', ()=> {
-        alertBox.classList.add('hidden');
-    });
     alertDiv.appendChild(text);
-    alertDiv.appendChild(button);
     alertBox.appendChild(alertDiv);
     document.body.appendChild(alertBox);
     window.callAlert = function(message) {

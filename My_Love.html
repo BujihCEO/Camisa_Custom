@@ -175,11 +175,12 @@
     height: 100%;
     font-family: font_1;
     font-size: 2%;
-    color: var(--color);
-    line-height: 0;
+    mask: var(--textMask) center / contain no-repeat;
+    background: var(--color);
+    color: transparent;
+    line-height: 1;
     text-transform: uppercase;
     white-space: nowrap;
-    padding-right: 2%;
 }
 
 .iconsBox {
@@ -188,12 +189,7 @@
     align-items: center;
     width: 100%;
     height: 100%;
-}
-
-.iconName {
-    height: 100%;
-    aspect-ratio: 1/1;
-    mask: url(assets/BG_My_Love_IconBar.svg) center / cover no-repeat;
+    mask: var(--iconsMask) center / contain no-repeat;
     background: var(--color);
 }
 
@@ -202,8 +198,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 80%;
-    height: 17%;
+    top: 82%;
+    height: 12%;
     left: 51%;
     width: 47%;
 }
@@ -212,8 +208,9 @@
     color: var(--color);
     text-align: center;
     font-family: font_1;
-    font-size: x-small;
+    font-size: 3%;
     letter-spacing: 0.05rem;
+    line-height: 1;
 }
 
 @font-face {
@@ -268,16 +265,14 @@
             <div class="inputTextBox"
                 tittle="Nome"
                 type="text" 
-                data-XYlimited="true" 
-                data-scaleX="false"
-                addFunction="creatIcons"
+                data-XYlimited="stop"
+                addFunction="textCanvas, createIcons"
             ></div>
 
             <div class="inputTextBox"
                 tittle="Texto"
                 type="text"
-                data-XYlimited="true"
-                data-scaleX=""
+                data-XYlimited="resize"
                 fontSize="value={1} min={5} max={}"
                 letterSpacing="value={0.1} min={0.1} max={}"
             ></div>
@@ -287,20 +282,61 @@
 </body>
 <script>
 
+var textName = document.querySelector('.name.textReplace');
+
+function textCanvas() {
+    var textStyle = window.getComputedStyle(textName);
+    
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var scale = 148.83 / parseFloat(textStyle.height);
+
+    var textWidth = parseFloat(textStyle.width) * scale;
+    var textHeight = 148.83;
+    canvas.width = textWidth;
+    canvas.height = textHeight;
+
+    ctx.font = `200px ${textStyle.fontFamily}` ;
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillText(textName.innerText, textWidth / 2, textHeight / 2 + 7);
+    textName.style.setProperty('--textMask', `url(${canvas.toDataURL()})`);
+}
+
 var iconsBox = document.querySelector('.iconsBox');
-function creatIcons() {
-    iconsBox.innerHTML = '';
-        var box = iconsBox.getBoundingClientRect();
-        var value = Math.floor(box.width / box.height);
+
+function createIcons() {
+    var box = window.getComputedStyle(iconsBox);
+    var scale = 148.83 / parseFloat(box.height);
+    var width = parseFloat(box.width) * scale;
+    var height = 148.83;
+    var value = Math.floor(width / height);
+
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    canvas.width = width;
+    canvas.height = height;
+    var image = new Image();
+    image.onload = function() {
+        var imageWidth = height * (image.width / image.height);
+        var totalImageWidth = imageWidth * value;
+        var spaceWidth = (width - totalImageWidth) / (value + 1);
         for (let i = 0; i < value; i++) {
-            var div = document.createElement('div');
-            div.classList.add('iconName');
-            iconsBox.appendChild(div);
+            var xPos = spaceWidth * (i + 1) + imageWidth * i;
+            ctx.drawImage(image, xPos, 0, imageWidth, height);
         }
+        iconsBox.style.setProperty('--iconsMask', `url(${canvas.toDataURL()})`);
+    };
+    image.src = 'assets/BG_My_Love_IconBar.svg';
 }
 
 function resizeBefore() {
-    creatIcons();
+    textCanvas();
+    createIcons();
 }
 
 </script>
