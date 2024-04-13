@@ -387,14 +387,16 @@ document.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 Bg_Product.addEventListener('mousedown', (e) => {
-    if (isHovered && !isElementClicked(e.target, ['dragSelector', 'ImgPreviewBox'])) {
+    if (isHovered && !isElementClicked(e.target, ['dragSelector'])) {
         MoveExmp.classList.add('hidden');
+        onClick = true;
         isDragging = true;
         initialX = e.clientX - offsetX;
         initialY = e.clientY - offsetY;
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
                 e.preventDefault();
+                onClick = false;
                 size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, e.clientX - initialX));
                 offsetY = Math.min(size, Math.max(-size, e.clientY - initialY));
@@ -404,6 +406,9 @@ Bg_Product.addEventListener('mousedown', (e) => {
         Bg_Product.addEventListener('mouseup', () => {
             if (isDragging) {
                 isDragging = false;
+                if (onClick) {
+                    deselectIcon();
+                }
             }
         });
     }
@@ -415,12 +420,14 @@ let initialX, initialY, offsetX = 0, offsetY = 0;
 Bg_Product.addEventListener('touchstart', function (e) {
     if (!isElementClicked(e.target, ['dragSelector'])) {
         e.preventDefault();
+        onClick = true;
         isDragging = true;
         initialX = e.touches[0].clientX - offsetX;
         initialY = e.touches[0].clientY - offsetY;
         Bg_Product.addEventListener('touchmove', (e) => {
             const touches = e.touches;
             if (isDragging) {
+                onClick = false;
                 MoveExmp.classList.add('hidden');
                 size = ProductBox.offsetHeight / 2;
                 offsetX = Math.min(size, Math.max(-size, touches[0].clientX - initialX));
@@ -431,14 +438,11 @@ Bg_Product.addEventListener('touchstart', function (e) {
         Bg_Product.addEventListener('touchend', () => {
             if (isDragging) {
                 isDragging = false;
+                if (onClick) {
+                    deselectIcon();
+                }
             }
         });
-    }
-});
-
-Bg_Product.addEventListener('click', ()=> {
-    if (!isElementClicked(e.target, ['dragSelector'])) {
-        deselectIcon();
     }
 });
 
@@ -898,8 +902,35 @@ function deselectIcon() {
     document.querySelectorAll('.imgOptionsBox').forEach(e =>{e.classList.add('hidden')});
 }
 
+var removeKey = '0b3e1c95c4c14120b56119afc9d4e5a2';
+
+function cutBG(file, target) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const queryParams = new URLSearchParams();
+    queryParams.set('mattingType', '6');
+    queryParams.set('crop', 'true');
+
+    fetch(`https://www.cutout.pro/api/v1/matting2?${queryParams.toString()}`, {
+        method: 'POST',
+        headers: {
+            'APIKEY': removeKey,
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 0 && data.data && data.data.imageBase64) {
+            target.src = 'data:image/png;base64,' + data.data.imageBase64;
+        } else {
+            console.error('Erro na resposta da API:', data.msg);
+        }
+    })
+    .catch(error => console.error(error));
+}
+
 function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
-    process.includes('potrace') ? loadOn(0): '';
+    process.includes('potrace') || process.includes('cutBG') ? loadOn(0) : '';
     deselectIcon();
     const file = input.files[0];
     const reader = new FileReader();
@@ -944,7 +975,7 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
                 optionBox.classList.remove('hidden');
                 loadOff();
             };
-            ImgPreview.src = e.target.result;
+            process.includes('cutBG') ? cutBG(file, ImgPreview) : ImgPreview.src = e.target.result;
         }
         if(process.includes('potrace')) {
             var ImgPreview = document.createElement('div');

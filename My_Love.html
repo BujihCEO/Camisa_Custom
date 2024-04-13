@@ -11,21 +11,16 @@
 .productWrap {
     --bg_1: url(assets/BG_My_Love_Top_1.svg);
     --bg_2: url(assets/BG_My_Love_Top_2.svg);
+    --bg_3: url(assets/BG_My_Love_Top_3.svg);
     --bg: var(--bg_1);
 }
 
-.Bg_1 {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    mask: var(--bg) center / contain no-repeat;
-}
-
-.Bg_1::before {
+.thisBG {
     content: '';
     position: absolute;
     height: 100%;
     width: 100%;
+    mask: var(--bg) center / contain no-repeat;
     background-color: var(--color);
 }
 
@@ -198,7 +193,7 @@
 .iconName {
     height: 100%;
     aspect-ratio: 1/1;
-    mask: url(assets/bar.svg) center / cover no-repeat;
+    mask: url(assets/BG_My_Love_IconBar.svg) center / cover no-repeat;
     background: var(--color);
 }
 
@@ -223,7 +218,7 @@
 
 @font-face {
     font-family: font_1;
-    src: url(assets/ArchivoBlack-Regular.ttf) format('truetype');
+    src: url(assets/Font_ArchivoBlack_Regular.ttf) format('truetype');
 }
 
 </style>
@@ -233,7 +228,7 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
-                        <div class="Bg_1"></div>
+                        <div class="thisBG"></div>
                         <div class="ImgWrap"></div>
                         <div class="nameBox">
                             <div class="name textReplace">Nome</div>
@@ -260,7 +255,7 @@
 
             <div class="addOptionsBox"
                 tittle="Texto Superior"
-                optionBox="qty={2} class={bgTemplate slider} att={--bg}"
+                optionBox="qty={3} class={bgTemplate slider} att={--bg}"
             ></div>
 
             <div class="addImgBox"

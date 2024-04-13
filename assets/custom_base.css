@@ -19,6 +19,15 @@
     margin: auto;
     --productModel: url(Camiseta.png);
     --productColor: #fff;
+    pointer-events: none;
+    user-select: none;
+    touch-action: none;
+}
+
+.ImgPreviewBox, .dragSelector {
+    pointer-events: all;
+    user-select: all;
+    touch-action: auto;
 }
 
 .ProductBox::after, .ProductBox::before {
@@ -28,9 +37,6 @@
     width: 100%;
     mask: var(--productModel) center / cover no-repeat;
     background: var(--productColor);
-    pointer-events: none;
-    user-select: none;
-    touch-action: none;
 }
 
 .ProductBox::after {
@@ -509,7 +515,7 @@
     background: url(https://www.svgrepo.com/show/509011/action-redo.svg) center / contain no-repeat;
 }
 
-input[type="text"] {
+.customBox input[type="text"] {
     height: 5rem;
     width: 100%;
     max-width: 30rem;
@@ -519,7 +525,7 @@ input[type="text"] {
     border: 0px;
 }
 
-input[type="number"] {
+.customBox input[type="number"] {
     height: 5rem;
     width: 100%;
     max-width: 30rem;
@@ -529,7 +535,7 @@ input[type="number"] {
     border: 0px;
 }
 
-input[type="range"] {
+.customBox input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
@@ -540,13 +546,13 @@ input[type="range"] {
     border: 3px solid black;
 }
 
-input[type="range"]::-webkit-slider-runnable-track {
+.customBox input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4rem;
     border-radius: var(--base-border-radius);
 }
 
-input[type="range"]::-webkit-slider-thumb {
+.customBox input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 1.5rem;
     height: 4rem;
