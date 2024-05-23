@@ -1,0 +1,5 @@
+<svg>
+  <filter id="sharpen">
+      <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="-1 0 0 0 4 0 0 0 -1"/>
+  </filter>
+</svg>

@@ -11,5 +11,5 @@
             />
     </filter>
     <rect width='3508' height='4961' fill='#fff'/>
-    <rect width='3508' height='4961' filter="url(#noise)" opacity='1'/>
+    <rect width='3508' height='4961' filter="url(#noise)" opacity='0.3'/>
 </svg>

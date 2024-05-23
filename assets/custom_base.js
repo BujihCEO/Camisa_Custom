@@ -784,7 +784,7 @@ function upadatePotrace(input, invert) {
             canvas.width = newImage.width;
             canvas.height = newImage.height;
             var ctx = canvas.getContext('2d');
-            ctx.filter = `brightness(${threshold}) invert(${invert})`;
+            ctx.filter = `url(#sharpen) brightness(${threshold}) invert(${invert})`;
             ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
             var imgCanvas = canvas.toDataURL();
             potrace(imgCanvas, previewTarget, loadOff);
