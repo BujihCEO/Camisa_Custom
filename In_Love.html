@@ -9,11 +9,12 @@
 <style>
 
 
-.ProductEdit::before {
+.Bg_1 {
     content: '';
     position: absolute;
-    height: 100%;
+    height: 70%;
     width: 100%;
+    top: 3%;
     mask: url(assets/BG_In_Love_3.png) center / contain no-repeat;
     background-color: var(--color);
 }
@@ -24,9 +25,10 @@
 }
 
 .ImgWrap {
+    height: 70%;
     width: 100%;
-    top: 6%;
-    mask: url(assets/BG_In_Love_4.png) center 23% / cover no-repeat;
+    top: 3%;
+    mask: url(assets/BG_In_Love.svg) center / contain no-repeat;
 }
 
 .ImgPreviewBox {
@@ -40,6 +42,7 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
+                        <div class="Bg_1"></div>
                         <div class="ImgWrap"></div>
                     </div>
                     <div class="showLimits"></div>
@@ -54,7 +57,7 @@
 
             <div class="addOptionsBox"
                 tittle="Cor Principal"
-                colorBox="class={colorModeBox} color={#821812}"
+                colorBox="class={colorModeBox} color={#C841E5}"
             ></div>
 
             <div class="addImgBox"

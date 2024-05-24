@@ -901,31 +901,34 @@ function deselectIcon() {
     document.querySelectorAll('.imgOptionsBox').forEach(e =>{e.classList.add('hidden')});
 }
 
-var removeKey = '0b3e1c95c4c14120b56119afc9d4e5a2';
+var removeKey = '841d5b6467c94577a0f06f42d40c7855';
 
-function cutBG(file, target) {
+async function cutBG(file) {
     const formData = new FormData();
     formData.append('file', file);
     const queryParams = new URLSearchParams();
     queryParams.set('mattingType', '6');
     queryParams.set('crop', 'true');
 
-    fetch(`https://www.cutout.pro/api/v1/matting2?${queryParams.toString()}`, {
-        method: 'POST',
-        headers: {
-            'APIKEY': removeKey,
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        const response = await fetch(`https://www.cutout.pro/api/v1/matting2?${queryParams.toString()}`, {
+            method: 'POST',
+            headers: {
+                'APIKEY': removeKey,
+            },
+            body: formData
+        });
+        const data = await response.json();
         if (data.code === 0 && data.data && data.data.imageBase64) {
-            target.src = 'data:image/png;base64,' + data.data.imageBase64;
+            return 'data:image/png;base64,' + data.data.imageBase64;
         } else {
             console.error('Erro na resposta da API:', data.msg);
+            return null;
         }
-    })
-    .catch(error => console.error(error));
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
 
 function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
@@ -944,7 +947,13 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
     imgIcon.onclick = ()=> selectIcon(imgIcon, imgIcon, ImgPreviewBox, optionBox);
     parentIcon.appendChild(imgIcon);
     imgGroup.push(ImgPreviewBox, imgIcon);
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
+        var imgUrl = undefined;
+        if (process.includes('cutBG')) {
+            imgUrl = await cutBG(file);
+        } else {
+            imgUrl = e.target.result;
+        }
         function setSize(element, child) {
             var style = window.getComputedStyle(element);
             element.style.height = style.height;
@@ -974,18 +983,18 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
                 optionBox.classList.remove('hidden');
                 loadOff();
             };
-            process.includes('cutBG') ? cutBG(file, ImgPreview) : ImgPreview.src = e.target.result;
+            ImgPreview.src = imgUrl;
         }
         if(process.includes('potrace')) {
             var ImgPreview = document.createElement('div');
             ImgPreview.className = 'ImgPreview';
             previewTarget = ImgPreview;
             ImgPreviewBox.appendChild(ImgPreview);
-            potrace(e.target.result, ImgPreview, ()=> {
+            potrace(imgUrl, ImgPreview, ()=> {
                 previewTarget.setAttribute('Threshold', 1);
                 previewTarget.setAttribute('invert', 0);
                 if (process.includes('color=')) {
-                    var color = process.match(/color={([^}]*)}/)?.[1]
+                    var color = process.match(/color={([^}]*)}/)?.[1];
                     previewTarget.setAttribute('svg-fill', color);
                 } 
                 setSize(ImgPreviewBox, ImgPreview);
@@ -995,7 +1004,7 @@ function loadImage(input, parentImg, parentIcon, imgGroup, process, optionBox) {
                 loadOff();
             });
         }
-        imgIcon.src = e.target.result;
+        imgIcon.src = imgUrl;
     };
     reader.readAsDataURL(file);
     input.value = '';
