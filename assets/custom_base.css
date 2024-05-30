@@ -24,11 +24,11 @@
 }
 
 .ProductBox.front {
-    --productModel: url(Camiseta-front.png);
+    --productModel: url(Camiseta-Front.png);
 }
 
 .ProductBox.back {
-    --productModel: url(Camiseta-back.png);
+    --productModel: url(Camiseta-Back.png);
 }
 
 .ImgPreviewBox, .dragSelector {
