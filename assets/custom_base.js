@@ -503,56 +503,69 @@ if (isTouchDevice()) {
 var dragSelector = document.querySelector('.dragSelector');
 var dragMove = document.querySelector('.dragMove');
 var dragSizeList = ['T', 'B', 'L', 'R', 'T-L', 'T-R', 'B-L', 'B-R'];
-for (let i = 0; i < 8; i++) {
+
+for (let i = 0; i < dragSizeList.length; i++) {
     var div = document.createElement('div');
-    div.classList.add('imgSize');
-    div.classList.add(dragSizeList[i]);
+    div.classList.add('imgSize', dragSizeList[i]);
     dragSelector.appendChild(div);
 }
+
 var showLimits = document.querySelector('.showLimits');
-var dragMove = document.querySelector('.dragMove');
 var dragTarget = null;
+var dragTargetChild = null;
+
 function getPositions() {
     var target = window.getComputedStyle(dragTarget);
+    var selector = window.getComputedStyle(dragSelector);
+
     currentTop = parseFloat(target.top) * PreviewScale;
     currentLeft = parseFloat(target.left) * PreviewScale;
-    var selector = window.getComputedStyle(dragSelector);
     dragCurrentTop = parseFloat(selector.top) * PreviewScale;
     dragCurrentLeft = parseFloat(selector.left) * PreviewScale;
+
     showLimits.classList.add('on');
 }
+
 function moveElement() {
-    dragTarget.style.top = ((movimentY + currentTop) / PreviewScale) + 'px';
-    dragTarget.style.left = ((movimentX + currentLeft) / PreviewScale) + 'px';
-    dragSelector.style.top = ((movimentY + dragCurrentTop) / PreviewScale) + 'px';
-    dragSelector.style.left = ((movimentX + dragCurrentLeft) / PreviewScale) + 'px';
+    var newTop = (movimentY + currentTop) / PreviewScale + 'px';
+    var newLeft = (movimentX + currentLeft) / PreviewScale + 'px';
+    dragTarget.style.top = newTop;
+    dragTarget.style.left = newLeft;
+    dragSelector.style.top = newTop;
+    dragSelector.style.left = newLeft;
 }
+
 dragMove.addEventListener('mousedown', function (event) {
     startY = event.clientY;
     startX = event.clientX;
     getPositions();
-    document.onmousemove = function (e) {
+
+    function onMouseMove(e) {
         movimentY = e.clientY - startY;
         movimentX = e.clientX - startX;
         moveElement();
-    };
-    document.onmouseup = function () {
-        document.onmousemove = null;
-        document.onmouseup = null;
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', function () {
+        document.removeEventListener('mousemove', onMouseMove);
         showLimits.classList.remove('on');
-    };
+    }, { once: true });
+
     dragMove.ondragstart = function () {
         return false;
     };
 });
+
 dragMove.addEventListener('touchstart', function (event) {
     event.preventDefault();
     touch = event.touches[0];
     startX = touch.clientX;
     startY = touch.clientY;
     getPositions();
-    function TouchMove(event) {
-        if (event.touches.length == 1) {
+
+    function onTouchMove(event) {
+        if (event.touches.length === 1) {
             event.preventDefault();
             touch = event.touches[0];
             movimentX = touch.clientX - startX;
@@ -560,137 +573,143 @@ dragMove.addEventListener('touchstart', function (event) {
             moveElement();
         }
     }
-    dragMove.addEventListener('touchmove', TouchMove);
+
+    dragMove.addEventListener('touchmove', onTouchMove);
     dragMove.addEventListener('touchend', function () {
-        dragMove.removeEventListener('touchmove', TouchMove);
+        dragMove.removeEventListener('touchmove', onTouchMove);
         showLimits.classList.remove('on');
-    });
+    }, { once: true });
 });
 
 var imgSizeAll = document.querySelectorAll('.imgSize');
-var dragTargetChild = null;
+
 imgSizeAll.forEach((element) => {
     function startTouch() {
         dragTargetChild = dragTarget.firstElementChild;
+
         var parent = window.getComputedStyle(dragTarget);
+        var child = window.getComputedStyle(dragTargetChild);
+        var selector = window.getComputedStyle(dragSelector);
+
         currentHeight = parseFloat(parent.height) * PreviewScale;
         currentWidth = parseFloat(parent.width) * PreviewScale;
         currentTop = parseFloat(parent.top) * PreviewScale;
         currentLeft = parseFloat(parent.left) * PreviewScale;
-        var child = window.getComputedStyle(dragTargetChild);
         imgHeight = parseFloat(child.height) * PreviewScale;
         imgWidth = parseFloat(child.width) * PreviewScale;
         imgTop = parseFloat(child.top) * PreviewScale;
         imgLeft = parseFloat(child.left) * PreviewScale;
-        var selector = window.getComputedStyle(dragSelector);
         DragCurrentTop = parseFloat(selector.top) * PreviewScale;
         DragCurrentLeft = parseFloat(selector.left) * PreviewScale;
+
         showLimits.classList.add('on');
     }
+
     function onMoviment() {
-        function applyStyles() {
-            if (verify) {
-                dragTarget.style.height = Vheight / PreviewScale + 'px';
-                dragTarget.style.width = Vwidth / PreviewScale + 'px';
-                dragTarget.style.top = ((Vtop + currentTop) / PreviewScale) + 'px';
-                dragTarget.style.left = ((Vleft + currentLeft) / PreviewScale) + 'px';
-            
-                dragTargetChild.style.height = Cheight / PreviewScale + 'px';
-                dragTargetChild.style.width = Cwidth / PreviewScale + 'px';
-                dragTargetChild.style.top = Ctop / PreviewScale + 'px';
-                dragTargetChild.style.left = Cleft / PreviewScale + 'px';
-            
-                dragSelector.style.height = Vheight / PreviewScale + 'px';
-                dragSelector.style.width = Vwidth / PreviewScale + 'px';
-                dragSelector.style.top = ((Vtop + DragCurrentTop) / PreviewScale) + 'px';
-                dragSelector.style.left = ((Vleft + DragCurrentLeft) / PreviewScale) + 'px';
-            }
-        }
+        var verify, Vheight, Vwidth, Vtop, Vleft, Cheight, Cwidth, Ctop, Cleft;
+
         if (element.classList.contains('T')) {
-            Vheight = -movimentY + currentHeight; Vwidth= currentWidth; Vtop = movimentY; Vleft = 0;
+            Vheight = -movimentY + currentHeight; Vwidth = currentWidth; Vtop = movimentY; Vleft = 0;
             Cheight = imgHeight; Cwidth = imgWidth; Ctop = -movimentY + imgTop; Cleft = imgLeft;
             verify = Ctop / PreviewScale <= 0;
-        }
-        if (element.classList.contains('B')) {
+        } else if (element.classList.contains('B')) {
             Vheight = movimentY + currentHeight; Vwidth = currentWidth; Vtop = 0; Vleft = 0;
-            Cheight = imgHeight; Cwidth = imgWidth; Ctop = imgTop; Cleft = imgLeft,
+            Cheight = imgHeight; Cwidth = imgWidth; Ctop = imgTop; Cleft = imgLeft;
             verify = Vheight / PreviewScale <= dragTargetChild.clientHeight + dragTargetChild.offsetTop;
-        }
-        if (element.classList.contains('L')) {
+        } else if (element.classList.contains('L')) {
             Vheight = currentHeight; Vwidth = -movimentX + currentWidth; Vtop = 0; Vleft = movimentX;
             Cheight = imgHeight; Cwidth = imgWidth; Ctop = imgTop; Cleft = -movimentX + imgLeft;
             verify = Cleft / PreviewScale <= 0;
-        }
-        if (element.classList.contains('R')) {
+        } else if (element.classList.contains('R')) {
             Vheight = currentHeight; Vwidth = movimentX + currentWidth; Vtop = 0; Vleft = 0;
             Cheight = imgHeight; Cwidth = imgWidth; Ctop = imgTop; Cleft = imgLeft;
             verify = Vwidth / PreviewScale <= dragTargetChild.clientWidth + dragTargetChild.offsetLeft;
-        }
-        if (element.classList.contains('T-L')) {
+        } else if (element.classList.contains('T-L')) {
             Vheight = -movimentY + currentHeight; Vwidth = (Vheight * currentWidth) / currentHeight; Vtop = movimentY; Vleft = movimentY;
             Cheight = ((-movimentY + currentHeight) * imgHeight) / currentHeight; Cwidth = (Cheight * imgWidth) / imgHeight;
             Ctop = (Cheight * imgTop) / imgHeight; Cleft = (Cheight * imgLeft) / imgHeight;
             verify = true;
-        }
-        if (element.classList.contains('T-R')) {
-            Vheight = -movimentY + currentHeight; Vwidth = (Vheight * currentWidth) / currentHeight; Vtop = movimentY; Vleft = 0; 
-            Cheight= ((-movimentY + currentHeight) * imgHeight) / currentHeight; Cwidth = (Cheight * imgWidth) / imgHeight;
+        } else if (element.classList.contains('T-R')) {
+            Vheight = -movimentY + currentHeight; Vwidth = (Vheight * currentWidth) / currentHeight; Vtop = movimentY; Vleft = 0;
+            Cheight = ((-movimentY + currentHeight) * imgHeight) / currentHeight; Cwidth = (Cheight * imgWidth) / imgHeight;
             Ctop = (Cheight * imgTop) / imgHeight; Cleft = (Cheight * imgLeft) / imgHeight;
             verify = true;
-        }
-        if (element.classList.contains('B-L')) {
+        } else if (element.classList.contains('B-L')) {
             Vheight = movimentY + currentHeight; Vwidth = (Vheight * currentWidth) / currentHeight; Vtop = 0; Vleft = -movimentY;
             Cheight = ((movimentY + currentHeight) * imgHeight) / currentHeight; Cwidth = (Cheight * imgWidth) / imgHeight;
             Ctop = (Cheight * imgTop) / imgHeight; Cleft = (Cheight * imgLeft) / imgHeight;
             verify = true;
-        }
-        if (element.classList.contains('B-R')) {
+        } else if (element.classList.contains('B-R')) {
             Vheight = movimentY + currentHeight; Vwidth = (Vheight * currentWidth) / currentHeight; Vtop = 0; Vleft = 0;
             Cheight = ((movimentY + currentHeight) * imgHeight) / currentHeight; Cwidth = (Cheight * imgWidth) / imgHeight;
             Ctop = (Cheight * imgTop) / imgHeight; Cleft = (Cheight * imgLeft) / imgHeight;
             verify = true;
         }
-        applyStyles();
+
+        if (verify) {
+            dragTarget.style.height = Vheight / PreviewScale + 'px';
+            dragTarget.style.width = Vwidth / PreviewScale + 'px';
+            dragTarget.style.top = (Vtop + currentTop) / PreviewScale + 'px';
+            dragTarget.style.left = (Vleft + currentLeft) / PreviewScale + 'px';
+
+            dragTargetChild.style.height = Cheight / PreviewScale + 'px';
+            dragTargetChild.style.width = Cwidth / PreviewScale + 'px';
+            dragTargetChild.style.top = Ctop / PreviewScale + 'px';
+            dragTargetChild.style.left = Cleft / PreviewScale + 'px';
+
+            dragSelector.style.height = Vheight / PreviewScale + 'px';
+            dragSelector.style.width = Vwidth / PreviewScale + 'px';
+            dragSelector.style.top = (Vtop + DragCurrentTop) / PreviewScale + 'px';
+            dragSelector.style.left = (Vleft + DragCurrentLeft) / PreviewScale + 'px';
+        }
     }
+
     element.addEventListener('mousedown', function (event) {
         startY = event.clientY;
         startX = event.clientX;
         startTouch();
-        document.onmousemove = function (e) {
+
+        function onMouseMove(e) {
             movimentY = e.clientY - startY;
             movimentX = e.clientX - startX;
             onMoviment();
-        };
-        document.onmouseup = function () {
-            document.onmousemove = null;
-            document.onmouseup = null;
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', function () {
+            document.removeEventListener('mousemove', onMouseMove);
             showLimits.classList.remove('on');
-        };
+        }, { once: true });
+
         element.ondragstart = function () {
             return false;
         };
     });
+
     element.addEventListener('touchstart', function (event) {
         touch = event.touches[0];
         startY = touch.clientY;
         startX = touch.clientX;
         event.preventDefault();
         startTouch();
-        function touchMove(event) {
-            if (event.touches.length == 1) {
+
+        function onTouchMove(event) {
+            if (event.touches.length === 1) {
                 touch = event.touches[0];
                 movimentY = touch.clientY - startY;
                 movimentX = touch.clientX - startX;
                 onMoviment();
             }
         }
-        element.addEventListener('touchmove', touchMove);
+
+        element.addEventListener('touchmove', onTouchMove);
         element.addEventListener('touchend', function () {
-            element.removeEventListener('touchmove', touchMove);
+            element.removeEventListener('touchmove', onTouchMove);
             showLimits.classList.remove('on');
-        });
+        }, { once: true });
     });
 });
+
 
 //  //  //  //
 
@@ -818,7 +837,7 @@ function upadatePotrace(input, invert) {
             canvas.width = newImage.width;
             canvas.height = newImage.height;
             var ctx = canvas.getContext('2d');
-            ctx.filter = `url(#sharpen) brightness(${threshold}) invert(${invert})`;
+            ctx.filter = `brightness(${threshold}) invert(${invert})`;
             ctx.drawImage(newImage, 0, 0, newImage.width, newImage.height);
             var imgCanvas = canvas.toDataURL();
             potrace(imgCanvas, previewTarget, loadOff);
