@@ -8,14 +8,20 @@
 </head>
 <style>
 
+.Bg_Front {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    mask: url(assets/BG_In_Love_Front.svg) center / contain no-repeat;
+    background-color: var(--color);
+}
 
-.Bg_1 {
-    content: '';
+.Bg_Back {
     position: absolute;
     height: 70%;
     width: 100%;
     top: 3%;
-    mask: url(assets/BG_In_Love_3.png) center / contain no-repeat;
+    mask: url(assets/BG_In_Love_Back_1.png) center / contain no-repeat;
     background-color: var(--color);
 }
 
@@ -28,7 +34,7 @@
     height: 70%;
     width: 100%;
     top: 3%;
-    mask: url(assets/BG_In_Love.svg) center / contain no-repeat;
+    mask: url(assets/BG_In_Love_Back_2.svg) center / contain no-repeat;
 }
 
 .ImgPreviewBox {
@@ -42,7 +48,10 @@
             <div class="ProductBox">
                 <div class="Preview">
                     <div class="ProductEdit">
-                        <div class="Bg_1"></div>
+                        <div class="Bg_Front"></div>
+                    </div>
+                    <div class="ProductEdit">
+                        <div class="Bg_Back"></div>
                         <div class="ImgWrap"></div>
                     </div>
                     <div class="showLimits"></div>
@@ -53,15 +62,27 @@
             </div>
             <div class="MoveExmp"></div>
         </div>
+
+        <div class="btn_side_wrap">
+            <button class="btn_side" side-data="front">Frente</button>
+            <button class="btn_side" side-data="back">Costas</button>
+        </div>
+
+        <div class="customBox">
+            <div class="addOptionsBox"
+                tittle="Cor"
+                colorBox="class={colorModeBox} color={#C841E5}"
+            ></div>
+        </div>
         <div class="customBox">
 
             <div class="addOptionsBox"
-                tittle="Cor Principal"
+                tittle="Cor"
                 colorBox="class={colorModeBox} color={#C841E5}"
             ></div>
 
             <div class="addImgBox"
-                tittle="Fotos"
+                tittle="Foto"
                 grid="qty={1}"
                 process="potrace"
             ></div>

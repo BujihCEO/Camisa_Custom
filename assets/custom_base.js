@@ -1,4 +1,40 @@
-const ProductEdit = document.querySelector('.ProductEdit');
+const Bg_Product = document.querySelector('.Bg_Product');
+const ProductBox = document.querySelector('.ProductBox');
+const Preview = document.querySelector('.Preview');
+const ProductEdit = document.querySelectorAll('.ProductEdit');
+const btn_side = document.querySelectorAll('.btn_side');
+const customBox = document.querySelectorAll('.customBox');
+
+btn_side.forEach((e, i)=> {
+    ProductEdit[i].setAttribute('side-data', e.getAttribute('side-data'));
+    if (i === 0) {
+        e.classList.add('selected');
+        ProductBox.classList.add(e.getAttribute('side-data'));
+    } else {
+        ProductEdit[i].classList.add('hidden');
+        customBox[i].classList.add('hidden');
+    }
+    e.onclick = ()=> {
+        deselectIcon();
+        btn_side.forEach((e, i) => {
+            e.classList.remove('selected');
+            ProductEdit[i].classList.add('hidden');
+            customBox[i].classList.add('hidden');
+        });
+        e.classList.add('selected');
+        ProductBox.classList.remove(ProductBox.classList[1]);
+        ProductBox.classList.add(e.getAttribute('side-data'));
+        ProductEdit[i].classList.remove('hidden');
+        customBox[i].classList.remove('hidden');
+    };
+});
+
+customBox.forEach((e, i) => {
+    Array.from(e.children).forEach(child => {
+        child.setAttribute('index-custom', i);
+    });
+});
+
 let updateOptionsFunctions = [];
 
 let btnOnFocus = false;
@@ -320,8 +356,6 @@ jscolor.presets.default = {
     width:250, height:165, closeButton:true, closeText:'', sliderSize:20
 };
 //  //
-const Bg_Product = document.querySelector('.Bg_Product');
-const ProductBox = document.querySelector('.ProductBox');
 const MoveExmp = document.querySelector('.MoveExmp');
 let PreviewScale = 1;
 
@@ -1304,7 +1338,8 @@ document.querySelector('.addImgBox') && createAddImgBox();
 
 function createOptionBox() {
     var boxes = document.querySelectorAll('.addOptionsBox');
-    boxes.forEach((box, index) => {
+    boxes.forEach((box) => {
+        var edit = ProductEdit[box.getAttribute('index-custom')];
         if (box.hasAttribute('tittle')) {
             var tittle = document.createElement('div');
             tittle.className = 'tittle';
@@ -1316,7 +1351,7 @@ function createOptionBox() {
             var className = colorBox.match(/class={([^}]*)}/)?.[1];
             var color = colorBox.match(/color={([^}]*)}/)?.[1];
             var att = colorBox.match(/att={([^}]*)}/)?.[1];
-            createJsColorBox(box, `${className} box_1`, ()=> ProductEdit, att ? att: '--color', color, false);
+            createJsColorBox(box, `${className} box_1`, ()=> edit, att ? att: '--color', color, false);
         }
         if (box.hasAttribute('optionBox')) {
             var optionBox = box.getAttribute('optionBox');
@@ -1337,7 +1372,7 @@ function createOptionBox() {
             allBtn.forEach((e, i) => {
                 e.onclick = ()=> {
                     allBtn.forEach(e => {e.classList.remove('selected');});
-                    ProductEdit.style.setProperty(att, `var(${att}_${i+1})`);
+                    edit.style.setProperty(att, `var(${att}_${i+1})`);
                     e.classList.add('selected');
                 }
             });
@@ -1443,7 +1478,6 @@ if (document.querySelector('.JsColorBox')) {
     }
 }
 
-var Preview = document.querySelector('.Preview');
 function resize() {
     document.body.style.setProperty('--boxSize', `${ProductBox.offsetWidth}px`);
     if (typeof resizeBefore === 'function') {

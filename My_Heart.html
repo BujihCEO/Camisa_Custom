@@ -115,6 +115,7 @@
         <div class="Bg_Product">
             <div class="ProductBox">
                 <div class="Preview">
+                    <div class="ProductEdit"></div>
                     <div class="ProductEdit">
                         <div class="Bg_1"></div>
                         <div class="textGroup">
@@ -137,6 +138,13 @@
             </div>
             <div class="MoveExmp"></div>
         </div>
+        
+        <div class="btn_side_wrap">
+            <button class="btn_side" side-data="front">Frente</button>
+            <button class="btn_side" side-data="back">Costas</button>
+        </div>
+
+        <div class="customBox"></div>
         <div class="customBox">
 
             <div class="addOptionsBox"
@@ -164,8 +172,12 @@
             ></div>
             
         </div>
+        
     </div>
 </body>
+<script>
+    var editSide = 'Back';
+</script>
 <script src="assets/print.js"></script>
 <script src="assets/jscolor.js"></script>
 <script src="assets/potrace.js"></script>

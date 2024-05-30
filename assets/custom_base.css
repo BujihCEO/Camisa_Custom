@@ -17,11 +17,18 @@
     max-width: 50vh;
     aspect-ratio: 1 / 1;
     margin: auto;
-    --productModel: url(Camiseta.png);
     --productColor: #fff;
     pointer-events: none;
     user-select: none;
     touch-action: none;
+}
+
+.ProductBox.front {
+    --productModel: url(Camiseta-front.png);
+}
+
+.ProductBox.back {
+    --productModel: url(Camiseta-back.png);
 }
 
 .ImgPreviewBox, .dragSelector {
@@ -46,9 +53,13 @@
 
 .Preview {
     position: absolute;
-    width: 35%;
+    width: 40%;
     aspect-ratio: 3508 / 4961;
     user-select: none;
+}
+
+.ProductBox.back > .Preview {
+    top: 16%
 }
 
 .ProductEdit {
@@ -248,6 +259,7 @@
     background-color: aqua;
     padding: 0 1rem;
     z-index: 1;
+    border-radius: var(--base-border-radius);
     --base-border-radius: 1.5rem;
 }
 
@@ -965,4 +977,35 @@ label {
     to {
         transform: translateY(-20px);
     }
+}
+
+.btn_side_wrap {
+    display: flex;
+    height: 6rem;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.btn_side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+    height: 70%;
+    width: 40%;
+    border-radius: 1rem;
+    box-shadow: 0 0 5px black;
+    font-family: sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    background: #fff;
+    color: #000;
+    transition: 0.2s;
+}
+
+.btn_side.selected {
+    height: 80%;
+    width: 50%;
+    background: #000;
+    color: #fff;
 }
