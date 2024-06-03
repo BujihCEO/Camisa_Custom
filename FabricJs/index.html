@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: calc(1 * 62.5%);">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="assets/index.css">
+    <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
+    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+    <script src="assets/jscolor.js"></script>
+    <script src="assets/potrace.js"></script>
+    <title>index</title>
+</head>
+<body>
+    <div class="previewWrap"></div>
+</body>
+<script src="assets/index.js"></script>
+<script>
+
+var setPrintArea = [
+    {
+        area: { 
+            node: frontPrint,
+            name: 'Frente',
+            add: [
+                {
+                    mask: {
+                        url: 'assets/BG_In_Love_Front.svg',
+                    },
+                }
+            ]
+        }
+    },
+
+    {
+        area: { 
+            node: backPrint,
+            name: 'Costa',
+            add: [
+                {
+                    image: {
+                        width: 1,
+                        height: 1,
+                    },
+                }
+            ]
+        }
+    },
+];
+
+var editList = [];
+var btnList = [];
+for (var [index, item] of setPrintArea.entries()) {
+    if (item.area.node) {
+        let a = item.area;
+        let p = a.node.getParent();
+        let btn = document.createElement('button');
+        btn.textContent = a.name;
+        btnList.push(btn);
+        popupBtnWrap.appendChild(btn);
+        let edit = document.createElement('div');
+        edit.className = 'customBox';
+        editList.push(edit);
+        editWrap.appendChild(edit);
+        btn.addEventListener('click', () => {
+            btnList.forEach((e, i) => {
+                dragOff();
+                if (e === btn) {
+                    e.classList.add('selected');
+                    editList[i].classList.remove('hidden');
+                    setPrintArea[i].area.node.getParent().show();
+                } else {
+                    e.classList.remove('selected');
+                    editList[i].classList.add('hidden');
+                    setPrintArea[i].area.node.getParent().hide();
+                }
+            });
+        });
+
+        setTimeout( ()=> {
+            setPreviews(p, canvasPreview);
+        }, 1000);
+
+        if (index === 0) {
+            btn.classList.add('selected');
+        } else { 
+            p.hide();
+            edit.classList.add('hidden'); 
+        }
+        
+        if (a.add) {
+            a.add.forEach((e) => {
+                if (e.image) {
+                    var att = e.image;
+                    var group = new Konva.Group({
+                        width: a.node.width() * att.width,
+                        height: a.node.height() * att.height,
+                    });
+                    a.node.add(group);
+
+                    var rect = new Konva.Rect({
+                        width: a.node.width() * att.width,
+                        height: a.node.height() * att.height,
+                        fill: 'red',
+                    });
+                    group.add(rect);
+
+                    var input = document.createElement('input');
+                    input.type = 'file';
+                    input.addEventListener('change', function(event) {
+                        upload(event, group);
+                    });
+                    editList[index].appendChild(input);
+                }
+                if (e.mask) {
+                    var att = e.mask;
+                    fetch(att.url)
+                        .then(response => response.text())
+                        .then(svgText => {
+                            var parser = new DOMParser();
+                            var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+                            var pathElement = svgDoc.querySelector('path');
+                            var pathData = pathElement.getAttribute('d');
+                            var svgPath = new Konva.Path({
+                                data: pathData,
+                                fill: 'red',
+                            });
+                            a.node.add(svgPath);
+                        })
+                }
+            });
+        }
+
+    }
+}
+
+</script>
+<script src="assets/custom_base.js"></script>
+</html>
