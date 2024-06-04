@@ -1,6 +1,3 @@
-var popupBtns = document.querySelectorAll('.popupBtnWrap > button');
-
-
 let updateOptionsFunctions = [];
 
 let btnOnFocus = false;

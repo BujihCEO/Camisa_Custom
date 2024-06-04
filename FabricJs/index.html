@@ -6,8 +6,8 @@
     <link rel="stylesheet" type="text/css" href="assets/index.css">
     <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
-    <script src="assets/jscolor.js"></script>
     <script src="assets/potrace.js"></script>
+    <script src="assets/jscolor.js"></script>
     <title>index</title>
 </head>
 <body>
@@ -25,6 +25,7 @@ var setPrintArea = [
                 {
                     mask: {
                         url: 'assets/BG_In_Love_Front.svg',
+                        jsColor: '#ff0000',
                     },
                 }
             ]
@@ -97,35 +98,42 @@ for (var [index, item] of setPrintArea.entries()) {
                     });
                     a.node.add(group);
 
-                    var rect = new Konva.Rect({
-                        width: a.node.width() * att.width,
-                        height: a.node.height() * att.height,
-                        fill: 'red',
-                    });
-                    group.add(rect);
-
                     var input = document.createElement('input');
                     input.type = 'file';
+                    input.accept = 'image/*';
                     input.addEventListener('change', function(event) {
                         upload(event, group);
                     });
-                    editList[index].appendChild(input);
+                    edit.appendChild(input);
                 }
                 if (e.mask) {
                     var att = e.mask;
-                    fetch(att.url)
-                        .then(response => response.text())
-                        .then(svgText => {
-                            var parser = new DOMParser();
-                            var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-                            var pathElement = svgDoc.querySelector('path');
-                            var pathData = pathElement.getAttribute('d');
-                            var svgPath = new Konva.Path({
-                                data: pathData,
-                                fill: 'red',
-                            });
-                            a.node.add(svgPath);
+                    if (att.url) {
+                        getPath(att.url, a.node, 'blue')
+                        .then(path => {
+                            if (att.jsColor) {
+                                createJsColor(edit, target = [path], att.jsColor);
+                            }
                         })
+                    }
+                    if (att.urll) {
+                        var group = new Konva.Group({
+                            width: a.node.width(),
+                            height: a.node.height(),
+                            globalCompositeOperation: 'source-in',
+                        });
+                        a.node.add(group);
+                        var rect = new Konva.Rect({
+                            fill: 'red',
+                        });
+                        group.add(rect);
+                        Konva.Image.fromURL(att.url, (image) => {
+                            group.add(image);
+                            image.setAttrs({
+                            })
+                            console.log(a.node);
+                        });
+                    }
                 }
             });
         }

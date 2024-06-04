@@ -129,6 +129,7 @@ function clickTap(target, callback) {
 
 function setPreviews(node, parent, index) {
     var visible = node.isVisible();
+    stage.setAttrs({x:0, y:0, scale: {x:1, y:1}})
     visible || node.show();
     var canvas = node.toCanvas();
     canvas.style = '';
@@ -333,26 +334,92 @@ function upload(e, parent) {
 stage.on('wheel', function (e) {
     e.evt.preventDefault();
     var scaleBy = 1.1;
-    var oldScale = layer.scaleX();
+    var oldScale = stage.scaleX();
 
     var pointer = stage.getPointerPosition();
 
     var mousePointTo = {
-        x: (pointer.x - layer.x()) / oldScale,
-        y: (pointer.y - layer.y()) / oldScale,
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
     };
 
     var newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
 
-    layer.scale({ x: newScale, y: newScale });
+    stage.scale({ x: newScale, y: newScale });
 
     var newPos = {
         x: pointer.x - mousePointTo.x * newScale,
         y: pointer.y - mousePointTo.y * newScale,
     };
 
-    layer.position(newPos);
-    layer.batchDraw();
+    stage.position(newPos);
+    stage.batchDraw();
 });
+
+function createJsColor(parent, target = [], color, setAtt = false) {
+    var box = document.createElement('div');
+    var jscolorButton = document.createElement('button');
+    box.className = 'JsColorBox';
+    jscolorButton.className = 'jscolor';
+    jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
+    box.appendChild(jscolorButton);
+    parent.appendChild(box);
+    
+    // Inicializa o jscolor
+    jscolor.install();
+
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-current-color') {
+                var newColor = mutation.target.getAttribute('data-current-color');
+                target.forEach(e => {
+                    e.setAttrs({ fill: newColor });
+                });
+                var nextSibling = jscolorButton.nextElementSibling;
+                if (nextSibling) {
+                    nextSibling.style.background = newColor;
+                }
+            }
+        });
+    });
+
+    observer.observe(jscolorButton, { attributes: true });
+
+    if (setAtt) {
+        updateOptionsFunctions.push(() => {
+            var tgt = target();
+            if (tgt instanceof Element) {
+                var color = tgt.getAttribute(setAtt);
+                jscolorButton.style.background = color;
+                jscolorButton.setAttribute('data-current-color', color);
+            }
+        });
+    }
+}
+
+function getPath(url, parent, fillColor) {
+    return fetch(url)
+        .then(response => response.text())
+        .then(svgText => {
+            var parser = new DOMParser();
+            var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+            var pathElement = svgDoc.querySelector('path');
+            if (pathElement) {
+                var pathData = pathElement.getAttribute('d');
+                var svgPath = new Konva.Path({
+                    data: pathData,
+                    fill: fillColor,
+                });
+                parent.add(svgPath);
+                return svgPath;
+            } else {
+                throw new Error("No path element found in the SVG.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching or parsing SVG:", error);
+            throw error;
+        });
+}
 
 var lastDist = 0;
