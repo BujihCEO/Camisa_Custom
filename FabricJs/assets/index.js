@@ -21,6 +21,10 @@ closePopup.addEventListener('click', ()=> {
 });
 popupEditor.appendChild(closePopup);
 
+var popupTop = document.createElement('div');
+popupTop.className = 'popupTop';
+popupEditor.appendChild(popupTop);
+
 var popupBottom = document.createElement('div');
 popupBottom.className = 'popupBottom';
 popupEditor.appendChild(popupBottom);
@@ -29,8 +33,9 @@ var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
 popupBottom.appendChild(popupBtnWrap);
 
-var editWrap = document.createElement('div');
-popupBottom.appendChild(editWrap);
+var mainEdit = document.createElement('div');
+mainEdit.className = 'mainEdit';
+popupBottom.appendChild(mainEdit);
 
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
@@ -100,7 +105,7 @@ function setOverlay(group, url) {
     img.src = url;
 }
 
-function objectFill(node, object, parent) {
+function objectCover(node, object, parent) {
     var objectWidth = object.width;
     var objectHeight = object.height;
     var width = parent.width();
@@ -153,6 +158,7 @@ var frontArea = new Konva.Group({
 var frontBg = new Konva.Group({
     width: productLayer.width(),
     height: productLayer.height(),
+    listening: false,
 });
 createMaskedImage(frontBg, `assets/Camiseta-Front.png`, '#FDF5E6', {
     shadowColor: 'black',
@@ -161,6 +167,7 @@ createMaskedImage(frontBg, `assets/Camiseta-Front.png`, '#FDF5E6', {
     shadowOpacity: 0.3,
 }
 );
+
 var frontPrint = new Konva.Group({
     width: 3508,
     height: 4961,
@@ -195,6 +202,7 @@ var backArea = new Konva.Group({
 var backBg = new Konva.Group({
     width: productLayer.width(),
     height: productLayer.height(),
+    listening: false,
 });
 createMaskedImage(backBg, `assets/Camiseta-Back.png`, '#FDF5E6', {
     shadowColor: 'black',
@@ -231,13 +239,6 @@ productLayer.add(backArea);
 
     //  TRANSFORMER //
 
-var dragRect = new Konva.Rect({
-    draggable: true,
-    fill: '#998fff66',
-});
-layer.add(dragRect);
-dragRect.hide();
-
 var transformer = new Konva.Transformer({
     enabledAnchors: [
         'top-left', 
@@ -245,30 +246,22 @@ var transformer = new Konva.Transformer({
         'bottom-left',
         'bottom-right',
     ],
+    shouldOverdrawWholeArea: true,
 });
 layer.add(transformer);
 transformer.hide();
 
 function dragOn(target) {
     transformer.nodes([target]);
-    dragRect.width(transformer.width());
-    dragRect.height(transformer.height());
-    dragRect.x(transformer.x());
-    dragRect.y(transformer.y());
-    dragRect.scaleX(transformer.scaleX());
-    dragRect.scaleY(transformer.scaleY());
-    transformer.nodes([target, dragRect]);
-    dragRect.show();
     transformer.show();
 }
 
 function dragOff() {
     transformer.nodes([]);
-    dragRect.hide();
     transformer.hide();
 }
 
-var canSelect = [dragRect];
+var canSelect = [];
 
 clickTap(stage, (e)=> {
     if (canSelect.includes(e.target)) {
@@ -277,35 +270,7 @@ clickTap(stage, (e)=> {
     dragOff();
 });
 
-//  //  //  //  //  //  //
-
-// var frontPrint = new Konva.Group({
-//     x: (editLayer.width() / 2) - ((editLayer.width() * 0.4) / 2),
-//     y: (editLayer.height() / 2) - (((editLayer.width() * 0.4) * 1.41) / 2),
-//     width: editLayer.width() * 0.4,
-//     height: (editLayer.width() * 0.4) * 1.41,
-//     clip: {
-//         x: 0,
-//         y: 0,
-//         width: editLayer.width() * 0.4,
-//         height: (editLayer.width() * 0.4) * 1.41,
-//     }
-// });
-
-// var backPrint = new Konva.Group({
-//     x: (editLayer.width() / 2) - ((editLayer.width() * 0.4) / 2),
-//     y: (editLayer.height() * 0.14),
-//     width: editLayer.width() * 0.4,
-//     height: (editLayer.width() * 0.4) * 1.41,
-//     clip: {
-//         x: 0,
-//         y: 0,
-//         width: editLayer.width() * 0.4,
-//         height: (editLayer.width() * 0.4) * 1.41,
-//     }
-// });
-
-function upload(e, parent) {
+function upload(e, parent, iconPlace) {
     var file = e.target.files[0];
     var reader = new FileReader();
 
@@ -315,14 +280,14 @@ function upload(e, parent) {
             var konvaImage = new Konva.Image({
                 image: img,
             });
-            objectFill(konvaImage, img, parent);
+            objectCover(konvaImage, img, parent);
             parent.add(konvaImage);
             canSelect.push(konvaImage);
-            parent.getLayer().draw();
             dragOn(konvaImage);
             clickTap(konvaImage, ()=> {
                 dragOn(konvaImage);
             });
+            iconPlace.appendChild(img);
             e.target.value = '';
         };
         img.src = reader.result;
@@ -355,6 +320,7 @@ stage.on('wheel', function (e) {
     stage.position(newPos);
     stage.batchDraw();
 });
+var lastDist = 0;
 
 function createJsColor(parent, target = [], color, setAtt = false) {
     var box = document.createElement('div');
@@ -365,7 +331,6 @@ function createJsColor(parent, target = [], color, setAtt = false) {
     box.appendChild(jscolorButton);
     parent.appendChild(box);
     
-    // Inicializa o jscolor
     jscolor.install();
 
     var observer = new MutationObserver(function(mutations) {
@@ -406,11 +371,9 @@ function getPath(url, parent, fillColor) {
             var pathElement = svgDoc.querySelector('path');
             if (pathElement) {
                 var pathData = pathElement.getAttribute('d');
-                var svgPath = new Konva.Path({
-                    data: pathData,
-                    fill: fillColor,
-                });
-                parent.add(svgPath);
+                var svgPath = new Konva.Path({ data: pathData });
+                if (fillColor) {svgPath.fill(fillColor);}
+                if (parent) {parent.add(svgPath);}
                 return svgPath;
             } else {
                 throw new Error("No path element found in the SVG.");
@@ -422,4 +385,71 @@ function getPath(url, parent, fillColor) {
         });
 }
 
-var lastDist = 0;
+function NewPotrace(event, fill, parent, conclusion = () => {}) {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    var img = new Image();
+
+    reader.onload = function () {
+        img.onload = () => {
+            Potrace.loadImageFromFile(file);
+            Potrace.process(() => {
+                var shape = new Konva.Shape();
+                objectCover(shape, img, parent);
+                
+                var scaleX = shape.width() / img.width;
+                var scaleY = shape.height() / img.height;
+                var scale = Math.min(scaleX, scaleY);
+                
+                var svgText = Potrace.getSVG(scale);
+                var parser = new DOMParser();
+                var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+                var pathElement = svgDoc.querySelector('path');
+                var pathData = pathElement.getAttribute('d');
+                var path2D = new Path2D(pathData);
+                
+                shape.setAttrs({
+                    id: 'svgImage',
+                    fill: fill,
+                    svgScale: scale,
+                    sceneFunc: function (ctx) {
+                        ctx.beginPath();
+                        ctx.clip(path2D);
+                        ctx.fillStyle = shape.fill();
+                        ctx.fillRect(0, 0, shape.width(), shape.height());
+                        ctx.closePath();
+                    },
+                    hitFunc: (ctx) => {
+                        ctx.rect(0, 0, shape.width(), shape.height());
+                        ctx.fillStrokeShape(shape);
+                    },
+                });
+
+                parent.add(shape);
+                canSelect.push(shape);
+                dragOn(shape);
+                clickTap(shape, ()=> {
+                    dragOn(shape);
+                });
+
+                conclusion(shape);
+            });
+        };
+        img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+var colorOrder = [
+    '000000',
+    '0000ff',
+    '008000',
+    'ffff00',
+    'ff00ff',
+    'c0c0c0',
+    '000080',
+    '008080',
+    'ffa500',
+    '800080',
+];

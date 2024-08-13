@@ -18,15 +18,54 @@
 
 var setPrintArea = [
     {
-        area: { 
+        area: {   
             node: frontPrint,
             name: 'Frente',
             add: [
                 {
-                    mask: {
-                        url: 'assets/BG_In_Love_Front.svg',
-                        jsColor: '#ff0000',
-                    },
+                    image: {
+                        position: {},
+                        mask: {
+                            url: 'assets/BG_In_Love_Front.svg',
+                            fill: '#ff0000',
+                            jsColor: '#ff0000',
+                        },
+                    }
+                },
+                {
+                    tittle: 'Grade de fotos',
+                    image: {
+                        position: {
+                            height: 1000,
+                            width: 1000,
+                            x: 1000,
+                            y: 1000,
+                        },
+                        upload: { 
+                            type: '', 
+                            fill: '#ff0000',
+                            jsColor: '#ff0000',
+                            model: {
+                                grid: {
+                                    qty: 4,
+                                    gap: 10,
+                                    positions: [ 
+                                        `
+                                            'a a b b'
+                                            'a a c c'
+                                            'd d c c'
+                                        `, 
+                                        `
+                                            'a a b b'
+                                            'a a b b'
+                                            'c c d d'
+                                            'c c d d'
+                                        `,
+                                    ]
+                                },
+                            },
+                        },
+                    } 
                 }
             ]
         }
@@ -38,11 +77,8 @@ var setPrintArea = [
             name: 'Costa',
             add: [
                 {
-                    image: {
-                        width: 1,
-                        height: 1,
-                    },
-                }
+
+                },
             ]
         }
     },
@@ -61,7 +97,7 @@ for (var [index, item] of setPrintArea.entries()) {
         let edit = document.createElement('div');
         edit.className = 'customBox';
         editList.push(edit);
-        editWrap.appendChild(edit);
+        mainEdit.appendChild(edit);
         btn.addEventListener('click', () => {
             btnList.forEach((e, i) => {
                 dragOff();
@@ -90,49 +126,127 @@ for (var [index, item] of setPrintArea.entries()) {
         
         if (a.add) {
             a.add.forEach((e) => {
+                var box = document.createElement('div');
+                var tittle = document.createElement('div');
+                tittle.className = 'tittle';
+                tittle.textContent = e.tittle;
+                box.appendChild(tittle);
+                edit.appendChild(box);
                 if (e.image) {
                     var att = e.image;
+                    var width = att.position.width ? att.position.width : a.node.width();
+                    var height = att.position.height ? att.position.height : a.node.height();
+                    
                     var group = new Konva.Group({
-                        width: a.node.width() * att.width,
-                        height: a.node.height() * att.height,
+                        width: width,
+                        height:height,
+                        x: att.position.x ? att.position.x : 0,
+                        y: att.position.y ? att.position.y : 0,
+                        clip: {
+                            width: width,
+                            height: height,
+                        },
                     });
                     a.node.add(group);
 
-                    var input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.addEventListener('change', function(event) {
-                        upload(event, group);
-                    });
-                    edit.appendChild(input);
-                }
-                if (e.mask) {
-                    var att = e.mask;
-                    if (att.url) {
-                        getPath(att.url, a.node, 'blue')
-                        .then(path => {
-                            if (att.jsColor) {
-                                createJsColor(edit, target = [path], att.jsColor);
+                    if (att.upload) {
+                        box.className = 'imageBox grid';
+                        var input = document.createElement('input');
+                        input.className = 'inputImage';
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        box.appendChild(input);
+                        var iconPlace;
+                        var imgPlace;
+                        
+                        if (att.upload.model.grid) {
+                            var grid = att.upload.model.grid;
+
+                            var boxPositions = document.createElement('div');
+                            boxPositions.className = 'slider';
+                            box.appendChild(boxPositions);
+
+                            var iconsBox = document.createElement('div');
+                            iconsBox.className = 'iconsBox slider';
+                            box.appendChild(iconsBox);
+
+                            grid.positions.forEach((e, i) => {
+                                var btn = document.createElement('div');
+                                btn.style.aspectRatio = `${width}/${height}`;
+                                btn.style.gridTemplateAreas = e;
+                                for (var ii = 0; ii < grid.qty; ii++) {
+                                    var div = document.createElement('div');
+                                    let gridAreaLetter = String.fromCharCode(97 + (ii % 26));
+                                    div.style.gridArea = gridAreaLetter;
+                                    div.style.color = `#${colorOrder[ii]}`;
+                                    btn.appendChild(div);
+                                }
+                                btn.addEventListener('click', ()=> {
+                                    
+                                });
+                                boxPositions.appendChild(btn);
+                            });
+
+                            for (let i = 0; i < grid.qty; i++) {
+                                let div = document.createElement('div');
+                                let imgIcon = document.createElement('div');
+                                imgIcon.className = 'addImage';
+                                imgIcon.input = true;
+
+                                let color = document.createElement('span');
+                                color.style.color = `#${colorOrder[i]}`;
+
+                                let konvaBox = new Konva.Group({
+
+                                });
+                                group.add(konvaBox);
+
+                                imgIcon.addEventListener('click', () => {
+                                    iconPlace = imgIcon;
+                                    imgPlace = konvaBox;
+                                    if (imgIcon.input === true) {
+                                        input.click();
+                                    }
+                                });
+
+                                div.appendChild(imgIcon);
+                                div.appendChild(color);
+                                iconsBox.appendChild(div);
                             }
-                        })
+
+                        }
+                        
+                        if (att.upload.type === 'svg') {
+                            input.addEventListener('change', function(event) {
+                                NewPotrace(event, att.upload.fill, group, (image) => {
+                                    createJsColor(box, target = [image], att.upload.jsColor);
+                                });
+                            });
+                        }
+    
+                        if (!att.upload.type) {
+                            input.addEventListener('change', function(event) {
+                                upload(event, group, iconPlace);
+                                btn.input = false;
+                            });
+                        }
+                        
                     }
-                    if (att.urll) {
-                        var group = new Konva.Group({
-                            width: a.node.width(),
-                            height: a.node.height(),
-                            globalCompositeOperation: 'source-in',
-                        });
-                        a.node.add(group);
-                        var rect = new Konva.Rect({
-                            fill: 'red',
-                        });
-                        group.add(rect);
-                        Konva.Image.fromURL(att.url, (image) => {
-                            group.add(image);
-                            image.setAttrs({
+
+                    if (att.mask) {
+                        var att = att.mask;
+                        if (att.url) {
+                            getPath(att.url, group, att.fill)
+                            .then(path => {
+                                path.setAttrs({
+                                    id: 'path',
+                                    listening: false,
+                                });
+                                if (att.jsColor) {
+                                    createJsColor(box, target = [path], att.jsColor);
+                                }
                             })
-                            console.log(a.node);
-                        });
+                        }
                     }
                 }
             });
