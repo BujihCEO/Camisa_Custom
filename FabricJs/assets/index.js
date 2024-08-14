@@ -273,7 +273,8 @@ clickTap(stage, (e)=> {
 function upload(e, parent, iconPlace) {
     var file = e.target.files[0];
     var reader = new FileReader();
-
+    parent.destroyChildren();
+    iconPlace.innerHTML = '';
     reader.onload = function () {
         var img = new Image();
         img.onload = function () {

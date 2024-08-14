@@ -363,7 +363,7 @@
 
 .slider >* {
     flex: none;
-    height: 80%;
+    height: calc(80% - 5px);
     margin: 0 .4rem;
     border-radius: var(--base-border-radius);
     box-shadow: 0 0 3px 1px black;
@@ -378,8 +378,9 @@
 }
 
 .slider > .selected {
-    height: 100%;
-    box-shadow: 0 0 0 3px red;
+    height: calc(100% - 5px);
+    box-shadow: 0 0 3px 0px red;
+    border: 2px solid red;
 }
 
 .addIcon {
