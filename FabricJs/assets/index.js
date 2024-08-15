@@ -280,6 +280,7 @@ function upload(e, parent, iconPlace) {
         img.onload = function () {
             var konvaImage = new Konva.Image({
                 image: img,
+                icon: iconPlace,
             });
             objectCover(konvaImage, img, parent);
             parent.add(konvaImage);

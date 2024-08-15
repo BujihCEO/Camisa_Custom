@@ -43,7 +43,7 @@ var setPrintArea = [
                             type: '', 
                             fill: '#ff0000',
                             jsColor: '#ff0000',
-                            grid: [
+                            add: [
                                 {x: 0, y: 0, w: 1000, h: 1000},
                                 {x: 1000, y: 0, w: 1000, h: 1000},
                                 {x: 0, y: 1000, w: 1000, h: 1000},
@@ -136,7 +136,7 @@ for (var [index, item] of setPrintArea.entries()) {
 
                     if (att.upload) {
                         var upBox = document.createElement('div');
-                        upBox.className = 'imageBox grid';
+                        upBox.className = 'imageBox';
                         box.appendChild(upBox);
                         var input = document.createElement('input');
                         input.className = 'inputImage';
@@ -149,29 +149,51 @@ for (var [index, item] of setPrintArea.entries()) {
                         var configBox = document.createElement('div');
                         configBox.className = 'configBox hidden';
 
-                        if (att.upload.grid) {
-                            var grid = att.upload.grid;
+                        var changeImg = document.createElement('div');
+                        changeImg.className =  'changeImg iconBox';
+                        changeImg.addEventListener('click', ()=> {
+                            input.click();
+                        });                        
+                        changeImg.span = document.createElement('span');
+                        changeImg.span.textContent = 'Mudar imagem';
+                        changeImg.appendChild(changeImg.span);
+                        configBox.appendChild(changeImg);
 
-                            var boxPositions = document.createElement('div');
-                            boxPositions.style.aspectRatio = `${width}/${height}`;
-                            upBox.appendChild(boxPositions);
+                        var callEditor = document.createElement('div');
+                        callEditor.className = 'callEditor iconBox';
+                        callEditor.span = document.createElement('span');
+                        callEditor.span.textContent = 'Editar';
+                        callEditor.appendChild(callEditor.span);
+                        configBox.appendChild(callEditor);
 
-                            for (let i = 0; i < grid.length; i++) {
-                                var position = document.createElement('div');
-                                position.style = `
-                                left: ${(grid[i].x / width) * 100}%; 
-                                top: ${(grid[i].y / height) * 100}%; 
-                                width: ${(grid[i].w / width) * 100}%; 
-                                height: ${(grid[i].h / height) * 100}%;
-                                color: #${colorOrder[i]}`;
-                                boxPositions.appendChild(position);
+                        if (att.upload.add) {
+                            var add = att.upload.add;
+                            var multi = add.length > 1 ? true : false;
+
+                            if (multi) {
+                                var boxPositions = document.createElement('div');
+                                boxPositions.className = 'boxPositions';
+                                boxPositions.style.aspectRatio = `${width}/${height}`;
+                                upBox.appendChild(boxPositions);
+    
+                                for (let i = 0; i < add.length; i++) {
+                                    var position = document.createElement('div');
+                                    position.style = `
+                                        left: ${(add[i].x / width) * 100}%; 
+                                        top: ${(add[i].y / height) * 100}%; 
+                                        width: ${(add[i].w / width) * 100}%; 
+                                        height: ${(add[i].h / height) * 100}%;
+                                        color: #${colorOrder[i]}
+                                    `;
+                                    boxPositions.appendChild(position);
+                                }
                             }
 
                             var iconsBox = document.createElement('div');
-                            iconsBox.className = 'slider';
+                            iconsBox.className = `iconsBox slider ${multi? 'multi': ''}`;
                             upBox.appendChild(iconsBox);
 
-                            for (let i = 0; i < grid.length; i++) {
+                            for (let i = 0; i < add.length; i++) {
                                 let div = document.createElement('div');
 
                                 let imgIcon = document.createElement('div');
@@ -179,18 +201,22 @@ for (var [index, item] of setPrintArea.entries()) {
                                 imgIcon.input = true;
                                 imgIcon.parent = div;
                                 iconPlace.push(imgIcon);
+                                div.appendChild(imgIcon);
 
-                                let color = document.createElement('span');
-                                color.style.color = `#${colorOrder[i]}`;
+                                if (multi) {
+                                    let color = document.createElement('span');
+                                    color.style.color = `#${colorOrder[i]}`;
+                                    div.appendChild(color);
+                                }
 
                                 let konvaBox = new Konva.Group({
-                                    width: grid[i].w,
-                                    height: grid[i].h,
-                                    x: grid[i].x,
-                                    y: grid[i].y,
+                                    width: add[i].w,
+                                    height: add[i].h,
+                                    x: add[i].x,
+                                    y: add[i].y,
                                     clip: {
-                                        width: grid[i].w,
-                                        height: grid[i].h,
+                                        width: add[i].w,
+                                        height: add[i].h,
                                     },
                                 });
                                 
@@ -229,8 +255,6 @@ for (var [index, item] of setPrintArea.entries()) {
                                     }
                                 });
 
-                                div.appendChild(imgIcon);
-                                div.appendChild(color);
                                 iconsBox.appendChild(div);
                             }
 
@@ -251,6 +275,7 @@ for (var [index, item] of setPrintArea.entries()) {
                                 upload(event, imgPlace.selected, iconPlace.selected);
                                 iconPlace.selected.input = false;
                                 iconPlace.selected.parent.classList.add('selected');
+                                configBox.classList.remove('hidden');
                             });
                         }
                         
