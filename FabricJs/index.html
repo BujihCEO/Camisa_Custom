@@ -161,6 +161,12 @@ for (var [index, item] of setPrintArea.entries()) {
 
                         var callEditor = document.createElement('div');
                         callEditor.className = 'callEditor iconBox';
+                        callEditor.addEventListener('click', ()=> {
+                            popupBottom.classList.add('down');
+                            setTimeout(()=> {
+                                configPopup.classList.remove('down');
+                            }, 300);
+                        });
                         callEditor.span = document.createElement('span');
                         callEditor.span.textContent = 'Editar';
                         callEditor.appendChild(callEditor.span);

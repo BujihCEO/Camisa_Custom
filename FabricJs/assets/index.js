@@ -37,6 +37,10 @@ var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
 popupBottom.appendChild(mainEdit);
 
+var configPopup = document.createElement('div');
+configPopup.className = 'configPopup';
+popupEditor.appendChild(configPopup);
+
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
 showPopup.textContent = 'personalizar';
@@ -252,6 +256,7 @@ layer.add(transformer);
 transformer.hide();
 
 function dragOn(target) {
+    nodeTarget = target;
     transformer.nodes([target]);
     transformer.show();
 }
@@ -278,25 +283,48 @@ function upload(e, parent, iconPlace) {
     reader.onload = function () {
         var img = new Image();
         img.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            canvas.ctx.drawImage(img, 0, 0);
+
             var konvaImage = new Konva.Image({
-                image: img,
+                image: canvas,
                 icon: iconPlace,
+                brightness: 1,
+                contrast: 1,
+                shadowColor: 'black',
+                shadowBlur: 10,
+                shadowOffset: { x: 10, y: 10 },
+                shadowOpacity: 0.5,
             });
+
             objectCover(konvaImage, img, parent);
             parent.add(konvaImage);
             canSelect.push(konvaImage);
             dragOn(konvaImage);
-            clickTap(konvaImage, ()=> {
+            clickTap(konvaImage, () => {
                 dragOn(konvaImage);
             });
             iconPlace.appendChild(img);
             e.target.value = '';
+
+            canvas.draw = ()=> {
+                canvas.ctx.filter = `
+                    brightness(${konvaImage.getAttr('brightness')})
+                    contrast(${konvaImage.getAttr('contrast')})
+                `;
+                canvas.ctx.drawImage(img, 0, 0);
+                parent.draw();
+            };
         };
         img.src = reader.result;
     };
 
     reader.readAsDataURL(file);
 };
+
 
 stage.on('wheel', function (e) {
     e.evt.preventDefault();
@@ -325,43 +353,43 @@ stage.on('wheel', function (e) {
 var lastDist = 0;
 
 function createJsColor(parent, target = [], color, setAtt = false) {
-    var box = document.createElement('div');
-    var jscolorButton = document.createElement('button');
-    box.className = 'JsColorBox';
-    jscolorButton.className = 'jscolor';
-    jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
-    box.appendChild(jscolorButton);
-    parent.appendChild(box);
-    
-    jscolor.install();
+var box = document.createElement('div');
+var jscolorButton = document.createElement('button');
+box.className = 'JsColorBox';
+jscolorButton.className = 'jscolor';
+jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
+box.appendChild(jscolorButton);
+parent.appendChild(box);
 
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'data-current-color') {
-                var newColor = mutation.target.getAttribute('data-current-color');
-                target.forEach(e => {
-                    e.setAttrs({ fill: newColor });
-                });
-                var nextSibling = jscolorButton.nextElementSibling;
-                if (nextSibling) {
-                    nextSibling.style.background = newColor;
-                }
+jscolor.install();
+
+var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'data-current-color') {
+            var newColor = mutation.target.getAttribute('data-current-color');
+            target.forEach(e => {
+                e.setAttrs({ fill: newColor });
+            });
+            var nextSibling = jscolorButton.nextElementSibling;
+            if (nextSibling) {
+                nextSibling.style.background = newColor;
             }
-        });
+        }
     });
+});
 
-    observer.observe(jscolorButton, { attributes: true });
+observer.observe(jscolorButton, { attributes: true });
 
-    if (setAtt) {
-        updateOptionsFunctions.push(() => {
-            var tgt = target();
-            if (tgt instanceof Element) {
-                var color = tgt.getAttribute(setAtt);
-                jscolorButton.style.background = color;
-                jscolorButton.setAttribute('data-current-color', color);
-            }
-        });
-    }
+if (setAtt) {
+    updateOptionsFunctions.push(() => {
+        var tgt = target();
+        if (tgt instanceof Element) {
+            var color = tgt.getAttribute(setAtt);
+            jscolorButton.style.background = color;
+            jscolorButton.setAttribute('data-current-color', color);
+        }
+    });
+}
 }
 
 function getPath(url, parent, fillColor) {
@@ -455,3 +483,126 @@ var colorOrder = [
     'ffa500',
     '800080',
 ];
+
+var nodeTarget;
+
+function createInput() {
+    var listBtn = [];
+    var listBox = [];
+
+    function createJsColor(input, parent, setAtt = false) {
+        var box = document.createElement('div');
+        input = document.createElement('button');
+        box.className = 'JsColorBox';
+        input.className = 'jscolor';
+        input.setAttribute('data-jscolor', `{value:''}`);
+        box.appendChild(input);
+        parent.appendChild(box);
+        
+        jscolor.install();
+    
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'data-current-color') {
+                    var newColor = mutation.target.getAttribute('data-current-color');
+                    input.target? input.target.setAttrs({ fill: newColor }): '';
+                    var nextSibling = input.nextElementSibling;
+                    if (nextSibling) {
+                        nextSibling.style.background = newColor;
+                    }
+                }
+            });
+        });
+    
+        observer.observe(input, { attributes: true });
+    
+        if (setAtt) {
+            updateOptionsFunctions.push(() => {
+                var tgt = target();
+                if (tgt instanceof Element) {
+                    var color = tgt.getAttribute(setAtt);
+                    input.style.background = color;
+                    input.setAttribute('data-current-color', color);
+                }
+            });
+        }
+    }
+
+    function rangeInput(input, parent, attr, v) {
+        input = document.createElement('input');
+        input.type = 'range';
+        Object.assign(input, { min: v.min, max: v.max, step: v.step, value: v.value });
+    
+        input.addEventListener('input', () => {
+            nodeTarget.setAttr(attr, input.value);
+            nodeTarget.image().draw();
+        });
+    
+        parent.appendChild(input);
+    }
+
+    var aBox = document.createElement('div');
+    configPopup.appendChild(aBox);
+    aBox.a = document.createElement('div');
+    aBox.b = document.createElement('div');
+    aBox.b.textContent = 'Ajustes';
+    aBox.c = document.createElement('div');
+    aBox.c.addEventListener('click', ()=> {
+        dragOff();
+        configPopup.classList.add('down');
+        setTimeout(()=> {
+            popupBottom.classList.remove('down'); 
+        }, 300);
+    });
+    aBox.append(aBox.a, aBox.b, aBox.c);
+
+    var bBox = document.createElement('div');
+    configPopup.appendChild(bBox);
+    var cBox = document.createElement('div');
+    configPopup.appendChild(cBox);
+
+    var create = [
+        {
+            name: 'Cor',
+            type: 'color',
+            attrs: 'fill',
+        },
+        {
+            name: 'Brilho',
+            type: 'range',
+            attrs: 'brightness',
+            setAtt: {value: 1, min: 0, max: 2, step: 0.1},
+        },
+        {
+            name: 'Contraste',
+            type: 'range',
+            attrs: 'contrast',
+            setAtt: {value: 1, min: 0, max: 2, step: 0.1},
+        },
+    ];
+
+    create.forEach((e) => {
+        var box = document.createElement('div');
+        var tittle = document.createElement('div');
+        tittle.textContent = e.name;
+        box.appendChild(tittle);
+
+        var input;
+        if(e.type === 'color') {
+            createJsColor(input, box);
+        }
+
+        if(e.type === 'range') {
+            rangeInput(input, box, e.attrs, e.setAtt);
+        }
+
+        bBox.appendChild(box);
+
+        var button = document.createElement('div');
+        button.textContent = e.name;
+        cBox.appendChild(button);
+    });
+}
+
+createInput();
+
