@@ -29,17 +29,17 @@ var popupBottom = document.createElement('div');
 popupBottom.className = 'popupBottom';
 popupEditor.appendChild(popupBottom);
 
-var popupBtnWrap = document.createElement('div');
-popupBtnWrap.className = 'popupBtnWrap';
-popupBottom.appendChild(popupBtnWrap);
-
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
 popupBottom.appendChild(mainEdit);
 
-var configPopup = document.createElement('div');
-configPopup.className = 'configPopup';
-popupEditor.appendChild(configPopup);
+var popupBtnWrap = document.createElement('div');
+popupBtnWrap.className = 'popupBtnWrap';
+popupBottom.appendChild(popupBtnWrap);
+
+var adjustBox = document.createElement('div');
+adjustBox.className = 'adjustBox';
+popupEditor.appendChild(adjustBox);
 
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
@@ -241,6 +241,38 @@ backArea.add(backPrint);
 backArea.add(backOverlay);
 productLayer.add(backArea);
 
+function adjShow(v = true) {
+    if (v) {
+        popupBottom.classList.add('down'); 
+        setTimeout(()=> {
+            adjustBox.classList.remove('down');
+        }, 300);
+    } else {
+        adjustBox.classList.add('down');
+        setTimeout(()=> {
+            popupBottom.classList.remove('down'); 
+        }, 300);
+    }
+}
+
+function hidden(a = []) {
+    a.forEach(e => {
+        e.classList.add('hidden');
+    });
+}
+
+function show(a = []) {
+    a.forEach(e => {
+        e.classList.remove('hidden');
+    });
+}
+
+function select(a = [], select) {
+    a.forEach(e => {
+        select ? e.classList.add('selected') : e.classList.remove('selected');
+    });
+}
+
     //  TRANSFORMER //
 
 var transformer = new Konva.Transformer({
@@ -257,11 +289,14 @@ transformer.hide();
 
 function dragOn(target) {
     nodeTarget = target;
+    nodeTarget.getAttr('icon').onClick();
     transformer.nodes([target]);
     transformer.show();
 }
 
 function dragOff() {
+    nodeTarget ? nodeTarget.getAttr('icon').onClick() : '';
+    nodeTarget = undefined;
     transformer.nodes([]);
     transformer.hide();
 }
@@ -273,13 +308,17 @@ clickTap(stage, (e)=> {
         return;
     }
     dragOff();
+    adjShow(false);
 });
 
-function upload(e, parent, iconPlace) {
+var iconPlace = [];
+var imgPlace = [];
+
+function upload(e, parent, icon) {
     var file = e.target.files[0];
     var reader = new FileReader();
     parent.destroyChildren();
-    iconPlace.innerHTML = '';
+    icon.innerHTML = '';
     reader.onload = function () {
         var img = new Image();
         img.onload = function () {
@@ -291,7 +330,7 @@ function upload(e, parent, iconPlace) {
 
             var konvaImage = new Konva.Image({
                 image: canvas,
-                icon: iconPlace,
+                icon: icon,
                 brightness: 1,
                 contrast: 1,
                 shadowColor: 'black',
@@ -303,21 +342,25 @@ function upload(e, parent, iconPlace) {
             objectCover(konvaImage, img, parent);
             parent.add(konvaImage);
             canSelect.push(konvaImage);
-            dragOn(konvaImage);
             clickTap(konvaImage, () => {
                 dragOn(konvaImage);
+                adjShow();
             });
-            iconPlace.appendChild(img);
+            icon.appendChild(img);
             e.target.value = '';
-
+            
             canvas.draw = ()=> {
                 canvas.ctx.filter = `
-                    brightness(${konvaImage.getAttr('brightness')})
-                    contrast(${konvaImage.getAttr('contrast')})
+                brightness(${konvaImage.getAttr('brightness')})
+                contrast(${konvaImage.getAttr('contrast')})
                 `;
                 canvas.ctx.drawImage(img, 0, 0);
                 parent.draw();
             };
+            console
+            iconPlace.selected = undefined;
+            imgPlace.selected = undefined;
+            dragOn(konvaImage);
         };
         img.src = reader.result;
     };
@@ -542,24 +585,20 @@ function createInput() {
     }
 
     var aBox = document.createElement('div');
-    configPopup.appendChild(aBox);
+    adjustBox.appendChild(aBox);
     aBox.a = document.createElement('div');
     aBox.b = document.createElement('div');
     aBox.b.textContent = 'Ajustes';
     aBox.c = document.createElement('div');
     aBox.c.addEventListener('click', ()=> {
-        dragOff();
-        configPopup.classList.add('down');
-        setTimeout(()=> {
-            popupBottom.classList.remove('down'); 
-        }, 300);
+        adjShow(false);
     });
     aBox.append(aBox.a, aBox.b, aBox.c);
 
     var bBox = document.createElement('div');
-    configPopup.appendChild(bBox);
+    adjustBox.appendChild(bBox);
     var cBox = document.createElement('div');
-    configPopup.appendChild(cBox);
+    adjustBox.appendChild(cBox);
 
     var create = [
         {

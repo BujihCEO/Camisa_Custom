@@ -261,7 +261,7 @@ body {
     text-align: center;
 }
 
-.configPopup {
+.adjustBox {
     position: fixed;
     display: grid;
     width: calc(100% - 2rem);
@@ -273,7 +273,7 @@ body {
     transition: 0.3s;
 }
 
-.configPopup > div:nth-child(1) {
+.adjustBox > div:nth-child(1) {
     display: grid;
     justify-items: center;
     align-items: center;
@@ -285,15 +285,15 @@ body {
     background: white;
 }
 
-.configPopup > div:nth-child(1) > div:nth-child(1) {
+.adjustBox > div:nth-child(1) > div:nth-child(1) {
     grid-area: a;
 }
 
-.configPopup > div:nth-child(1) > div:nth-child(2) {
+.adjustBox > div:nth-child(1) > div:nth-child(2) {
     grid-area: b;
 }
 
-.configPopup > div:nth-child(1) > div:nth-child(3) {
+.adjustBox > div:nth-child(1) > div:nth-child(3) {
     grid-area: c;
     height: 85%;
     aspect-ratio: 1;
@@ -302,7 +302,7 @@ body {
     background-color: #dadada;
 }
 
-.configPopup > div:nth-child(3) {
+.adjustBox > div:nth-child(3) {
     display: flex;
     justify-content: space-evenly;
     gap: 1rem;
@@ -310,7 +310,7 @@ body {
     overflow-x: auto;
 }
 
-.configPopup > div:nth-child(3) > div {
+.adjustBox > div:nth-child(3) > div {
     width: 100%;
     font-size: 1.5rem;
     padding: 1rem;
@@ -318,7 +318,7 @@ body {
     text-align: center;
 }
 
-.configPopup > div:nth-child(3) > div.selected {
+.adjustBox > div:nth-child(3) > div.selected {
     box-shadow: inset 0px 0px 0rem 2px red;
 }
 

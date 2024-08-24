@@ -51,7 +51,29 @@ var setPrintArea = [
                             ],
                         },
                     } 
-                }
+                },
+                {
+                    tittle: 'Foto',
+                    image: {
+                        position: {
+                            x: 0,
+                            y: 0,
+                            height: 2000,
+                            width: 2000,
+                        },
+                        upload: { 
+                            type: '', 
+                            fill: '#ff0000',
+                            jsColor: '#ff0000',
+                            add: [
+                                {x: 0, y: 0, w: 1000, h: 1000},
+                                {x: 1000, y: 0, w: 1000, h: 1000},
+                                {x: 0, y: 1000, w: 1000, h: 1000},
+                                {x: 1000, y: 1000, w: 1000, h: 1000},
+                            ],
+                        },
+                    } 
+                },
             ]
         }
     },
@@ -143,8 +165,6 @@ for (var [index, item] of setPrintArea.entries()) {
                         input.type = 'file';
                         input.accept = 'image/*';
                         upBox.appendChild(input);
-                        var iconPlace = [];
-                        var imgPlace = [];
                         
                         var configBox = document.createElement('div');
                         configBox.className = 'configBox hidden';
@@ -162,10 +182,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         var callEditor = document.createElement('div');
                         callEditor.className = 'callEditor iconBox';
                         callEditor.addEventListener('click', ()=> {
-                            popupBottom.classList.add('down');
-                            setTimeout(()=> {
-                                configPopup.classList.remove('down');
-                            }, 300);
+                            adjShow();
                         });
                         callEditor.span = document.createElement('span');
                         callEditor.span.textContent = 'Editar';
@@ -206,6 +223,7 @@ for (var [index, item] of setPrintArea.entries()) {
                                 imgIcon.className = 'addImage';
                                 imgIcon.input = true;
                                 imgIcon.parent = div;
+                                imgIcon.configBox = configBox;
                                 iconPlace.push(imgIcon);
                                 div.appendChild(imgIcon);
 
@@ -230,36 +248,56 @@ for (var [index, item] of setPrintArea.entries()) {
 
                                 group.add(konvaBox);
 
-                                imgIcon.addEventListener('click', (e) => {
-                                    if (imgIcon.input === true) {
-                                        if (iconPlace.selected) {
-                                            configBox.classList.add('hidden');
-                                            iconPlace.selected.parentNode.classList.remove('selected');
-                                            dragOff(imgPlace.selected.getChildren()[0]);
+                                imgIcon.onClick = (verify = false)=> {
+                                    console.log(verify);
+                                    if (verify) {
+                                        if (imgIcon.input === true) {
+                                            if (iconPlace.selected) {
+                                                iconPlace.selected.parent.classList.remove('selected');
+                                                iconPlace.selected.configBox.classList.add('hidden');
+                                            }
+                                            imgIcon.parent.classList.add('selected');
+                                            imgIcon.configBox.classList.add('hidden');
                                             iconPlace.selected = imgIcon;
                                             imgPlace.selected = konvaBox;
+                                            nodeTarget = undefined;
+                                            transformer.nodes([]);
+                                            transformer.hide();
+                                            input.click();
+                                            console.log(1);
                                         } else {
-                                            iconPlace.selected = imgIcon;
-                                            imgPlace.selected = konvaBox;
+                                            if (iconPlace.selected === imgIcon) {
+                                                dragOff();
+                                                console.log(2);
+                                            } else {
+                                                dragOn(konvaBox.getChildren()[0]);
+                                                console.log(3);
+                                            }
                                         }
-                                        input.click();
                                     } else {
                                         if (iconPlace.selected === imgIcon) {
-                                            configBox.classList.add('hidden');
-                                            div.classList.remove('selected');
-                                            dragOff(konvaBox.getChildren()[0]);
+                                            iconPlace.selected.parent.classList.remove('selected');
+                                            iconPlace.selected.configBox.classList.add('hidden');
                                             iconPlace.selected = undefined;
                                             imgPlace.selected = undefined;
+                                            console.log(4);
                                         } else {
-                                            iconPlace.selected ? iconPlace.selected.parentNode.classList.remove('selected') : '';
+                                            if (iconPlace.selected) {
+                                                iconPlace.selected.parent.classList.remove('selected');
+                                                iconPlace.selected.configBox.classList.add('hidden');
+                                            }
+                                            imgIcon.parent.classList.add('selected');
+                                            imgIcon.configBox.classList.remove('hidden');
                                             iconPlace.selected = imgIcon;
                                             imgPlace.selected = konvaBox;
-                                            dragOn(konvaBox.getChildren()[0]);
-                                            configBox.classList.remove('hidden');
-                                            div.classList.add('selected');
+                                            console.log(5);
                                         }
                                     }
-                                });
+                                }
+                                
+                                imgIcon.onclick = ()=> {
+                                    imgIcon.onClick(true);
+                                }
 
                                 iconsBox.appendChild(div);
                             }
@@ -280,8 +318,6 @@ for (var [index, item] of setPrintArea.entries()) {
                             input.addEventListener('change', function(event) {
                                 upload(event, imgPlace.selected, iconPlace.selected);
                                 iconPlace.selected.input = false;
-                                iconPlace.selected.parent.classList.add('selected');
-                                configBox.classList.remove('hidden');
                             });
                         }
                         
