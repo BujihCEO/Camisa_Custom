@@ -178,7 +178,7 @@ body {
     border-radius: var(--base-border-radius);
 }
 
-.inputImage {
+.inputHidden {
     position: fixed;
     left: -200vw;
     visibility: hidden;

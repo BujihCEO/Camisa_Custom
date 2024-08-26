@@ -241,16 +241,30 @@ backArea.add(backPrint);
 backArea.add(backOverlay);
 productLayer.add(backArea);
 
+var adjBox = false;
 function adjShow(v = true) {
     if (v) {
-        popupBottom.classList.add('down'); 
-        setTimeout(()=> {
-            adjustBox.classList.remove('down');
-        }, 300);
+        if (adjBox === true) {
+            adjustBox.classList.add('down');
+            setTimeout(()=> {
+                updateSets();
+                adjustBox.classList.remove('down');
+                adjBox = true;
+            }, 300);
+        } else {
+            popupBottom.classList.add('down'); 
+            setTimeout(()=> {
+                updateSets();
+                adjustBox.classList.remove('down');
+                adjBox = true;
+            }, 300);
+        }
+
     } else {
         adjustBox.classList.add('down');
         setTimeout(()=> {
-            popupBottom.classList.remove('down'); 
+            popupBottom.classList.remove('down');
+            adjBox = false;
         }, 300);
     }
 }
@@ -272,6 +286,8 @@ function select(a = [], select) {
         select ? e.classList.add('selected') : e.classList.remove('selected');
     });
 }
+
+var updateSets = ()=>{};
 
     //  TRANSFORMER //
 
@@ -314,7 +330,7 @@ clickTap(stage, (e)=> {
 var iconPlace = [];
 var imgPlace = [];
 
-function upload(e, parent, icon) {
+function upload(e, parent, icon, adjust) {
     var file = e.target.files[0];
     var reader = new FileReader();
     parent.destroyChildren();
@@ -328,39 +344,39 @@ function upload(e, parent, icon) {
             canvas.height = img.height;
             canvas.ctx.drawImage(img, 0, 0);
 
-            var konvaImage = new Konva.Image({
+            var kvImg = new Konva.Image({
                 image: canvas,
                 icon: icon,
-                brightness: 1,
-                contrast: 1,
                 shadowColor: 'black',
                 shadowBlur: 10,
                 shadowOffset: { x: 10, y: 10 },
                 shadowOpacity: 0.5,
+                adjust: adjust.map(e => e.n),
             });
 
-            objectCover(konvaImage, img, parent);
-            parent.add(konvaImage);
-            canSelect.push(konvaImage);
-            clickTap(konvaImage, () => {
-                dragOn(konvaImage);
+            adjust.forEach( e => {
+                kvImg.setAttr(e.n, e.v);
+            });
+
+            objectCover(kvImg, img, parent);
+            parent.add(kvImg);
+            canSelect.push(kvImg);
+            clickTap(kvImg, () => {
+                dragOn(kvImg);
                 adjShow();
             });
             icon.appendChild(img);
             e.target.value = '';
             
-            canvas.draw = ()=> {
-                canvas.ctx.filter = `
-                brightness(${konvaImage.getAttr('brightness')})
-                contrast(${konvaImage.getAttr('contrast')})
-                `;
+            var filter = adjust.map(e => `${e.n}(\${kvImg.getAttr('${e.n}')})`).join(' ');
+            canvas.draw = () => {
+                canvas.ctx.filter = eval("`" + filter + "`");
                 canvas.ctx.drawImage(img, 0, 0);
                 parent.draw();
             };
-            console
             iconPlace.selected = undefined;
             imgPlace.selected = undefined;
-            dragOn(konvaImage);
+            dragOn(kvImg);
         };
         img.src = reader.result;
     };
@@ -396,43 +412,43 @@ stage.on('wheel', function (e) {
 var lastDist = 0;
 
 function createJsColor(parent, target = [], color, setAtt = false) {
-var box = document.createElement('div');
-var jscolorButton = document.createElement('button');
-box.className = 'JsColorBox';
-jscolorButton.className = 'jscolor';
-jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
-box.appendChild(jscolorButton);
-parent.appendChild(box);
+    var box = document.createElement('div');
+    var jscolorButton = document.createElement('button');
+    box.className = 'JsColorBox';
+    jscolorButton.className = 'jscolor';
+    jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
+    box.appendChild(jscolorButton);
+    parent.appendChild(box);
 
-jscolor.install();
+    jscolor.install();
 
-var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.attributeName === 'data-current-color') {
-            var newColor = mutation.target.getAttribute('data-current-color');
-            target.forEach(e => {
-                e.setAttrs({ fill: newColor });
-            });
-            var nextSibling = jscolorButton.nextElementSibling;
-            if (nextSibling) {
-                nextSibling.style.background = newColor;
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-current-color') {
+                var newColor = mutation.target.getAttribute('data-current-color');
+                target.forEach(e => {
+                    e.setAttrs({ fill: newColor });
+                });
+                var nextSibling = jscolorButton.nextElementSibling;
+                if (nextSibling) {
+                    nextSibling.style.background = newColor;
+                }
             }
-        }
+        });
     });
-});
 
-observer.observe(jscolorButton, { attributes: true });
+    observer.observe(jscolorButton, { attributes: true });
 
-if (setAtt) {
-    updateOptionsFunctions.push(() => {
-        var tgt = target();
-        if (tgt instanceof Element) {
-            var color = tgt.getAttribute(setAtt);
-            jscolorButton.style.background = color;
-            jscolorButton.setAttribute('data-current-color', color);
-        }
-    });
-}
+    if (setAtt) {
+        updateOptionsFunctions.push(() => {
+            var tgt = target();
+            if (tgt instanceof Element) {
+                var color = tgt.getAttribute(setAtt);
+                jscolorButton.style.background = color;
+                jscolorButton.setAttribute('data-current-color', color);
+            }
+        });
+    }
 }
 
 function getPath(url, parent, fillColor) {
@@ -458,10 +474,12 @@ function getPath(url, parent, fillColor) {
         });
 }
 
-function NewPotrace(event, fill, parent, conclusion = () => {}) {
+function NewPotrace(event, parent, icon, adjust, conclusion = () => {}) {
     var file = event.target.files[0];
     var reader = new FileReader();
     var img = new Image();
+    parent.destroyChildren();
+    icon.innerHTML = '';
 
     reader.onload = function () {
         img.onload = () => {
@@ -482,9 +500,8 @@ function NewPotrace(event, fill, parent, conclusion = () => {}) {
                 var path2D = new Path2D(pathData);
                 
                 shape.setAttrs({
-                    id: 'svgImage',
-                    fill: fill,
-                    svgScale: scale,
+                    icon: icon,
+                    adjust: adjust.map(e => e.n),
                     sceneFunc: function (ctx) {
                         ctx.beginPath();
                         ctx.clip(path2D);
@@ -498,6 +515,58 @@ function NewPotrace(event, fill, parent, conclusion = () => {}) {
                     },
                 });
 
+                adjust.forEach( e => {
+                    shape.setAttr(e.n, e.v);
+                });
+
+                icon.appendChild(img);
+                parent.add(shape);
+                canSelect.push(shape);
+                iconPlace.selected = undefined;
+                imgPlace.selected = undefined;
+                dragOn(shape);
+                clickTap(shape, () => {
+                    dragOn(shape);
+                    adjShow();
+                });
+                
+                event.target.value = '';
+                conclusion(shape);
+            });
+        };
+        img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function potraceTest(event, fill, parent, conclusion = () => {}) {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    var img = new Image();
+
+    reader.onload = function () {
+        img.onload = () => {
+            Potrace.loadImageFromFile(file);
+            Potrace.process(() => {
+                var shape = new Konva.Image();
+                objectCover(shape, img, parent);
+                
+                var scaleX = shape.width() / img.width;
+                var scaleY = shape.height() / img.height;
+                var scale = Math.min(scaleX, scaleY);
+                var svgText = Potrace.getSVG(scale);
+
+                var kvImg = new Konva.Image({
+                    image: canvas,
+                    icon: icon,
+                    shadowColor: 'black',
+                    shadowBlur: 10,
+                    shadowOffset: { x: 10, y: 10 },
+                    shadowOpacity: 0.5,
+                    adjust: adjust.map(e => e.n),
+                });
+
                 parent.add(shape);
                 canSelect.push(shape);
                 dragOn(shape);
@@ -508,6 +577,8 @@ function NewPotrace(event, fill, parent, conclusion = () => {}) {
                 conclusion(shape);
             });
         };
+        var svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        var url = URL.createObjectURL(svgBlob);
         img.src = reader.result;
     };
 
@@ -533,22 +604,23 @@ function createInput() {
     var listBtn = [];
     var listBox = [];
 
-    function createJsColor(input, parent, setAtt = false) {
+    function createJsColor(input, parent) {
         var box = document.createElement('div');
         input = document.createElement('button');
         box.className = 'JsColorBox';
         input.className = 'jscolor';
         input.setAttribute('data-jscolor', `{value:''}`);
+        parent.input = input;
         box.appendChild(input);
         parent.appendChild(box);
         
         jscolor.install();
-    
+        
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'data-current-color') {
                     var newColor = mutation.target.getAttribute('data-current-color');
-                    input.target? input.target.setAttrs({ fill: newColor }): '';
+                    nodeTarget? nodeTarget.setAttrs({ fill: newColor }): '';
                     var nextSibling = input.nextElementSibling;
                     if (nextSibling) {
                         nextSibling.style.background = newColor;
@@ -556,26 +628,25 @@ function createInput() {
                 }
             });
         });
-    
+        
         observer.observe(input, { attributes: true });
-    
-        if (setAtt) {
-            updateOptionsFunctions.push(() => {
-                var tgt = target();
-                if (tgt instanceof Element) {
-                    var color = tgt.getAttribute(setAtt);
-                    input.style.background = color;
-                    input.setAttribute('data-current-color', color);
-                }
-            });
-        }
+        
+        input.change = (value)=> {
+            input.setAttribute('data-jscolor', `{value: ${value}}`);
+            input.style.background = value;
+        };
     }
 
     function rangeInput(input, parent, attr, v) {
         input = document.createElement('input');
         input.type = 'range';
         Object.assign(input, { min: v.min, max: v.max, step: v.step, value: v.value });
+        parent.input = input;
     
+        input.change = (value)=> {
+            input.value = value;
+        };
+
         input.addEventListener('input', () => {
             nodeTarget.setAttr(attr, input.value);
             nodeTarget.image().draw();
@@ -583,6 +654,31 @@ function createInput() {
     
         parent.appendChild(input);
     }
+
+    updateSets = () => {
+        var attrList = nodeTarget.getAttr('adjust');
+        var available = [];
+        listBtn.forEach(e => {
+            if (attrList.includes(e.n)) {
+                available.push(e);
+                e.classList.remove('hidden');
+            } else {
+                e.classList.add('hidden');
+                e.box.classList.add('hidden');
+            }
+        });
+        available.forEach((e, i) => {
+            if (i === 0) {
+                e.classList.add('selected');
+                e.box.classList.remove('hidden');
+            } else {
+                e.classList.remove('selected');
+                e.box.classList.add('hidden');
+            }
+            e.box.input.change(nodeTarget.getAttr(e.n));
+        });
+
+    };
 
     var aBox = document.createElement('div');
     adjustBox.appendChild(aBox);
@@ -621,12 +717,13 @@ function createInput() {
     ];
 
     create.forEach((e) => {
-        var box = document.createElement('div');
+        let box = document.createElement('div');
         var tittle = document.createElement('div');
         tittle.textContent = e.name;
         box.appendChild(tittle);
 
-        var input;
+        let input;
+
         if(e.type === 'color') {
             createJsColor(input, box);
         }
@@ -637,8 +734,24 @@ function createInput() {
 
         bBox.appendChild(box);
 
-        var button = document.createElement('div');
+        let button = document.createElement('div');
         button.textContent = e.name;
+        button.box = box;
+        button.n = e.attrs;
+        listBtn.push(button);
+
+        button.onclick = ()=> {
+            listBtn.forEach(e => {
+                if (e === button) {
+                    e.classList.add('selected');
+                    e.box.classList.remove('hidden');
+                } else {
+                    e.classList.remove('selected');
+                    e.box.classList.add('hidden');
+                }
+            });
+        };
+
         cBox.appendChild(button);
     });
 }

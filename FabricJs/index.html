@@ -40,9 +40,7 @@ var setPrintArea = [
                             width: 2000,
                         },
                         upload: { 
-                            type: '', 
-                            fill: '#ff0000',
-                            jsColor: '#ff0000',
+                            type: '',
                             add: [
                                 {x: 0, y: 0, w: 1000, h: 1000},
                                 {x: 1000, y: 0, w: 1000, h: 1000},
@@ -62,15 +60,13 @@ var setPrintArea = [
                             width: 2000,
                         },
                         upload: { 
-                            type: '', 
-                            fill: '#ff0000',
-                            jsColor: '#ff0000',
+                            type: 'svg',
                             add: [
                                 {x: 0, y: 0, w: 1000, h: 1000},
                                 {x: 1000, y: 0, w: 1000, h: 1000},
                                 {x: 0, y: 1000, w: 1000, h: 1000},
                                 {x: 1000, y: 1000, w: 1000, h: 1000},
-                            ],
+                            ], 
                         },
                     } 
                 },
@@ -161,7 +157,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         upBox.className = 'imageBox';
                         box.appendChild(upBox);
                         var input = document.createElement('input');
-                        input.className = 'inputImage';
+                        input.className = 'inputHidden';
                         input.type = 'file';
                         input.accept = 'image/*';
                         upBox.appendChild(input);
@@ -173,7 +169,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         changeImg.className =  'changeImg iconBox';
                         changeImg.addEventListener('click', ()=> {
                             input.click();
-                        });                        
+                        });              
                         changeImg.span = document.createElement('span');
                         changeImg.span.textContent = 'Mudar imagem';
                         changeImg.appendChild(changeImg.span);
@@ -249,7 +245,6 @@ for (var [index, item] of setPrintArea.entries()) {
                                 group.add(konvaBox);
 
                                 imgIcon.onClick = (verify = false)=> {
-                                    console.log(verify);
                                     if (verify) {
                                         if (imgIcon.input === true) {
                                             if (iconPlace.selected) {
@@ -306,17 +301,23 @@ for (var [index, item] of setPrintArea.entries()) {
 
                         upBox.appendChild(configBox);
 
+                        var adjust = [];
+
                         if (att.upload.type === 'svg') {
+                            adjust.push({n: 'fill', v: '#ff0000'});
                             input.addEventListener('change', function(event) {
-                                NewPotrace(event, att.upload.fill, group, (image) => {
-                                    createJsColor(box, target = [image], att.upload.jsColor);
-                                });
+                                NewPotrace(event, imgPlace.selected, iconPlace.selected, adjust, (image) => {});
+                                iconPlace.selected.input = false;
                             });
                         }
     
                         if (!att.upload.type) {
+                            adjust.push(
+                                {n: 'brightness', v: 1}, 
+                                {n: 'contrast', v: 1}
+                            );
                             input.addEventListener('change', function(event) {
-                                upload(event, imgPlace.selected, iconPlace.selected);
+                                upload(event, imgPlace.selected, iconPlace.selected, adjust);
                                 iconPlace.selected.input = false;
                             });
                         }
