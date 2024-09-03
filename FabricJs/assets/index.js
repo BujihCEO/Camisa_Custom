@@ -38,7 +38,7 @@ popupBtnWrap.className = 'popupBtnWrap';
 popupBottom.appendChild(popupBtnWrap);
 
 var adjustBox = document.createElement('div');
-adjustBox.className = 'adjustBox';
+adjustBox.className = 'adjustBox down';
 popupEditor.appendChild(adjustBox);
 
 var showPopup = document.createElement('div');
@@ -123,11 +123,12 @@ function objectCover(node, object, parent) {
     var newHeight = objectHeight * scale;
     var newX = (width - newWidth) / 2;
     var newY = (height - newHeight) / 2;
+
     node.setAttrs({
         x: newX,
         y: newY,
-        width: newWidth,
-        height: newHeight,
+        scaleX: scale,
+        scaleY: scale
     });
 }
 
@@ -269,50 +270,125 @@ function adjShow(v = true) {
     }
 }
 
-function hidden(a = []) {
-    a.forEach(e => {
-        e.classList.add('hidden');
+function createLoading() {
+    var loadingContainer = document.createElement('div');
+    loadingContainer.className = "LoadingCustom hidden ProductLoad";
+    var loadGif = document.createElement('div');
+    loadGif.className = "loadGif";
+    var loadMessage_1 = document.createElement('div');
+    loadMessage_1.className = "loadMessage";
+    loadMessage_1.innerText = "Criando sua obra de arte";
+    var loadMessage_2 = document.createElement('div');
+    loadMessage_2.className = "loadMessage";
+    loadMessage_2.innerText = "Enviando para o carrinho";
+    var loaderDots = document.createElement('div');
+    loaderDots.className = "loaderDots";
+    Array.from({length: 3}, () => {
+        var dot = document.createElement('div');
+        dot.className = "dot";
+        loaderDots.appendChild(dot);
     });
+    loadingContainer.appendChild(loadGif);
+    loadingContainer.appendChild(loadMessage_1);
+    loadingContainer.appendChild(loadMessage_2);
+    loadingContainer.appendChild(loaderDots);
+    document.body.appendChild(loadingContainer);
+    window.loadOn = function(type) {
+        if (type === 0) {
+            loadingContainer.classList.remove('message1', 'message2');
+            loadingContainer.classList.add('ProductLoad');
+        };
+        if (type === 1) {
+            loadingContainer.classList.remove('ProductLoad', 'message2');
+            loadingContainer.classList.add('message1');
+        };
+        if (type === 2) {
+            loadingContainer.classList.remove('ProductLoad', 'message1');
+            loadingContainer.classList.add('message2');
+        };
+        loadingContainer.classList.remove('hidden');
+    };
+    window.loadOff = function() {
+        loadingContainer.classList.add('hidden');
+    }
 }
+createLoading();
 
-function show(a = []) {
-    a.forEach(e => {
-        e.classList.remove('hidden');
-    });
-}
-
-function select(a = [], select) {
-    a.forEach(e => {
-        select ? e.classList.add('selected') : e.classList.remove('selected');
-    });
-}
+var nodeTarget = [];
 
 var updateSets = ()=>{};
 
     //  TRANSFORMER //
 
-var transformer = new Konva.Transformer({
-    enabledAnchors: [
+var anchors = {
+    none: [],
+    basic: [
         'top-left', 
         'top-right',
         'bottom-left',
         'bottom-right',
     ],
+    all: [
+        'top-left', 
+        'top-center', 
+        'top-right', 
+        'middle-right', 
+        'middle-left', 
+        'bottom-left', 
+        'bottom-center', 
+        'bottom-right'
+    ],
+}
+
+var transformer = new Konva.Transformer({
     shouldOverdrawWholeArea: true,
+    anchorSize: 5,
+    anchorStyleFunc: (anchor) => {
+        anchor.cornerRadius(10);
+        if (anchor.hasName('top-center') || anchor.hasName('bottom-center')) {
+          anchor.height(4);
+          anchor.offsetY(2);
+          anchor.width(10);
+          anchor.offsetX(5);
+        }
+        if (anchor.hasName('middle-left') || anchor.hasName('middle-right')) {
+          anchor.height(10);
+          anchor.offsetY(5);
+          anchor.width(4);
+          anchor.offsetX(2);
+        }
+    },
 });
 layer.add(transformer);
 transformer.hide();
 
+//transformer.removeEventListener('dragmove');
+transformer.off('dragstart');
+transformer.off('dragmove');
+
+var dontMove = ()=> {
+    transformer.centeredScaling(true);
+    transformer.draggable(false);
+    nodeTarget.forEach(e => {
+        e.draggable(false);
+    });
+};
+
 function dragOn(target) {
     nodeTarget = target;
-    nodeTarget.getAttr('icon').onClick();
-    transformer.nodes([target]);
+    nodeTarget[0].onSelect();
+    transformer.setAttrs({
+        nodes: nodeTarget,
+        enabledAnchors: nodeTarget[0].getAttr('anchors') ? nodeTarget[0].getAttr('anchors') : anchors.basic,
+    });
     transformer.show();
 }
 
 function dragOff() {
-    nodeTarget ? nodeTarget.getAttr('icon').onClick() : '';
-    nodeTarget = undefined;
+    if (nodeTarget.length > 0) {
+        onSelect();
+        nodeTarget = [];
+    }
     transformer.nodes([]);
     transformer.hide();
 }
@@ -327,10 +403,9 @@ clickTap(stage, (e)=> {
     adjShow(false);
 });
 
-var iconPlace = [];
-var imgPlace = [];
+var needDraw = ['overFill', 'brightness', 'contrast'];
 
-function upload(e, parent, icon, adjust) {
+function upload(e, parent, icon, attrs) {
     var file = e.target.files[0];
     var reader = new FileReader();
     parent.destroyChildren();
@@ -342,48 +417,49 @@ function upload(e, parent, icon, adjust) {
             canvas.ctx = canvas.getContext('2d');
             canvas.width = img.width;
             canvas.height = img.height;
-            canvas.ctx.drawImage(img, 0, 0);
 
             var kvImg = new Konva.Image({
                 image: canvas,
                 icon: icon,
-                shadowColor: 'black',
-                shadowBlur: 10,
-                shadowOffset: { x: 10, y: 10 },
-                shadowOpacity: 0.5,
-                adjust: adjust.map(e => e.n),
+                brightness: 1,
+                contrast: 1,
             });
 
-            adjust.forEach( e => {
-                kvImg.setAttr(e.n, e.v);
-            });
-
+            var filters = ['brightness', 'contrast'];
+            var filter = filters.map(e => `${e}(\${kvImg.getAttr('${e}')})`).join(' ');
+            canvas.draw = () => {
+                canvas.ctx.globalCompositeOperation = 'source-over';
+                canvas.ctx.filter = eval("`" + filter + "`");
+                canvas.ctx.drawImage(img, 0, 0);
+                if (kvImg.getAttr('overFill')) {
+                    canvas.ctx.fillStyle = kvImg.getAttr('overFill');
+                    canvas.ctx.globalCompositeOperation = 'source-in';
+                    canvas.ctx.drawImage(img, 0, 0);
+                    canvas.ctx.globalCompositeOperation = 'overlay';
+                    canvas.ctx.fillRect(0, 0, kvImg.width(), kvImg.height());
+                }
+            };
+            canvas.draw();
             objectCover(kvImg, img, parent);
             parent.add(kvImg);
             canSelect.push(kvImg);
+            kvImg.onSelect = ()=> {onSelect(kvImg)};
             clickTap(kvImg, () => {
-                dragOn(kvImg);
+                dragOn([kvImg]);
                 adjShow();
             });
             icon.appendChild(img);
+            icon.node = [kvImg];
+            iconsList.selected = undefined;
+            nodesBox.selected = undefined;
             e.target.value = '';
-            
-            var filter = adjust.map(e => `${e.n}(\${kvImg.getAttr('${e.n}')})`).join(' ');
-            canvas.draw = () => {
-                canvas.ctx.filter = eval("`" + filter + "`");
-                canvas.ctx.drawImage(img, 0, 0);
-                parent.draw();
-            };
-            iconPlace.selected = undefined;
-            imgPlace.selected = undefined;
-            dragOn(kvImg);
+            dragOn([kvImg]);
         };
         img.src = reader.result;
     };
 
     reader.readAsDataURL(file);
 };
-
 
 stage.on('wheel', function (e) {
     e.evt.preventDefault();
@@ -474,7 +550,44 @@ function getPath(url, parent, fillColor) {
         });
 }
 
-function NewPotrace(event, parent, icon, adjust, conclusion = () => {}) {
+function setClip(url, target) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'document';
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var svgDoc = xhr.response;
+            var pathElement = svgDoc.querySelector('path');
+            
+            if (pathElement) {
+                var pathData = pathElement.getAttribute('d');
+                var path2D = new Path2D(pathData);
+                var width = target.width();
+                var height = target.height();
+                target.setAttrs({
+                    clipFunc: function (ctx) {
+                        ctx.rect(0, 0, width, height);
+                        ctx._context.clip(path2D);
+                    },
+                });
+            } else {
+                console.error("No path element found in the SVG.");
+            }
+        } else {
+            console.error("Failed to load SVG. Status:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function () {
+        console.error("Error during the request.");
+    };
+
+    xhr.send();
+}
+
+function NewPotrace(event, parent, icon, attrs) {
+    loadOn(0);
     var file = event.target.files[0];
     var reader = new FileReader();
     var img = new Image();
@@ -485,26 +598,25 @@ function NewPotrace(event, parent, icon, adjust, conclusion = () => {}) {
         img.onload = () => {
             Potrace.loadImageFromFile(file);
             Potrace.process(() => {
-                var shape = new Konva.Shape();
-                objectCover(shape, img, parent);
-                
-                var scaleX = shape.width() / img.width;
-                var scaleY = shape.height() / img.height;
-                var scale = Math.min(scaleX, scaleY);
-                
-                var svgText = Potrace.getSVG(scale);
+                var svgText = Potrace.getSVG(1);
                 var parser = new DOMParser();
                 var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
                 var pathElement = svgDoc.querySelector('path');
                 var pathData = pathElement.getAttribute('d');
                 var path2D = new Path2D(pathData);
                 
-                shape.setAttrs({
+                var shape = new Konva.Shape({
+                    width: img.width,
+                    height: img.height,
                     icon: icon,
-                    adjust: adjust.map(e => e.n),
+                    path2D: path2D,
+                    potrace: 1,
+                    invert: 0,
+                });
+                shape.setAttrs({
                     sceneFunc: function (ctx) {
                         ctx.beginPath();
-                        ctx.clip(path2D);
+                        ctx.clip(shape.getAttr('path2D'));
                         ctx.fillStyle = shape.fill();
                         ctx.fillRect(0, 0, shape.width(), shape.height());
                         ctx.closePath();
@@ -514,24 +626,22 @@ function NewPotrace(event, parent, icon, adjust, conclusion = () => {}) {
                         ctx.fillStrokeShape(shape);
                     },
                 });
-
-                adjust.forEach( e => {
-                    shape.setAttr(e.n, e.v);
-                });
-
-                icon.appendChild(img);
+                
+                objectCover(shape, img, parent);
                 parent.add(shape);
                 canSelect.push(shape);
-                iconPlace.selected = undefined;
-                imgPlace.selected = undefined;
-                dragOn(shape);
+                shape.onSelect = ()=> {onSelect(shape)};
                 clickTap(shape, () => {
-                    dragOn(shape);
+                    dragOn([shape]);
                     adjShow();
                 });
-                
+                icon.appendChild(img);
+                icon.node = [shape];
+                iconsList.selected = undefined;
+                nodesBox.selected = undefined;
                 event.target.value = '';
-                conclusion(shape);
+                dragOn([shape]);
+                loadOff();
             });
         };
         img.src = reader.result;
@@ -540,49 +650,31 @@ function NewPotrace(event, parent, icon, adjust, conclusion = () => {}) {
     reader.readAsDataURL(file);
 }
 
-function potraceTest(event, fill, parent, conclusion = () => {}) {
-    var file = event.target.files[0];
-    var reader = new FileReader();
+function upPotrace() {
+    loadOn(0);
     var img = new Image();
-
-    reader.onload = function () {
-        img.onload = () => {
-            Potrace.loadImageFromFile(file);
-            Potrace.process(() => {
-                var shape = new Konva.Image();
-                objectCover(shape, img, parent);
-                
-                var scaleX = shape.width() / img.width;
-                var scaleY = shape.height() / img.height;
-                var scale = Math.min(scaleX, scaleY);
-                var svgText = Potrace.getSVG(scale);
-
-                var kvImg = new Konva.Image({
-                    image: canvas,
-                    icon: icon,
-                    shadowColor: 'black',
-                    shadowBlur: 10,
-                    shadowOffset: { x: 10, y: 10 },
-                    shadowOpacity: 0.5,
-                    adjust: adjust.map(e => e.n),
-                });
-
-                parent.add(shape);
-                canSelect.push(shape);
-                dragOn(shape);
-                clickTap(shape, ()=> {
-                    dragOn(shape);
-                });
-
-                conclusion(shape);
-            });
-        };
-        var svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-        var url = URL.createObjectURL(svgBlob);
-        img.src = reader.result;
+    img.onload = ()=> {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.filter = `brightness(${nodeTarget[0].getAttr('potrace')})
+            invert(${nodeTarget[0].getAttr('invert')})`;
+        ctx.drawImage(img, 0, 0);
+        var url = canvas.toDataURL();
+        Potrace.loadImageFromUrl(url);
+        Potrace.process(() => {
+            var svgText = Potrace.getSVG(1);
+            var parser = new DOMParser();
+            var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+            var pathElement = svgDoc.querySelector('path');
+            var pathData = pathElement.getAttribute('d');
+            var path2D = new Path2D(pathData);
+            nodeTarget[0].setAttr('path2D', path2D);
+            loadOff();
+        });
     };
-
-    reader.readAsDataURL(file);
+    img.src = nodeTarget[0].getAttr('icon').children[0].src;
 }
 
 var colorOrder = [
@@ -598,19 +690,16 @@ var colorOrder = [
     '800080',
 ];
 
-var nodeTarget;
-
 function createInput() {
     var listBtn = [];
-    var listBox = [];
 
-    function createJsColor(input, parent) {
+    function createJsColor(parent, add) {
         var box = document.createElement('div');
-        input = document.createElement('button');
+        var input = document.createElement('button');
         box.className = 'JsColorBox';
         input.className = 'jscolor';
         input.setAttribute('data-jscolor', `{value:''}`);
-        parent.input = input;
+        parent.input.push(input);
         box.appendChild(input);
         parent.appendChild(box);
         
@@ -620,7 +709,14 @@ function createInput() {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'data-current-color') {
                     var newColor = mutation.target.getAttribute('data-current-color');
-                    nodeTarget? nodeTarget.setAttrs({ fill: newColor }): '';
+                    if (nodeTarget.length > 0) {
+                        nodeTarget.forEach(e => {
+                            e.setAttr(add.attr, newColor);
+                            if (needDraw.includes(add.attr)) {
+                                e.image().draw();
+                            }
+                        });
+                    }
                     var nextSibling = input.nextElementSibling;
                     if (nextSibling) {
                         nextSibling.style.background = newColor;
@@ -631,35 +727,126 @@ function createInput() {
         
         observer.observe(input, { attributes: true });
         
-        input.change = (value)=> {
+        input.change = ()=> {
+            var value = nodeTarget[0].getAttr(add.attr);
             input.setAttribute('data-jscolor', `{value: ${value}}`);
             input.style.background = value;
         };
     }
 
-    function rangeInput(input, parent, attr, v) {
-        input = document.createElement('input');
-        input.type = 'range';
-        Object.assign(input, { min: v.min, max: v.max, step: v.step, value: v.value });
-        parent.input = input;
+    function rangeInput(parent, add) {
+        var v = add.values;
+        var box = document.createElement('div');
+        box.className = 'rangeBox';
+        
+        var title = document.createElement('div');
+        title.textContent = add.name;
+        
+        var input = document.createElement('input');
+        Object.assign(input, {
+            type: 'range',
+            min: v.min, 
+            max: v.max, 
+            step: v.percentage ? (v.max - v.min) * 0.005 : 1 
+        });
+        console.log(input.step);
+        
+        parent.input.push(input);
+        
+        var label = document.createElement('div');
+        
+        function mapToRange(value) {
+            var mappedValue = ((value - v.min) / (v.max - v.min)) * 200 - 100;
+            label.textContent = `${Math.round(mappedValue)}`;
+        }
     
-        input.change = (value)=> {
+        input.change = () => {
+            var value = nodeTarget[0].getAttr(add.attr) / (v.scale ? 5 : 1);
             input.value = value;
+            v.percentage ? mapToRange(value) : label.textContent = value;
         };
-
-        input.addEventListener('input', () => {
-            nodeTarget.setAttr(attr, input.value);
-            nodeTarget.image().draw();
+    
+        input.addEventListener(add.onChange ? 'change' : 'input', () => {
+            if (nodeTarget.length > 0) {
+                nodeTarget.forEach(e => {
+                    var value = input.value * (v.scale ? 5 : 1);
+                    e.setAttr(add.attr, value);
+                    add.func ? eval(add.func) : '';
+                    if (needDraw.includes(add.attr)) {
+                        e.image().draw();
+                    }
+                });
+            }
         });
     
-        parent.appendChild(input);
+        input.oninput = () => { 
+            v.percentage ? mapToRange(input.value) : label.textContent = input.value;
+        };
+    
+        box.append(title, input, label);
+        parent.appendChild(box);
+    }
+    
+
+    function createChooser(parent, add) {
+        var box = document.createElement('div');
+        box.className = 'chooserBox flex-list';
+        var tittle = document.createElement('div');
+        tittle.textContent = add.name;
+        
+        var list = [];
+        var buttonBox = document.createElement('div');
+        buttonBox.className = 'slider';
+
+        add.values.forEach(e => {
+            var button = document.createElement('div');
+            Object.assign(button, {textContent: e.name, value: e.value});
+            list.push(button);
+            buttonBox.appendChild(button);
+
+            button.onclick = ()=> {
+                if (button === list.selected) {return};
+                list.forEach(e => {
+                    if (e === button) {
+                        e.classList.add('selected');
+                        list.selected = e;
+                        if (nodeTarget.length > 0) {
+                            nodeTarget.forEach(e => {
+                                e.setAttr(add.attr, button.value);
+                                add.func ? eval(add.func) : '';
+                                if (needDraw.includes(add.attr)) {
+                                    e.image().draw();
+                                }
+                            });
+                        }
+                    } else {
+                        e.classList.remove('selected');
+                    }
+                });
+            };
+        });
+
+        parent.input.push(buttonBox);
+        buttonBox.change = ()=> {
+            var value = nodeTarget[0].getAttr(add.attr);
+            list.forEach(e => {
+                if (e.value == value) {
+                    e.classList.add('selected');
+                    list.selected = e;
+                } else {
+                    e.classList.remove('selected');
+                }
+            });
+        };
+        box.append(tittle, buttonBox);
+        parent.appendChild(box);
     }
 
     updateSets = () => {
-        var attrList = nodeTarget.getAttr('adjust');
+        var attrs = Object.keys(nodeTarget[0].attrs);
         var available = [];
         listBtn.forEach(e => {
-            if (attrList.includes(e.n)) {
+            if (e.n.some(n => attrs.includes(n))) {
                 available.push(e);
                 e.classList.remove('hidden');
             } else {
@@ -675,7 +862,9 @@ function createInput() {
                 e.classList.remove('selected');
                 e.box.classList.add('hidden');
             }
-            e.box.input.change(nodeTarget.getAttr(e.n));
+            e.box.input.forEach(input => {
+                input.change();
+            });
         });
 
     };
@@ -699,45 +888,115 @@ function createInput() {
     var create = [
         {
             name: 'Cor',
-            type: 'color',
-            attrs: 'fill',
+            add: [
+                {
+                    name: 'Cor',
+                    type: 'color',
+                    attr: 'fill',
+                }
+            ]
         },
         {
+            name: 'Cor',
+            add: [
+                {
+                    name: 'Cor',
+                    type: 'color',
+                    attr: 'overFill',
+                }
+            ]
+        },
+
+        // Img Filters
+
+        {
             name: 'Brilho',
-            type: 'range',
-            attrs: 'brightness',
-            setAtt: {value: 1, min: 0, max: 2, step: 0.1},
+            add: [
+                {
+                    name: 'Brilho',
+                    type: 'range',
+                    attr: 'brightness',
+                    values: {min: 0, max: 2, percentage: true},
+                }
+            ],
         },
         {
             name: 'Contraste',
-            type: 'range',
-            attrs: 'contrast',
-            setAtt: {value: 1, min: 0, max: 2, step: 0.1},
+            add: [
+                {
+                    name: 'Contraste',
+                    type: 'range',
+                    attr: 'contrast',
+                    values: {min: 0, max: 2, percentage: true},
+                },
+            ]
+        },
+
+        // Potrace
+      
+        {
+            name: 'Efeito',
+            class: 'svgEfect',
+            add: [
+                {
+                    name: 'Potencia',
+                    type: 'range',
+                    attr: 'potrace',
+                    onChange: true,
+                    func: 'upPotrace()',
+                    values: {min: 0, max: 2, percentage: true},
+                },
+                {
+                    name: 'Inverter',
+                    type: 'chooser',
+                    attr: 'invert',
+                    func: 'upPotrace()',
+                    values: [
+                        {name: 'Não', value: 0}, {name: 'Sim', value: 1}
+                    ],
+                },
+            ]
+        },
+
+        // Text Settings
+
+        {
+            name: 'Tamanho',
+            class: 'fontSize',
+            add: [
+                {
+                    name: 'Tamanho da fonte',
+                    type: 'range',
+                    attr: 'fontSize',
+                    values: {min: 1, max: 150, scale: true},
+                },
+            ]
         },
     ];
 
     create.forEach((e) => {
         let box = document.createElement('div');
-        var tittle = document.createElement('div');
-        tittle.textContent = e.name;
-        box.appendChild(tittle);
-
-        let input;
-
-        if(e.type === 'color') {
-            createJsColor(input, box);
-        }
-
-        if(e.type === 'range') {
-            rangeInput(input, box, e.attrs, e.setAtt);
-        }
+        box.input = [];
+        
+        e.add.forEach(add => {
+            if(add.type === 'color') {
+                createJsColor(box, add);
+            }
+            if(add.type === 'range') {
+                rangeInput(box, add);
+            }
+            if(add.type === 'chooser') {
+                createChooser(box, add);
+            }
+        });
 
         bBox.appendChild(box);
 
         let button = document.createElement('div');
+        button.className = e.class || e.class;
         button.textContent = e.name;
         button.box = box;
-        button.n = e.attrs;
+        button.n = e.add.map(e => e.attr);
         listBtn.push(button);
 
         button.onclick = ()=> {
@@ -758,3 +1017,62 @@ function createInput() {
 
 createInput();
 
+var iconsList = [];
+var nodesBox = [];
+
+function onSelect(target = undefined, icon = false) {
+    if (!target) {
+        iconsList.selected.parent.classList.remove('selected');
+        iconsList.selected.configBox.classList.add('hidden');
+        iconsList.selected = undefined;
+        nodesBox.selected = undefined;
+        console.log(4);
+        return;
+    }
+    if (icon) {
+        if (target.onInput === true) {
+            if (iconsList.selected) {
+                iconsList.selected.parent.classList.remove('selected');
+                iconsList.selected.configBox.classList.add('hidden');
+            }
+            target.parent.classList.add('selected');
+            target.configBox.classList.add('hidden');
+            iconsList.selected = target;
+            nodesBox.selected = target.nodeBox;
+            nodeTarget = [];
+            transformer.nodes([]);
+            transformer.hide();
+            target.input.click();
+            console.log(1);
+        } else {
+            var text = target.node[0].getClassName() === 'Text';
+            if (iconsList.selected === target && !text) {
+                dragOff();
+                console.log(2);
+            } else {
+                dragOn(target.node);
+                console.log(3);
+            }
+        }
+    } else {
+        var icon = target.getAttr('icon');
+        var text = icon.node[0].getClassName() === 'Text';
+        if (iconsList.selected === icon && !text) {
+            iconsList.selected.parent.classList.remove('selected');
+            iconsList.selected.configBox.classList.add('hidden');
+            iconsList.selected = undefined;
+            nodesBox.selected = undefined;
+            console.log(4);
+        } else {
+            if (iconsList.selected) {
+                iconsList.selected.parent.classList.remove('selected');
+                iconsList.selected.configBox.classList.add('hidden');
+            }
+            icon.parent.classList.add('selected');
+            icon.configBox.classList.remove('hidden');
+            iconsList.selected = icon;
+            nodesBox.selected = target.getParent();
+            console.log(5);
+        }
+    }
+}

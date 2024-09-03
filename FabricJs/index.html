@@ -42,13 +42,16 @@ var setPrintArea = [
                         upload: { 
                             type: '',
                             add: [
-                                {x: 0, y: 0, w: 1000, h: 1000},
-                                {x: 1000, y: 0, w: 1000, h: 1000},
-                                {x: 0, y: 1000, w: 1000, h: 1000},
-                                {x: 1000, y: 1000, w: 1000, h: 1000},
+                                {x: 0, y: 0, width: 1000, height: 1000},
+                                {x: 1000, y: 0, width: 1000, height: 1000},
+                                {x: 0, y: 1000, width: 1000, height: 1000},
+                                {x: 1000, y: 1000, width: 1000, height: 1000},
                             ],
                         },
-                    } 
+                        clip: {
+                            url: 'assets/Star.svg',
+                        }, 
+                    },
                 },
                 {
                     tittle: 'Foto',
@@ -59,17 +62,43 @@ var setPrintArea = [
                             height: 2000,
                             width: 2000,
                         },
+                        childAttrs: {
+
+                        },
                         upload: { 
                             type: 'svg',
                             add: [
-                                {x: 0, y: 0, w: 1000, h: 1000},
-                                {x: 1000, y: 0, w: 1000, h: 1000},
-                                {x: 0, y: 1000, w: 1000, h: 1000},
-                                {x: 1000, y: 1000, w: 1000, h: 1000},
+                                {x: 0, y: 0, width: 1000, height: 1000},
+                                {x: 1000, y: 0, width: 1000, height: 1000},
+                                {x: 0, y: 1000, width: 1000, height: 1000},
+                                {x: 1000, y: 1000, width: 1000, height: 1000},
                             ], 
                         },
                     } 
                 },
+                {
+                    tittle: 'nome',
+                    text: {
+                        position: {
+                            height: 2000,
+                            width: 2000,
+                        },
+                        childAttrs: {
+                            text: 'Alisson',
+                            width: 2000,
+                            fontSize: 300,
+                            fontFamily: 'Sans-serif',
+                            align: 'center',
+                            fill: 'red',
+                            anchors: anchors.none,
+                            dontMove,
+                        },
+                        add: [
+                            {x: 0, y: 0, fontStyle: '600'},
+                            {x: 0, y: 1000},
+                        ]
+                    }
+                }
             ]
         }
     },
@@ -137,14 +166,13 @@ for (var [index, item] of setPrintArea.entries()) {
                 edit.appendChild(box);
                 if (e.image) {
                     var att = e.image;
-                    var width = att.position.width ? att.position.width : a.node.width();
-                    var height = att.position.height ? att.position.height : a.node.height();
-                    
+                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
+                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
                     var group = new Konva.Group({
                         width: width,
                         height: height,
-                        x: att.position.x ? att.position.x : (a.node.width() / 2) - (width / 2),
-                        y: att.position.y ? att.position.y : (a.node.height() / 2) - (height / 2),
+                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
+                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
                         clip: {
                             width: width,
                             height: height,
@@ -187,7 +215,7 @@ for (var [index, item] of setPrintArea.entries()) {
 
                         if (att.upload.add) {
                             var add = att.upload.add;
-                            var multi = add.length > 1 ? true : false;
+                            var multi = add.length > 1;
 
                             if (multi) {
                                 var boxPositions = document.createElement('div');
@@ -200,8 +228,8 @@ for (var [index, item] of setPrintArea.entries()) {
                                     position.style = `
                                         left: ${(add[i].x / width) * 100}%; 
                                         top: ${(add[i].y / height) * 100}%; 
-                                        width: ${(add[i].w / width) * 100}%; 
-                                        height: ${(add[i].h / height) * 100}%;
+                                        width: ${(add[i].width / width) * 100}%; 
+                                        height: ${(add[i].height / height) * 100}%;
                                         color: #${colorOrder[i]}
                                     `;
                                     boxPositions.appendChild(position);
@@ -212,15 +240,16 @@ for (var [index, item] of setPrintArea.entries()) {
                             iconsBox.className = `iconsBox slider ${multi? 'multi': ''}`;
                             upBox.appendChild(iconsBox);
 
-                            for (let i = 0; i < add.length; i++) {
+                            add.forEach((e, i) => {
                                 let div = document.createElement('div');
 
                                 let imgIcon = document.createElement('div');
                                 imgIcon.className = 'addImage';
-                                imgIcon.input = true;
+                                imgIcon.onInput = true;
+                                imgIcon.input = input;
                                 imgIcon.parent = div;
                                 imgIcon.configBox = configBox;
-                                iconPlace.push(imgIcon);
+                                iconsList.push(imgIcon);
                                 div.appendChild(imgIcon);
 
                                 if (multi) {
@@ -229,99 +258,50 @@ for (var [index, item] of setPrintArea.entries()) {
                                     div.appendChild(color);
                                 }
 
-                                let konvaBox = new Konva.Group({
-                                    width: add[i].w,
-                                    height: add[i].h,
-                                    x: add[i].x,
-                                    y: add[i].y,
-                                    clip: {
-                                        width: add[i].w,
-                                        height: add[i].h,
-                                    },
+                                let konvaBox = new Konva.Group(e);
+                                
+                                konvaBox.setAttrs({
+                                    clip: konvaBox.size(),
                                 });
                                 
-                                imgPlace.push(konvaBox);
+                                nodesBox.push(konvaBox);
 
                                 group.add(konvaBox);
-
-                                imgIcon.onClick = (verify = false)=> {
-                                    if (verify) {
-                                        if (imgIcon.input === true) {
-                                            if (iconPlace.selected) {
-                                                iconPlace.selected.parent.classList.remove('selected');
-                                                iconPlace.selected.configBox.classList.add('hidden');
-                                            }
-                                            imgIcon.parent.classList.add('selected');
-                                            imgIcon.configBox.classList.add('hidden');
-                                            iconPlace.selected = imgIcon;
-                                            imgPlace.selected = konvaBox;
-                                            nodeTarget = undefined;
-                                            transformer.nodes([]);
-                                            transformer.hide();
-                                            input.click();
-                                            console.log(1);
-                                        } else {
-                                            if (iconPlace.selected === imgIcon) {
-                                                dragOff();
-                                                console.log(2);
-                                            } else {
-                                                dragOn(konvaBox.getChildren()[0]);
-                                                console.log(3);
-                                            }
-                                        }
-                                    } else {
-                                        if (iconPlace.selected === imgIcon) {
-                                            iconPlace.selected.parent.classList.remove('selected');
-                                            iconPlace.selected.configBox.classList.add('hidden');
-                                            iconPlace.selected = undefined;
-                                            imgPlace.selected = undefined;
-                                            console.log(4);
-                                        } else {
-                                            if (iconPlace.selected) {
-                                                iconPlace.selected.parent.classList.remove('selected');
-                                                iconPlace.selected.configBox.classList.add('hidden');
-                                            }
-                                            imgIcon.parent.classList.add('selected');
-                                            imgIcon.configBox.classList.remove('hidden');
-                                            iconPlace.selected = imgIcon;
-                                            imgPlace.selected = konvaBox;
-                                            console.log(5);
-                                        }
-                                    }
-                                }
                                 
                                 imgIcon.onclick = ()=> {
-                                    imgIcon.onClick(true);
+                                    onSelect(imgIcon, true);
                                 }
 
+                                imgIcon.nodeBox = konvaBox;
+
                                 iconsBox.appendChild(div);
-                            }
+                            });
 
                         }
 
                         upBox.appendChild(configBox);
 
-                        var adjust = [];
-
                         if (att.upload.type === 'svg') {
-                            adjust.push({n: 'fill', v: '#ff0000'});
                             input.addEventListener('change', function(event) {
-                                NewPotrace(event, imgPlace.selected, iconPlace.selected, adjust, (image) => {});
-                                iconPlace.selected.input = false;
+                                NewPotrace(event, nodesBox.selected, iconsList.selected);
+                                iconsList.selected.onInput = false;
                             });
                         }
     
                         if (!att.upload.type) {
-                            adjust.push(
-                                {n: 'brightness', v: 1}, 
-                                {n: 'contrast', v: 1}
-                            );
                             input.addEventListener('change', function(event) {
-                                upload(event, imgPlace.selected, iconPlace.selected, adjust);
-                                iconPlace.selected.input = false;
+                                upload(event, nodesBox.selected, iconsList.selected);
+                                iconsList.selected.onInput = false;
                             });
                         }
                         
+                    }
+
+                    if (att.clip) {
+                        var att = att.clip;
+                        if (att.url) {
+                            setClip(att.url, group);
+                        }
                     }
 
                     if (att.mask) {
@@ -339,6 +319,77 @@ for (var [index, item] of setPrintArea.entries()) {
                             })
                         }
                     }
+                    
+                }
+                if (e.text) {
+                    var att = e.text;
+                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
+                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
+                    var group = new Konva.Group({
+                        width: width,
+                        height: height,
+                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
+                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
+                        clip: {
+                            width: width,
+                            height: height,
+                        },
+                    });
+                    group.setAttrs(att.setAttrs);
+                    a.node.add(group);
+                    
+                    let targets = [];
+                    
+                    var input = document.createElement('input');
+                    Object.assign(input, {type: 'text'});
+
+                    if (e.text.add) {
+                        e.text.add.forEach(e => {
+                            var text = new Konva.Text({
+                                icon: input,
+                                ...e,
+                                ...att.childAttrs,
+                            });
+                            canSelect.push(text);
+                            clickTap(text, () => {
+                                dragOn(targets);
+                                adjShow();
+                            });
+                            group.add(text);
+                            targets.push(text);
+                            text.onSelect = ()=> {onSelect(text)};
+                        });
+                    }
+
+                    var inputBox = document.createElement('div');
+                    inputBox.className = 'inputTextBox';
+
+                    var callEditor = document.createElement('div');
+                    callEditor.className = 'callEditor iconBox';
+                    callEditor.addEventListener('click', ()=> {
+                        dragOn(targets);
+                        adjShow();
+                    });
+                    callEditor.span = document.createElement('span');
+                    callEditor.span.textContent = 'Editar';
+                    callEditor.appendChild(callEditor.span);
+
+                    input.node = targets;
+                    input.parent = inputBox;
+                    input.configBox = document.createElement('div');
+                    
+                    input.onclick = ()=> {
+                        onSelect(input, true);
+                    }
+                    
+                    input.oninput = ()=> {
+                        targets.forEach(e=> {
+                            e.setAttr('text', input.value);
+                        });
+                    }
+
+                    inputBox.append(input, callEditor);
+                    box.appendChild(inputBox);
                 }
             });
         }
@@ -347,5 +398,4 @@ for (var [index, item] of setPrintArea.entries()) {
 }
 
 </script>
-<script src="assets/custom_base.js"></script>
 </html>

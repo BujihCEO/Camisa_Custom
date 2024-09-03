@@ -253,26 +253,6 @@
     background: url(https://www.svgrepo.com/show/509011/action-redo.svg) center / contain no-repeat;
 }
 
-.customBox input[type="text"] {
-    height: 5rem;
-    width: 100%;
-    max-width: 30rem;
-    font-size: 2.6rem;
-    font-weight: 700;
-    text-align: center;
-    border: 0px;
-}
-
-.customBox input[type="number"] {
-    height: 5rem;
-    width: 100%;
-    max-width: 30rem;
-    font-size: 2.6rem;
-    font-weight: 700;
-    text-align: center;
-    border: 0px;
-}
-
 .customBox input[type="range"] {
     -webkit-appearance: none;
     appearance: none;

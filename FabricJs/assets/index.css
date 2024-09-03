@@ -1,5 +1,6 @@
 body {
     font-family: sans-serif;
+    --base-border-radius: 1rem;
 }
 
 .down {
@@ -261,23 +262,76 @@ body {
     text-align: center;
 }
 
+.inputTextBox {
+    display: flex;
+    width: 100%;
+}
+
+.inputTextBox.selected {
+    box-shadow: 0 0 3px 0px red;
+    border: 2px solid red;
+}
+
+.inputTextBox > .callEditor {
+    display: grid;
+    justify-content: center;
+    padding: 0 0.5rem;
+}
+
+.rangeBox {
+    display: grid;
+    grid-template: 2fr / 1fr;
+    font-size: 14px;
+}
+
+.rangeBox > *:nth-child(1) {
+    
+}
+
+.rangeBox > *:nth-child(2), .rangeBox > *:nth-child(3) {
+    grid-row: 2;
+}
+
+.rangeBox > *:nth-child(3) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    min-width: 30px;
+    padding: 6px;
+    margin: 0 10px;
+    border-radius: var(--base-border-radius);
+    box-shadow: 0 0 4px #00000087;
+}
+
+.customBox input[type="text"], .customBox input[type="number"] {
+    height: 3rem;
+    width: 100%;
+    max-width: 30rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid black;
+    border-radius: var(--base-border-radius);
+}
+
 .adjustBox {
     position: fixed;
     display: grid;
-    width: calc(100% - 2rem);
+    gap: 1rem;
+    width: 100%;
     bottom: 0;
-    margin: 0 1rem;
-    translate: 0 -1rem;
+    padding: 1rem;
     background: white;
-    border-radius: 1rem;
+    border-radius: 2rem 2rem 0 0;
+    box-shadow: 0 0 15px #0000004d;
+    box-sizing: border-box;
     transition: 0.3s;
 }
 
 .adjustBox > div:nth-child(1) {
-    display: grid;
-    justify-items: center;
+    display: flex;
     align-items: center;
-    grid-template-areas: 'a b b c';
     height: 4rem;
     font-size: 1.4rem;
     font-weight: 600;
@@ -285,18 +339,17 @@ body {
     background: white;
 }
 
-.adjustBox > div:nth-child(1) > div:nth-child(1) {
-    grid-area: a;
+.adjustBox > div:nth-child(1) > div:nth-child(1), .adjustBox > div:nth-child(1) > div:nth-child(3) {
+    height: 100%;
+    aspect-ratio: 1;
 }
 
 .adjustBox > div:nth-child(1) > div:nth-child(2) {
-    grid-area: b;
+    width: 100%;
+    text-align: center;
 }
 
 .adjustBox > div:nth-child(1) > div:nth-child(3) {
-    grid-area: c;
-    height: 85%;
-    aspect-ratio: 1;
     border-radius: 50%;
     background: url(https://www.svgrepo.com/show/510922/close-sm.svg) center / contain no-repeat;
     background-color: #dadada;
@@ -306,7 +359,6 @@ body {
     display: flex;
     justify-content: space-evenly;
     gap: 1rem;
-    padding: 0.5rem;
     overflow-x: auto;
 }
 
@@ -320,6 +372,26 @@ body {
 
 .adjustBox > div:nth-child(3) > div.selected {
     box-shadow: inset 0px 0px 0rem 2px red;
+}
+
+.flex-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chooserBox > :nth-child(2) {
+    height: 4rem;
+}
+
+.chooserBox > :nth-child(2) > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 2rem;
+    border-radius: var(--base-border-radius);
+    font-size: 1.5rem;
 }
 
 .changeImg::before {
