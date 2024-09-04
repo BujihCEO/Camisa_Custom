@@ -23,6 +23,7 @@ var setPrintArea = [
             name: 'Frente',
             add: [
                 {
+                    tittle: 'Cor principal',
                     image: {
                         position: {},
                         mask: {
@@ -85,17 +86,21 @@ var setPrintArea = [
                         },
                         childAttrs: {
                             text: 'Alisson',
-                            width: 2000,
                             fontSize: 300,
                             fontFamily: 'Sans-serif',
                             align: 'center',
                             fill: 'red',
+                            stroke: 'blue',
+                            strokeWidth: 20,
+                            shadowBlur: 0,
+                            shadowColor: 'black',
+                            shadowOffset: { x: 10, y: 10 },
+                            shadowOpacity: 0.5,
                             anchors: anchors.none,
                             dontMove,
                         },
                         add: [
                             {x: 0, y: 0, fontStyle: '600'},
-                            {x: 0, y: 1000},
                         ]
                     }
                 }

@@ -282,10 +282,7 @@ body {
     display: grid;
     grid-template: 2fr / 1fr;
     font-size: 14px;
-}
-
-.rangeBox > *:nth-child(1) {
-    
+    gap: 0 10px;
 }
 
 .rangeBox > *:nth-child(2), .rangeBox > *:nth-child(3) {
@@ -299,9 +296,9 @@ body {
     height: 30px;
     min-width: 30px;
     padding: 6px;
-    margin: 0 10px;
     border-radius: var(--base-border-radius);
     box-shadow: 0 0 4px #00000087;
+    margin: 4px;
 }
 
 .customBox input[type="text"], .customBox input[type="number"] {
@@ -355,6 +352,13 @@ body {
     background-color: #dadada;
 }
 
+.adjustBox > div:nth-child(2) > div {
+    display: grid;
+    grid-row-gap: 14px;
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
 .adjustBox > div:nth-child(3) {
     display: flex;
     justify-content: space-evenly;
@@ -362,23 +366,35 @@ body {
     overflow-x: auto;
 }
 
-.adjustBox > div:nth-child(3) > div {
-    width: 100%;
-    font-size: 1.5rem;
-    padding: 1rem;
-    border-radius: 1rem;
+.iconBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    max-width: 88px;
+    min-width: 64px;
+    padding: 4px;
     text-align: center;
+    font-size: 13px;
+    border: 2px solid transparent;
+    border-radius: var(--base-border-radius);
 }
 
-.adjustBox > div:nth-child(3) > div.selected {
-    box-shadow: inset 0px 0px 0rem 2px red;
+.iconBtn.selected {
+    border-color: red;
+}
+
+.iconBtn::before {
+    content: '';
+    height: 3rem;
+    width: 3rem;
 }
 
 .flex-list {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    max-height: 20rem;
 }
 
 .chooserBox > :nth-child(2) {
@@ -394,10 +410,64 @@ body {
     font-size: 1.5rem;
 }
 
+.JsColorBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+}
+
+.JsColorBox.list {
+    justify-content: space-between;
+}
+
+.JsColorBox > div {
+    font-size: 14px;
+}
+
+.jscolor {
+    height: 100%;
+    border: 3px solid black;
+    box-sizing: border-box;
+    cursor: pointer;
+    aspect-ratio: 3 / 1;
+    border-radius: var(--base-border-radius);
+}
+
+.JsColorBox.list > .jscolor {
+    aspect-ratio: 1;
+    border-radius: 50%;
+}
+
+.jscolor-wrap {
+    left: calc(50% - 156px) !important;
+}
+
+.jscolor-wrap .jscolor-btn {
+    width: 100%;
+    border: none !important;
+}
+
+.jscolor-btn-close {
+    background: url(https://www.svgrepo.com/show/521564/close.svg) center / contain no-repeat !important;
+}
+
 .changeImg::before {
     background: url(https://www.svgrepo.com/show/375090/replace.svg) center / 80% no-repeat white;
 }
 
 .callEditor::before {
+    background: url(https://www.svgrepo.com/show/509064/config.svg) center / 80% no-repeat white;
+}
+
+.fontSize::before {
+    background: url(https://www.svgrepo.com/show/479249/font-size-1.svg) center / 80% no-repeat white;
+}
+
+.color::before {
+    background: url(https://www.svgrepo.com/show/500158/color-adjustement-mode-channels.svg) center / 80% no-repeat white;
+}
+
+.Adjust::before {
     background: url(https://www.svgrepo.com/show/509064/config.svg) center / 80% no-repeat white;
 }

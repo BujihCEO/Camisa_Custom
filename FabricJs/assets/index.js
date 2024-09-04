@@ -362,15 +362,26 @@ var transformer = new Konva.Transformer({
 layer.add(transformer);
 transformer.hide();
 
-//transformer.removeEventListener('dragmove');
-transformer.off('dragstart');
-transformer.off('dragmove');
-
-var dontMove = ()=> {
+var dontMove = () => {
     transformer.centeredScaling(true);
-    transformer.draggable(false);
-    nodeTarget.forEach(e => {
-        e.draggable(false);
+    transformer.setAttrs({
+        enabledAnchors: anchors.all
+    });
+    let initialPositions = transformer.nodes().map((node) => node.position());
+    transformer.on('transformend', () => {
+        initialPositions = transformer.nodes().map((node) => node.position());
+    });
+    transformer.on('dragstart', (e) => {
+        transformer.nodes().forEach((shape, index) => {
+            shape.position(initialPositions[index]);
+        });
+        transformer.getLayer().batchDraw();
+    });
+    transformer.on('dragmove', () => {
+        transformer.nodes().forEach((shape, index) => {
+            shape.position(initialPositions[index]);
+        });
+        transformer.getLayer().batchDraw();
     });
 };
 
@@ -381,6 +392,7 @@ function dragOn(target) {
         nodes: nodeTarget,
         enabledAnchors: nodeTarget[0].getAttr('anchors') ? nodeTarget[0].getAttr('anchors') : anchors.basic,
     });
+    //nodeTarget[0].getAttr('dontMove') ? dontMove() : '';
     transformer.show();
 }
 
@@ -690,13 +702,23 @@ var colorOrder = [
     '800080',
 ];
 
+jscolor.presets.default = {
+    width:250, height:165, closeButton:true, closeText:'', sliderSize:20
+};
+
 function createInput() {
     var listBtn = [];
 
     function createJsColor(parent, add) {
         var box = document.createElement('div');
-        var input = document.createElement('button');
         box.className = 'JsColorBox';
+        if (add.list) {
+            var tittle = document.createElement('div');
+            tittle.textContent = add.name;
+            box.classList.add('list');
+            box.appendChild(tittle);
+        }
+        var input = document.createElement('button');
         input.className = 'jscolor';
         input.setAttribute('data-jscolor', `{value:''}`);
         parent.input.push(input);
@@ -716,10 +738,6 @@ function createInput() {
                                 e.image().draw();
                             }
                         });
-                    }
-                    var nextSibling = input.nextElementSibling;
-                    if (nextSibling) {
-                        nextSibling.style.background = newColor;
                     }
                 }
             });
@@ -747,23 +765,23 @@ function createInput() {
             type: 'range',
             min: v.min, 
             max: v.max, 
-            step: v.percentage ? (v.max - v.min) * 0.005 : 1 
+            step: v.label ? (v.max - v.min) * 0.005 : 1 
         });
-        console.log(input.step);
         
         parent.input.push(input);
         
         var label = document.createElement('div');
         
         function mapToRange(value) {
-            var mappedValue = ((value - v.min) / (v.max - v.min)) * 200 - 100;
+            var l = v.label;
+            var mappedValue = ((value - v.min) / (v.max - v.min)) * (l.max - l.min) + l.min;
             label.textContent = `${Math.round(mappedValue)}`;
         }
     
         input.change = () => {
             var value = nodeTarget[0].getAttr(add.attr) / (v.scale ? 5 : 1);
             input.value = value;
-            v.percentage ? mapToRange(value) : label.textContent = value;
+            v.label ? mapToRange(value) : label.textContent = value;
         };
     
         input.addEventListener(add.onChange ? 'change' : 'input', () => {
@@ -780,14 +798,14 @@ function createInput() {
         });
     
         input.oninput = () => { 
-            v.percentage ? mapToRange(input.value) : label.textContent = input.value;
+            v.label ? mapToRange(input.value) : label.textContent = input.value;
         };
     
         box.append(title, input, label);
         parent.appendChild(box);
     }
     
-
+    
     function createChooser(parent, add) {
         var box = document.createElement('div');
         box.className = 'chooserBox flex-list';
@@ -858,6 +876,7 @@ function createInput() {
             if (i === 0) {
                 e.classList.add('selected');
                 e.box.classList.remove('hidden');
+                aBox.b.textContent = e.textContent;
             } else {
                 e.classList.remove('selected');
                 e.box.classList.add('hidden');
@@ -873,7 +892,6 @@ function createInput() {
     adjustBox.appendChild(aBox);
     aBox.a = document.createElement('div');
     aBox.b = document.createElement('div');
-    aBox.b.textContent = 'Ajustes';
     aBox.c = document.createElement('div');
     aBox.c.addEventListener('click', ()=> {
         adjShow(false);
@@ -888,6 +906,7 @@ function createInput() {
     var create = [
         {
             name: 'Cor',
+            class: 'color',
             add: [
                 {
                     name: 'Cor',
@@ -898,6 +917,7 @@ function createInput() {
         },
         {
             name: 'Cor',
+            class: 'color',
             add: [
                 {
                     name: 'Cor',
@@ -910,26 +930,22 @@ function createInput() {
         // Img Filters
 
         {
-            name: 'Brilho',
+            name: 'Ajuste',
+            class: 'Adjust',
             add: [
                 {
                     name: 'Brilho',
                     type: 'range',
                     attr: 'brightness',
-                    values: {min: 0, max: 2, percentage: true},
-                }
-            ],
-        },
-        {
-            name: 'Contraste',
-            add: [
+                    values: {min: 0, max: 2, label: {min: -100, max: 100}},
+                },
                 {
                     name: 'Contraste',
                     type: 'range',
                     attr: 'contrast',
-                    values: {min: 0, max: 2, percentage: true},
+                    values: {min: 0, max: 2, label: {min: -100, max: 100}},
                 },
-            ]
+            ],
         },
 
         // Potrace
@@ -944,7 +960,7 @@ function createInput() {
                     attr: 'potrace',
                     onChange: true,
                     func: 'upPotrace()',
-                    values: {min: 0, max: 2, percentage: true},
+                    values: {min: 0, max: 2, label: {min: -100, max: 100}},
                 },
                 {
                     name: 'Inverter',
@@ -972,6 +988,65 @@ function createInput() {
                 },
             ]
         },
+
+        {
+            name: 'Borda',
+            class: 'stroke',
+            add: [
+                {
+                    name: 'Espessura',
+                    type: 'range',
+                    attr: 'strokeWidth',
+                    values: {min: 0, max: 20, scale: true},
+                },
+                {
+                    name: 'Cor',
+                    type: 'color',
+                    attr: 'stroke',
+                    list: true,
+                },
+            ]
+        },
+
+        // effects 
+
+        {
+            name: 'Sombra',
+            class: 'shadow',
+            add: [
+                {
+                    name: 'Borrão',
+                    type: 'range',
+                    attr: 'shadowBlur',
+                    values: {min: 0, max: 20, scale: true},
+                },
+                {
+                    name: 'Opacidade',
+                    type: 'range',
+                    attr: 'shadowOpacity',
+                    values: {min: 0, max: 1, label: {min: 0, max: 100}},
+                },
+                {
+                    name: 'Cor',
+                    type: 'color',
+                    attr: 'shadowColor',
+                    list: true,
+                },
+                {
+                    name: 'Posição Horizontal',
+                    type: 'range',
+                    attr: 'shadowOffsetX',
+                    values: {min: -50, max: 50},
+                },
+                {
+                    name: 'Posição Vetical',
+                    type: 'range',
+                    attr: 'shadowOffsetY',
+                    values: {min: -50, max: 50},
+                },
+            ],
+        },
+
     ];
 
     create.forEach((e) => {
@@ -993,7 +1068,7 @@ function createInput() {
         bBox.appendChild(box);
 
         let button = document.createElement('div');
-        button.className = e.class || e.class;
+        button.className = `iconBtn  ${e.class}`;
         button.textContent = e.name;
         button.box = box;
         button.n = e.add.map(e => e.attr);
@@ -1004,6 +1079,7 @@ function createInput() {
                 if (e === button) {
                     e.classList.add('selected');
                     e.box.classList.remove('hidden');
+                    aBox.b.textContent = e.textContent;
                 } else {
                     e.classList.remove('selected');
                     e.box.classList.add('hidden');
