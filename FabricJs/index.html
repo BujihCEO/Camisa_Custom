@@ -198,7 +198,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         var configBox = document.createElement('div');
                         configBox.className = 'configBox hidden';
 
-                        var changeImg = document.createElement('div');
+                        var changeImg = document.createElement('button');
                         changeImg.className =  'changeImg iconBox';
                         changeImg.addEventListener('click', ()=> {
                             input.click();
@@ -208,7 +208,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         changeImg.appendChild(changeImg.span);
                         configBox.appendChild(changeImg);
 
-                        var callEditor = document.createElement('div');
+                        var callEditor = document.createElement('button');
                         callEditor.className = 'callEditor iconBox';
                         callEditor.addEventListener('click', ()=> {
                             adjShow();
@@ -370,7 +370,7 @@ for (var [index, item] of setPrintArea.entries()) {
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
 
-                    var callEditor = document.createElement('div');
+                    var callEditor = document.createElement('button');
                     callEditor.className = 'callEditor iconBox';
                     callEditor.addEventListener('click', ()=> {
                         dragOn(targets);

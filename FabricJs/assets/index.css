@@ -246,7 +246,6 @@ body {
 
 .iconBox {
     display: grid;
-    justify-content: center;
 }
 
 .iconBox::before {
@@ -274,8 +273,6 @@ body {
 }
 
 .inputTextBox > .callEditor {
-    display: grid;
-    justify-content: center;
     padding: 0 0.5rem;
 }
 
@@ -543,6 +540,7 @@ button {
     border: none;
     cursor: pointer;
     color: black;
+    font-size: 1rem;
 }
 
 .jscolor-btn-close {
@@ -550,11 +548,11 @@ button {
 }
 
 .changeImg::before {
-    background: url(https://www.svgrepo.com/show/375090/replace.svg) center / 80% no-repeat white;
+    background: url(https://www.svgrepo.com/show/60281/change.svg) center / 65% no-repeat white;
 }
 
 .callEditor::before {
-    background: url(https://www.svgrepo.com/show/509064/config.svg) center / 80% no-repeat white;
+    background: url(https://www.svgrepo.com/show/521620/edit.svg) center / 80% no-repeat white;
 }
 
 .fontSize::before {

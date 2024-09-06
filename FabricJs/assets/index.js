@@ -50,6 +50,8 @@ showPopup.addEventListener('click', ()=> {
 document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
 
+Konva.hitOnDragEnabled = true;
+
 var stage = new Konva.Stage({
     container: canvaBox,
     width: window.innerWidth,
@@ -500,6 +502,21 @@ function upload(e, parent, icon, attrs) {
     reader.readAsDataURL(file);
 };
 
+function getDistance(p1, p2) {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+}
+
+function getCenter(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+    };
+}
+
+var lastCenter = null;
+var lastDist = 0;
+var dragStopped = false;
+
 stage.on('wheel', function (e) {
     e.evt.preventDefault();
     var scaleBy = 1.1;
@@ -524,7 +541,78 @@ stage.on('wheel', function (e) {
     stage.position(newPos);
     stage.batchDraw();
 });
-var lastDist = 0;
+
+stage.on('touchmove', function (e) {
+    e.evt.preventDefault();
+    var touch1 = e.evt.touches[0];
+    var touch2 = e.evt.touches[1];
+
+    // we need to restore dragging, if it was cancelled by multi-touch
+    if (touch1 && !touch2 && !stage.isDragging() && dragStopped) {
+        stage.startDrag();
+        dragStopped = false;
+    }
+
+    if (touch1 && touch2) {
+        // if the stage was under Konva's drag&drop
+        // we need to stop it, and implement our own pan logic with two pointers
+        if (stage.isDragging()) {
+            dragStopped = true;
+            stage.stopDrag();
+        }
+
+        var p1 = {
+            x: touch1.clientX,
+            y: touch1.clientY,
+        };
+        var p2 = {
+            x: touch2.clientX,
+            y: touch2.clientY,
+        };
+
+        if (!lastCenter) {
+            lastCenter = getCenter(p1, p2);
+            return;
+        }
+        var newCenter = getCenter(p1, p2);
+
+        var dist = getDistance(p1, p2);
+
+        if (!lastDist) {
+            lastDist = dist;
+        }
+
+        // local coordinates of center point
+        var pointTo = {
+            x: (newCenter.x - stage.x()) / stage.scaleX(),
+            y: (newCenter.y - stage.y()) / stage.scaleX(),
+        };
+
+        var scale = stage.scaleX() * (dist / lastDist);
+
+        stage.scaleX(scale);
+        stage.scaleY(scale);
+
+        // calculate new position of the stage
+        var dx = newCenter.x - lastCenter.x;
+        var dy = newCenter.y - lastCenter.y;
+
+        var newPos = {
+            x: newCenter.x - pointTo.x * scale + dx,
+            y: newCenter.y - pointTo.y * scale + dy,
+        };
+
+        stage.position(newPos);
+
+        lastDist = dist;
+        lastCenter = newCenter;
+    }
+});
+
+stage.on('touchend', function (e) {
+    lastDist = 0;
+    lastCenter = null;
+});
 
 function createJsColor(parent, target = [], color, setAtt = false) {
     var box = document.createElement('div');
@@ -651,6 +739,7 @@ function NewPotrace(event, parent, icon, attrs) {
                     path2D: path2D,
                     potrace: 1,
                     invert: 0,
+                    sharpen: 0,
                 });
                 shape.setAttrs({
                     sceneFunc: function (ctx) {
@@ -689,10 +778,54 @@ function NewPotrace(event, parent, icon, attrs) {
     reader.readAsDataURL(file);
 }
 
+function applySharpen(ctx, width, height, intensity = 1) {
+    // Ajuste a intensidade do sharpen
+    const weights = [
+        0, -1 * intensity, 0,
+        -1 * intensity, 1 + 4 * intensity, -1 * intensity,
+        0, -1 * intensity, 0
+    ];
+    
+    const side = Math.round(Math.sqrt(weights.length));
+    const halfSide = Math.floor(side / 2);
+    const srcData = ctx.getImageData(0, 0, width, height);
+    const dstData = ctx.createImageData(width, height);
+    
+    const src = srcData.data;
+    const dst = dstData.data;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const dstOff = (y * width + x) * 4;
+            let r = 0, g = 0, b = 0;
+            
+            for (let cy = 0; cy < side; cy++) {
+                for (let cx = 0; cx < side; cx++) {
+                    const scy = Math.min(height - 1, Math.max(0, y + cy - halfSide));
+                    const scx = Math.min(width - 1, Math.max(0, x + cx - halfSide));
+                    const srcOff = (scy * width + scx) * 4;
+                    const wt = weights[cy * side + cx];
+                    
+                    r += src[srcOff] * wt;
+                    g += src[srcOff + 1] * wt;
+                    b += src[srcOff + 2] * wt;
+                }
+            }
+            
+            dst[dstOff] = r;
+            dst[dstOff + 1] = g;
+            dst[dstOff + 2] = b;
+            dst[dstOff + 3] = src[dstOff + 3]; // Copy alpha channel
+        }
+    }
+    
+    ctx.putImageData(dstData, 0, 0);
+}
+
 function upPotrace() {
     loadOn(0);
     var img = new Image();
-    img.onload = ()=> {
+    img.onload = () => {
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
         canvas.width = img.width;
@@ -700,6 +833,7 @@ function upPotrace() {
         ctx.filter = `brightness(${nodeTarget[0].getAttr('potrace')})
             invert(${nodeTarget[0].getAttr('invert')})`;
         ctx.drawImage(img, 0, 0);
+        applySharpen(ctx, canvas.width, canvas.height, nodeTarget[0].getAttr('sharpen'));
         var url = canvas.toDataURL();
         Potrace.loadImageFromUrl(url);
         Potrace.process(() => {
@@ -1142,20 +1276,30 @@ function createInput() {
             class: 'svgEfect',
             add: [
                 {
-                    name: 'Potencia',
+                    name: 'Brilho',
                     type: 'range',
                     attr: 'potrace',
                     onChange: true,
                     func: 'upPotrace()',
-                    values: {min: 0, max: 2, label: {min: -100, max: 100}},
+                    values: {min: 0, max: 2, label: {min: 0, max: 100}},
                 },
                 {
-                    name: 'Inverter',
-                    type: 'chooser',
+                    name: 'Detalhamento',
+                    type: 'range',
+                    attr: 'sharpen',
+                    onChange: true,
+                    func: 'upPotrace()',
+                    values: {min: 0, max: 2, label: {min: 0, max: 100}},
+                },
+                {
+                    name: 'inverter',
+                    class: 'flex',
+                    type: 'btnFunc',
                     attr: 'invert',
                     func: 'upPotrace()',
-                    values: [
-                        {name: 'Não', value: 0}, {name: 'Sim', value: 1}
+                    btns: [
+                        {text: 'Não', value: '0', class: ''}, 
+                        {text: 'Sim', value: '1', class: ''},
                     ],
                 },
             ]
@@ -1208,7 +1352,7 @@ function createInput() {
                     values: {min: 0, max: 20, scale: true},
                 },
                 {
-                    name: 'Opacidade',
+                    name: 'Transparência',
                     type: 'range',
                     attr: 'shadowOpacity',
                     values: {min: 0, max: 1, label: {min: 0, max: 100}},
