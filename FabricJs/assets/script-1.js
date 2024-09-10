@@ -16,7 +16,7 @@ closePopup.className = 'close';
 closePopup.addEventListener('click', ()=> {
     popupEditor.classList.add('hidden');
     Array.from(productLayer.children).forEach((e, i) => {
-        setPreviews(e, canvasPreview, i);
+        //setPreviews(e, canvasPreview, i);
     });
 });
 popupEditor.appendChild(closePopup);
@@ -57,6 +57,118 @@ var stage = new Konva.Stage({
     width: window.innerWidth,
     height: window.innerHeight,
     draggable: true,
+});
+
+function getDistance(p1, p2) {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+}
+
+function getCenter(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+    };
+}
+
+var lastCenter = null;
+var lastDist = 0;
+var dragStopped = false;
+
+stage.on('wheel', function (e) {
+    e.evt.preventDefault();
+    var scaleBy = 1.1;
+    var oldScale = stage.scaleX();
+
+    var pointer = stage.getPointerPosition();
+
+    var mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    var newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+    stage.scale({ x: newScale, y: newScale });
+
+    var newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+    };
+
+    stage.position(newPos);
+    stage.batchDraw();
+});
+
+stage.on('touchmove', function (e) {
+    e.evt.preventDefault();
+    var touch1 = e.evt.touches[0];
+    var touch2 = e.evt.touches[1];
+
+    // we need to restore dragging, if it was cancelled by multi-touch
+    if (touch1 && !touch2 && !stage.isDragging() && dragStopped) {
+        stage.startDrag();
+        dragStopped = false;
+    }
+
+    if (touch1 && touch2) {
+        // if the stage was under Konva's drag&drop
+        // we need to stop it, and implement our own pan logic with two pointers
+        if (stage.isDragging()) {
+            dragStopped = true;
+            stage.stopDrag();
+        }
+
+        var p1 = {
+            x: touch1.clientX,
+            y: touch1.clientY,
+        };
+        var p2 = {
+            x: touch2.clientX,
+            y: touch2.clientY,
+        };
+
+        if (!lastCenter) {
+            lastCenter = getCenter(p1, p2);
+            return;
+        }
+        var newCenter = getCenter(p1, p2);
+
+        var dist = getDistance(p1, p2);
+
+        if (!lastDist) {
+            lastDist = dist;
+        }
+
+        // local coordinates of center point
+        var pointTo = {
+            x: (newCenter.x - stage.x()) / stage.scaleX(),
+            y: (newCenter.y - stage.y()) / stage.scaleX(),
+        };
+
+        var scale = stage.scaleX() * (dist / lastDist);
+
+        stage.scaleX(scale);
+        stage.scaleY(scale);
+
+        // calculate new position of the stage
+        var dx = newCenter.x - lastCenter.x;
+        var dy = newCenter.y - lastCenter.y;
+
+        var newPos = {
+            x: newCenter.x - pointTo.x * scale + dx,
+            y: newCenter.y - pointTo.y * scale + dy,
+        };
+
+        stage.position(newPos);
+
+        lastDist = dist;
+        lastCenter = newCenter;
+    }
+});
+
+stage.on('touchend', function (e) {
+    lastDist = 0;
+    lastCenter = null;
 });
 
 var layer = new Konva.Layer();
@@ -139,6 +251,8 @@ function clickTap(target, callback) {
     target.on('tap', callback);
 }
 
+var previewList = [];
+
 function setPreviews(node, parent, index) {
     var visible = node.isVisible();
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
@@ -176,8 +290,7 @@ createMaskedImage(frontBg, `assets/Camiseta-Front.png`, '#FDF5E6', {
     shadowBlur: 10,
     shadowOffset: { x: 5, y: 5},
     shadowOpacity: 0.3,
-}
-);
+});
 
 var frontPrint = new Konva.Group({
     width: 3508,
@@ -446,7 +559,7 @@ clickTap(stage, (e)=> {
 
 var needDraw = ['overFill', 'brightness', 'contrast'];
 
-function upload(e, parent, icon, attrs) {
+function newUpload(e, parent, icon, attrs) {
     var file = e.target.files[0];
     var reader = new FileReader();
     parent.destroyChildren();
@@ -459,11 +572,16 @@ function upload(e, parent, icon, attrs) {
             canvas.width = img.width;
             canvas.height = img.height;
 
+            var noEdit = {...attrs.noEdit};
+            var edit = {...attrs.edit};
+            Object.assign(edit, { brightness: 1, contrast: 1 });
+
             var kvImg = new Konva.Image({
                 image: canvas,
                 icon: icon,
-                brightness: 1,
-                contrast: 1,
+                ...noEdit,
+                ...edit,
+                edit: Object.keys(edit),
             });
 
             var filters = ['brightness', 'contrast'];
@@ -502,117 +620,11 @@ function upload(e, parent, icon, attrs) {
     reader.readAsDataURL(file);
 };
 
-function getDistance(p1, p2) {
-    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+var jsColorList = [];
+
+function getColor(id, attrs = []) {
+
 }
-
-function getCenter(p1, p2) {
-    return {
-        x: (p1.x + p2.x) / 2,
-        y: (p1.y + p2.y) / 2,
-    };
-}
-
-var lastCenter = null;
-var lastDist = 0;
-var dragStopped = false;
-
-stage.on('wheel', function (e) {
-    e.evt.preventDefault();
-    var scaleBy = 1.1;
-    var oldScale = stage.scaleX();
-
-    var pointer = stage.getPointerPosition();
-
-    var mousePointTo = {
-        x: (pointer.x - stage.x()) / oldScale,
-        y: (pointer.y - stage.y()) / oldScale,
-    };
-
-    var newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-
-    stage.scale({ x: newScale, y: newScale });
-
-    var newPos = {
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
-    };
-
-    stage.position(newPos);
-    stage.batchDraw();
-});
-
-stage.on('touchmove', function (e) {
-    e.evt.preventDefault();
-    var touch1 = e.evt.touches[0];
-    var touch2 = e.evt.touches[1];
-
-    // we need to restore dragging, if it was cancelled by multi-touch
-    if (touch1 && !touch2 && !stage.isDragging() && dragStopped) {
-        stage.startDrag();
-        dragStopped = false;
-    }
-
-    if (touch1 && touch2) {
-        // if the stage was under Konva's drag&drop
-        // we need to stop it, and implement our own pan logic with two pointers
-        if (stage.isDragging()) {
-            dragStopped = true;
-            stage.stopDrag();
-        }
-
-        var p1 = {
-            x: touch1.clientX,
-            y: touch1.clientY,
-        };
-        var p2 = {
-            x: touch2.clientX,
-            y: touch2.clientY,
-        };
-
-        if (!lastCenter) {
-            lastCenter = getCenter(p1, p2);
-            return;
-        }
-        var newCenter = getCenter(p1, p2);
-
-        var dist = getDistance(p1, p2);
-
-        if (!lastDist) {
-            lastDist = dist;
-        }
-
-        // local coordinates of center point
-        var pointTo = {
-            x: (newCenter.x - stage.x()) / stage.scaleX(),
-            y: (newCenter.y - stage.y()) / stage.scaleX(),
-        };
-
-        var scale = stage.scaleX() * (dist / lastDist);
-
-        stage.scaleX(scale);
-        stage.scaleY(scale);
-
-        // calculate new position of the stage
-        var dx = newCenter.x - lastCenter.x;
-        var dy = newCenter.y - lastCenter.y;
-
-        var newPos = {
-            x: newCenter.x - pointTo.x * scale + dx,
-            y: newCenter.y - pointTo.y * scale + dy,
-        };
-
-        stage.position(newPos);
-
-        lastDist = dist;
-        lastCenter = newCenter;
-    }
-});
-
-stage.on('touchend', function (e) {
-    lastDist = 0;
-    lastCenter = null;
-});
 
 function createJsColor(parent, target = [], color, setAtt = false) {
     var box = document.createElement('div');
@@ -654,7 +666,7 @@ function createJsColor(parent, target = [], color, setAtt = false) {
     }
 }
 
-function getPath(url, parent, fillColor) {
+function getPath(url, parent, attrs) {
     return fetch(url)
         .then(response => response.text())
         .then(svgText => {
@@ -663,10 +675,11 @@ function getPath(url, parent, fillColor) {
             var pathElement = svgDoc.querySelector('path');
             if (pathElement) {
                 var pathData = pathElement.getAttribute('d');
-                var svgPath = new Konva.Path({ data: pathData });
-                if (fillColor) {svgPath.fill(fillColor);}
-                if (parent) {parent.add(svgPath);}
-                return svgPath;
+                var svgPath = new Konva.Path({ 
+                    data: pathData,
+                    ...attrs
+                });
+                parent.add(svgPath);
             } else {
                 throw new Error("No path element found in the SVG.");
             }
@@ -677,7 +690,107 @@ function getPath(url, parent, fillColor) {
         });
 }
 
-function setClip(url, target) {
+function translatePathData(pathData, dx, dy, scaleX, scaleY) {
+    return pathData.replace(/([MLHVCSQTA])([^MLHVCSQTA]+)/gi, function(match, command, params) {
+        var paramArray = params.trim().split(/[\s,]+/).map(parseFloat);
+
+        if (command === 'H') {
+            // Ajusta o valor X para comandos horizontais (H), com o deslocamento e escala
+            paramArray = paramArray.map(x => dx + (x * scaleX)); // Primeiro adiciona o dx, depois aplica a escala
+        } else if (command === 'V') {
+            // Ajusta o valor Y para comandos verticais (V), com o deslocamento e escala
+            paramArray = paramArray.map(y => dy + (y * scaleY)); // Primeiro adiciona o dy, depois aplica a escala
+        } else {
+            // Para os comandos que afetam tanto X quanto Y, ajuste ambos
+            for (let i = 0; i < paramArray.length; i += 2) {
+                paramArray[i] = dx + (paramArray[i] * scaleX);    // Ajuste X com dx e escala
+                paramArray[i + 1] = dy + (paramArray[i + 1] * scaleY); // Ajuste Y com dy e escala
+            }
+        }
+
+        return command + ' ' + paramArray.join(' ');
+    });
+}
+
+var nodePath = {n: undefined, y: 0, x: 0, sY: 0, sX: 0};
+
+function movePath(p, t) {
+    var path = p.getAttr('path2D');
+    var size = p.size();
+    var scale = t.scale();
+    var pos = t.position();
+
+    var x = pos.x;
+    var y = pos.y;
+    var scaleX = scale.x;
+    var scaleY = scale.y;
+    var height = size.height;
+    var width = size.width;
+
+    var pathDraw = new Path2D(translatePathData(path, x, y, scaleX, scaleY));
+
+    // Ajustes para criar retângulos com base na posição e escala
+    if (y > 0) {
+        // Preencher a área acima
+        pathDraw.rect(0, 0, width, Math.abs(y));
+    }
+    if (x > 0) {
+        // Preencher a área à esquerda
+        pathDraw.rect(0, 0, Math.abs(x), height);
+    }
+    
+    // Preencher a área abaixo (se houver espaço devido à escala Y)
+    if (y + height * scaleY < height) {
+        pathDraw.rect(0, height * scaleY + y, width, height - height * scaleY - y);
+    }
+    
+    // Preencher a área à direita (se houver espaço devido à escala X)
+    if (x + width * scaleX < width) {
+        pathDraw.rect(width * scaleX + x, 0, width - width * scaleX - x, height);
+    }
+
+    p.setAttr('pathDraw', pathDraw);
+    p.draw();
+}
+
+function textClip(url, targetID, text, height, input, rule = 0) {
+    var font;
+    var target = stage.findOne(`#${targetID}`);
+    opentype.load(url, function(err, newfont) {
+        if (err) {
+            console.error('Erro ao carregar a fonte: ', err);
+            return;
+        }
+        font = newfont;
+    });
+    
+    var fontSize = text.getAttr('fontSize');
+    
+    // if (target.getAttr('pathText')) {
+    //     var pathData = font.getPath(text.text(), text.x(), text.y() + height, fontSize);
+    //     target.setAttr('pathText', new Path2D(pathData.toPathData()));
+    // } else {
+    //     rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+    //     target.setAttrs({
+    //         pathText: pathText,
+    //         rule: rule,
+    //         clipFunc: function (ctx) {
+    //             ctx.rect(0, 0, width, height);
+    //             var path2D = new Path2D();
+    //             rule === 0 ? '' : path2D.rect(0, 0, width, height);
+    //             path2D.addPath(target.getAttr('pathText'));
+    //             ctx._context.clip(path2D, rule);
+    //         },
+    //     });
+    // }
+
+    input.addEventListener('input', ()=> {
+        var pathData = font.getPath(input.value.toUpperCase(), text.x(), text.y() + height, fontSize);
+        target.setAttr('pathText', new Path2D(pathData.toPathData()));
+    });
+}
+
+function setClip(url, target, rule = 0) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'document';
@@ -688,16 +801,35 @@ function setClip(url, target) {
             var pathElement = svgDoc.querySelector('path');
             
             if (pathElement) {
-                var pathData = pathElement.getAttribute('d');
-                var path2D = new Path2D(pathData);
+                var clip = pathElement.getAttribute('d');
                 var width = target.width();
                 var height = target.height();
+                var pathClip = new Path2D(clip);
+                var pathText = new Path2D();
+                
+                rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+                
                 target.setAttrs({
+                    pathClip: pathClip,
+                    pathText: pathText,
+                    rule: rule, 
                     clipFunc: function (ctx) {
                         ctx.rect(0, 0, width, height);
-                        ctx._context.clip(path2D);
+                        var path2D = new Path2D();
+                        rule === 0 ? '' : path2D.rect(0, 0, width, height);
+                        path2D.addPath(target.getAttr('pathClip'));
+                        path2D.addPath(target.getAttr('pathText'));
+                        ctx._context.clip(path2D, rule);
                     },
                 });
+
+                var rect = new Konva.Rect({
+                    height: height,
+                    width: width,
+                    fill: 'red',
+                });
+                //target.add(rect);
+
             } else {
                 console.error("No path element found in the SVG.");
             }
@@ -732,22 +864,27 @@ function NewPotrace(event, parent, icon, attrs) {
                 var pathData = pathElement.getAttribute('d');
                 var path2D = new Path2D(pathData);
                 
+                var noEdit = {...attrs.noEdit};
+                var edit = {...attrs.edit};
+                Object.assign(edit, { potrace: 1, invert: 0, sharpen: 0, moveable: true, });
+
                 var shape = new Konva.Shape({
                     width: img.width,
                     height: img.height,
                     icon: icon,
                     path2D: path2D,
-                    potrace: 1,
-                    invert: 0,
-                    sharpen: 0,
+                    ...noEdit,
+                    ...edit,
+                    edit: Object.keys(edit),
                 });
+
+                shape.getAttr('func') ? shape.getAttr('func')() : '';
+            
                 shape.setAttrs({
                     sceneFunc: function (ctx) {
-                        ctx.beginPath();
                         ctx.clip(shape.getAttr('path2D'));
                         ctx.fillStyle = shape.fill();
                         ctx.fillRect(0, 0, shape.width(), shape.height());
-                        ctx.closePath();
                     },
                     hitFunc: (ctx) => {
                         ctx.rect(0, 0, shape.width(), shape.height());
@@ -762,6 +899,9 @@ function NewPotrace(event, parent, icon, attrs) {
                 clickTap(shape, () => {
                     dragOn([shape]);
                     adjShow();
+                });
+                shape.on('dragstart', ()=> {
+                    console.log(true);
                 });
                 icon.appendChild(img);
                 icon.node = [shape];
@@ -925,25 +1065,26 @@ function align(v) {
     var pSize = parent.size();
     var nodeSize = nodeTarget[0].size();
     var newPos = nodeTarget[0].position();
+    var scale = nodeTarget[0].scale();
 
     switch (v) {
         case 'top':
             newPos.y = 0;
             break;
         case 'bottom':
-            newPos.y = pSize.height - nodeSize.height;
+            newPos.y = pSize.height - (nodeSize.height * scale.y);
             break;
         case 'left':
             newPos.x = 0;
             break;
         case 'right':
-            newPos.x = pSize.width - nodeSize.width;
+            newPos.x = pSize.width - (nodeSize.width * scale.x);
             break;
         case 'middle':
-            newPos.y = (pSize.height - nodeSize.height) / 2;
+            newPos.y = (pSize.height - (nodeSize.height * scale.y)) / 2;
             break;
         case 'center':
-            newPos.x = (pSize.width - nodeSize.width) / 2;
+            newPos.x = (pSize.width - (nodeSize.width * scale.x)) / 2;
             break;
         default:
             break;
@@ -1281,7 +1422,7 @@ function createInput() {
                     attr: 'potrace',
                     onChange: true,
                     func: 'upPotrace()',
-                    values: {min: 0, max: 2, label: {min: 0, max: 100}},
+                    values: {min: 0, max: 2, label: {min: -10, max: 10}},
                 },
                 {
                     name: 'Detalhamento',
@@ -1464,7 +1605,7 @@ function createInput() {
     });
 
     updateSets = () => {
-        var attrs = Object.keys(nodeTarget[0].attrs);
+        var attrs = nodeTarget[0].getAttr('edit');
         cBox.setAttribute('type', nodeTarget[0].getClassName());
         var available = [];
         listBtn.forEach(e => {

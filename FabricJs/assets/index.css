@@ -1,6 +1,7 @@
 body {
     font-family: sans-serif;
     --base-border-radius: 1rem;
+    color: #0d1216;
 }
 
 .toDown {
@@ -122,7 +123,6 @@ body {
     font-size: 2.5rem;
     font-weight: 600;
     background: #fff;
-    color: #000;
     transition: 0.2s;
 }
 
@@ -135,10 +135,7 @@ body {
     display: flex;
     width: 100%;
     box-sizing: border-box;
-    background: white;
-    color: black;
     border-radius: 1rem;
-    box-shadow: 0px 0px 5px;
     overflow: auto;
 }
 
@@ -160,13 +157,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
     width: 100%;
     background: #fff;
     margin: 1rem 0;
     padding: 1rem;
     border-radius: var(--base-border-radius);
     box-sizing: border-box;
-    color: black;
     border: 3px solid;
     box-shadow: 2px 3px 0px 1px;
 }
@@ -174,7 +171,6 @@ body {
 .customBox >* >* {
     max-width: 100%;
     box-shadow: 0px 2px 4px black;
-    margin: 1rem 0;
     padding: 0.5rem;
     border-radius: var(--base-border-radius);
 }
@@ -196,10 +192,23 @@ body {
     height: 10rem;
 }
 
-.imageBox > .boxPositions > div {
+.boxPositions {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #00000012;
+}
+
+.boxPositions > div {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.boxPositions > div > div {
     position: absolute;
     background: repeating-linear-gradient( 
-        45deg, currentColor, currentColor 5px, transparent 5px,transparent 10px );
+        45deg, currentColor, currentColor 5px, transparent 5px,transparent 10px ), 
+        linear-gradient(white 0 100%);
     box-sizing: border-box;
 }
 
@@ -237,11 +246,17 @@ body {
 }
 
 .configBox > * {
-    width: 5rem;
+    width: 10rem;
+    height: 50px;
     border: 2px solid;
     border-radius: var(--base-border-radius);
     padding: 0.5rem;
     overflow: hidden;
+}
+
+.configBox > .iconBox {
+    display: flex;
+    align-items: center;
 }
 
 .iconBox {
@@ -251,6 +266,7 @@ body {
 .iconBox::before {
     content: '';
     display: block;
+    height: 100%;
     width: 100%;
     aspect-ratio: 1;
 }
@@ -443,7 +459,7 @@ body {
 }
 
 .onLeft::before {
-    background: url(https://www.svgrepo.com/show/509719/align-shapes-right.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509716/align-shapes-left.svg) center / contain no-repeat white;
 }
 
 .onMiddle::before {
@@ -539,7 +555,6 @@ button {
     background-color: white;
     border: none;
     cursor: pointer;
-    color: black;
     font-size: 1rem;
 }
 

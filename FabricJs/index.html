@@ -8,13 +8,24 @@
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <script src="assets/potrace.js"></script>
     <script src="assets/jscolor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.3/opentype.min.js"></script>
     <title>index</title>
 </head>
 <body>
     <div class="previewWrap"></div>
 </body>
-<script src="assets/index.js"></script>
+<script src="assets/script-1.js"></script>
 <script>
+
+const font = new FontFace('Lucidity', 'url(assets/Font_Lucidity_Psych.ttf)');
+
+font.load().then(() => {
+  document.fonts.add(font);
+  console.log('Fonte carregada e pronta para uso!');
+
+}).catch((error) => {
+  console.error('Erro ao carregar a fonte:', error);
+});
 
 var setPrintArea = [
     {
@@ -23,12 +34,13 @@ var setPrintArea = [
             name: 'Frente',
             add: [
                 {
-                    tittle: 'Cor principal',
                     image: {
                         position: {},
                         mask: {
                             url: 'assets/BG_In_Love_Front.svg',
-                            fill: '#ff0000',
+                            attrs: {
+                                fill: '#ff0000',
+                            },
                             jsColor: '#ff0000',
                         },
                     }
@@ -51,6 +63,7 @@ var setPrintArea = [
                         },
                         clip: {
                             url: 'assets/Star.svg',
+                            rule: 1,
                         }, 
                     },
                 },
@@ -62,9 +75,6 @@ var setPrintArea = [
                             y: 0,
                             height: 2000,
                             width: 2000,
-                        },
-                        childAttrs: {
-
                         },
                         upload: { 
                             type: 'svg',
@@ -84,24 +94,34 @@ var setPrintArea = [
                             height: 2000,
                             width: 2000,
                         },
-                        childAttrs: {
-                            text: 'Alisson',
-                            fontSize: 300,
-                            fontFamily: 'Sans-serif',
-                            align: 'center',
-                            fill: 'red',
-                            stroke: 'blue',
-                            strokeWidth: 20,
-                            shadowBlur: 0,
-                            shadowColor: 'black',
-                            shadowOffset: { x: 10, y: 10 },
-                            shadowOpacity: 0.5,
-                            anchors: anchors.none,
-                            dontMove,
+                        attrs: {
+                            noEdit: {
+                                text: '',
+                                fontFamily: 'Lucidity',
+                                fill: 'transparent',
+                                anchors: anchors.none,
+                                rotate: false,
+                            },
+                            edit: {
+                                fontSize: 400,
+                                align: 'center',
+                                stroke: 'blue',
+                                strokeWidth: 5,
+                                shadowBlur: 0,
+                                shadowColor: 'black',
+                                shadowOffset: { x: 0, y: 0 },
+                                shadowOpacity: 0,
+                                moveable: true,
+                            },
                         },
                         add: [
-                            {x: 0, y: 0, fontStyle: '600'},
-                        ]
+                            {x: 1000, y: 0},
+                        ],
+                        clip: {
+                            url: 'assets/Font_Lucidity_Psych.ttf', 
+                            target: ['1-2'],
+                            height: 322,
+                        },
                     }
                 }
             ]
@@ -114,294 +134,53 @@ var setPrintArea = [
             name: 'Costa',
             add: [
                 {
-
+                    tittle: 'Foto no coração',
+                    image: {
+                        position: {
+                            y: 0,
+                            width: 3425,
+                            height: 3297,
+                        },
+                        upload: { 
+                            type: 'svg',
+                            attrs: {
+                                edit: {
+                                    fill: 'red',
+                                    invert: 1,
+                                },
+                                noEdit: {
+                                    //func: () => { getColor() },
+                                }
+                            },
+                            add: [
+                                {width: 3425, height: 3297},
+                            ],
+                        },
+                        clip: {
+                            url: 'assets/heart-2.svg',
+                        },
+                    },
+                },
+                {
+                    image: {
+                        position: {
+                            y: 0,
+                            width: 3425,
+                            height: 3297,
+                        },
+                        mask: {
+                            url: 'assets/heart-1.svg',
+                            attrs: {
+                                fill: '#ff0000',
+                            },
+                        },
+                    }
                 },
             ]
         }
     },
 ];
 
-var editList = [];
-var btnList = [];
-for (var [index, item] of setPrintArea.entries()) {
-    if (item.area.node) {
-        let a = item.area;
-        let p = a.node.getParent();
-        let btn = document.createElement('button');
-        btn.textContent = a.name;
-        btnList.push(btn);
-        popupBtnWrap.appendChild(btn);
-        let edit = document.createElement('div');
-        edit.className = 'customBox';
-        editList.push(edit);
-        mainEdit.appendChild(edit);
-        btn.addEventListener('click', () => {
-            btnList.forEach((e, i) => {
-                dragOff();
-                if (e === btn) {
-                    e.classList.add('selected');
-                    editList[i].classList.remove('hidden');
-                    setPrintArea[i].area.node.getParent().show();
-                } else {
-                    e.classList.remove('selected');
-                    editList[i].classList.add('hidden');
-                    setPrintArea[i].area.node.getParent().hide();
-                }
-            });
-        });
-
-        setTimeout( ()=> {
-            setPreviews(p, canvasPreview);
-        }, 1000);
-
-        if (index === 0) {
-            btn.classList.add('selected');
-        } else { 
-            p.hide();
-            edit.classList.add('hidden'); 
-        }
-        
-        if (a.add) {
-            a.add.forEach((e) => {
-                var box = document.createElement('div');
-                var tittle = document.createElement('div');
-                tittle.className = 'tittle';
-                tittle.textContent = e.tittle;
-                box.appendChild(tittle);
-                edit.appendChild(box);
-                if (e.image) {
-                    var att = e.image;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
-                    var group = new Konva.Group({
-                        width: width,
-                        height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
-                        clip: {
-                            width: width,
-                            height: height,
-                        },
-                    });
-                    a.node.add(group);
-
-                    if (att.upload) {
-                        var upBox = document.createElement('div');
-                        upBox.className = 'imageBox';
-                        box.appendChild(upBox);
-                        var input = document.createElement('input');
-                        input.className = 'inputHidden';
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        upBox.appendChild(input);
-                        
-                        var configBox = document.createElement('div');
-                        configBox.className = 'configBox hidden';
-
-                        var changeImg = document.createElement('button');
-                        changeImg.className =  'changeImg iconBox';
-                        changeImg.addEventListener('click', ()=> {
-                            input.click();
-                        });              
-                        changeImg.span = document.createElement('span');
-                        changeImg.span.textContent = 'Mudar imagem';
-                        changeImg.appendChild(changeImg.span);
-                        configBox.appendChild(changeImg);
-
-                        var callEditor = document.createElement('button');
-                        callEditor.className = 'callEditor iconBox';
-                        callEditor.addEventListener('click', ()=> {
-                            adjShow();
-                        });
-                        callEditor.span = document.createElement('span');
-                        callEditor.span.textContent = 'Editar';
-                        callEditor.appendChild(callEditor.span);
-                        configBox.appendChild(callEditor);
-
-                        if (att.upload.add) {
-                            var add = att.upload.add;
-                            var multi = add.length > 1;
-
-                            if (multi) {
-                                var boxPositions = document.createElement('div');
-                                boxPositions.className = 'boxPositions';
-                                boxPositions.style.aspectRatio = `${width}/${height}`;
-                                upBox.appendChild(boxPositions);
-    
-                                for (let i = 0; i < add.length; i++) {
-                                    var position = document.createElement('div');
-                                    position.style = `
-                                        left: ${(add[i].x / width) * 100}%; 
-                                        top: ${(add[i].y / height) * 100}%; 
-                                        width: ${(add[i].width / width) * 100}%; 
-                                        height: ${(add[i].height / height) * 100}%;
-                                        color: #${colorOrder[i]}
-                                    `;
-                                    boxPositions.appendChild(position);
-                                }
-                            }
-
-                            var iconsBox = document.createElement('div');
-                            iconsBox.className = `iconsBox slider ${multi? 'multi': ''}`;
-                            upBox.appendChild(iconsBox);
-
-                            add.forEach((e, i) => {
-                                let div = document.createElement('div');
-
-                                let imgIcon = document.createElement('div');
-                                imgIcon.className = 'addImage';
-                                imgIcon.onInput = true;
-                                imgIcon.input = input;
-                                imgIcon.parent = div;
-                                imgIcon.configBox = configBox;
-                                iconsList.push(imgIcon);
-                                div.appendChild(imgIcon);
-
-                                if (multi) {
-                                    let color = document.createElement('span');
-                                    color.style.color = `#${colorOrder[i]}`;
-                                    div.appendChild(color);
-                                }
-
-                                let konvaBox = new Konva.Group(e);
-                                
-                                konvaBox.setAttrs({
-                                    clip: konvaBox.size(),
-                                });
-                                
-                                nodesBox.push(konvaBox);
-
-                                group.add(konvaBox);
-                                
-                                imgIcon.onclick = ()=> {
-                                    onSelect(imgIcon, true);
-                                }
-
-                                imgIcon.nodeBox = konvaBox;
-
-                                iconsBox.appendChild(div);
-                            });
-
-                        }
-
-                        upBox.appendChild(configBox);
-
-                        if (att.upload.type === 'svg') {
-                            input.addEventListener('change', function(event) {
-                                NewPotrace(event, nodesBox.selected, iconsList.selected);
-                                iconsList.selected.onInput = false;
-                            });
-                        }
-    
-                        if (!att.upload.type) {
-                            input.addEventListener('change', function(event) {
-                                upload(event, nodesBox.selected, iconsList.selected);
-                                iconsList.selected.onInput = false;
-                            });
-                        }
-                        
-                    }
-
-                    if (att.clip) {
-                        var att = att.clip;
-                        if (att.url) {
-                            setClip(att.url, group);
-                        }
-                    }
-
-                    if (att.mask) {
-                        var att = att.mask;
-                        if (att.url) {
-                            getPath(att.url, group, att.fill)
-                            .then(path => {
-                                path.setAttrs({
-                                    id: 'path',
-                                    listening: false,
-                                });
-                                if (att.jsColor) {
-                                    createJsColor(box, target = [path], att.jsColor);
-                                }
-                            })
-                        }
-                    }
-                    
-                }
-                if (e.text) {
-                    var att = e.text;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
-                    var group = new Konva.Group({
-                        width: width,
-                        height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
-                        clip: {
-                            width: width,
-                            height: height,
-                        },
-                    });
-                    group.setAttrs(att.setAttrs);
-                    a.node.add(group);
-                    
-                    let targets = [];
-                    
-                    var input = document.createElement('input');
-                    Object.assign(input, {type: 'text'});
-
-                    if (e.text.add) {
-                        e.text.add.forEach(e => {
-                            var text = new Konva.Text({
-                                icon: input,
-                                ...e,
-                                ...att.childAttrs,
-                                moveable: true,
-                            });
-                            canSelect.push(text);
-                            clickTap(text, () => {
-                                dragOn(targets);
-                                adjShow();
-                            });
-                            group.add(text);
-                            targets.push(text);
-                            text.onSelect = ()=> {onSelect(text)};
-                        });
-                    }
-
-                    var inputBox = document.createElement('div');
-                    inputBox.className = 'inputTextBox';
-
-                    var callEditor = document.createElement('button');
-                    callEditor.className = 'callEditor iconBox';
-                    callEditor.addEventListener('click', ()=> {
-                        dragOn(targets);
-                        adjShow();
-                    });
-                    callEditor.span = document.createElement('span');
-                    callEditor.span.textContent = 'Editar';
-                    callEditor.appendChild(callEditor.span);
-
-                    input.node = targets;
-                    input.parent = inputBox;
-                    input.configBox = document.createElement('div');
-                    
-                    input.onclick = ()=> {
-                        onSelect(input, true);
-                    }
-                    
-                    input.oninput = ()=> {
-                        targets.forEach(e=> {
-                            e.setAttr('text', input.value);
-                        });
-                    }
-
-                    inputBox.append(input, callEditor);
-                    box.appendChild(inputBox);
-                }
-            });
-        }
-
-    }
-}
-
 </script>
+<script src="assets/script-2.js"></script>
 </html>
