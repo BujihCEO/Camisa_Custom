@@ -29,6 +29,16 @@ var popupBottom = document.createElement('div');
 popupBottom.className = 'popupBottom';
 popupEditor.appendChild(popupBottom);
 
+var controlX = document.createElement('div');
+controlX.className = 'controlX';
+popupBottom.appendChild(controlX);
+
+controlX.c1 = document.createElement('div');
+controlX.appendChild(controlX.c1);
+
+var inputX = document.createElement('div');
+controlX.c1.appendChild(inputX);
+
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
 popupBottom.appendChild(mainEdit);
@@ -49,6 +59,31 @@ showPopup.addEventListener('click', ()=> {
 });
 document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
+
+let initialHeight = mainEdit.offsetHeight;
+let maxHeight = window.innerHeight / 2;
+let initialY = 0;
+
+controlX.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+    initialY = e.clientY; // Pega a posição inicial do arraste
+    console.log('dragstart');
+});
+
+controlX.addEventListener('drag', (e) => {
+    if (e.clientY === 0) return; // Ignorar valores inválidos
+
+    // Calcula a diferença de arrasto vertical
+    let deltaY = e.clientY - initialY;
+
+    // Ajusta a altura de mainEdit de acordo com o movimento vertical
+    mainEdit.style.height = `${initialHeight + deltaY}px`;
+});
+
+controlX.addEventListener('dragend', () => {
+    // Atualiza a altura inicial após o arraste terminar
+    initialHeight = mainEdit.offsetHeight;
+});
 
 Konva.hitOnDragEnabled = true;
 
@@ -1680,7 +1715,6 @@ function createInput() {
                 [...e.box.children].forEach(c => {
                     if (attrs.includes(c.attr)) {
                         c.classList.remove('hidden');
-                        console.log(c, c.input);
                         c.input.change();
                     } else {
                         c.classList.add('hidden');
