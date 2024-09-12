@@ -243,12 +243,20 @@ for (var [index, item] of setPrintArea.entries()) {
                             group.add(text);
                             targets.push(text);
                             text.onSelect = ()=> {onSelect(text)};
-                            console.log(text.direction());
                         });
                     }
                     
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
+                    
+                    var selectText = document.createElement('button');
+                    selectText.className = 'findTarget iconBox';
+                    selectText.addEventListener('click', ()=> {
+                        onSelect(input, true);
+                    });
+                    selectText.span = document.createElement('span');
+                    selectText.span.textContent = 'Mirar';
+                    selectText.appendChild(selectText.span);
                     
                     var callEditor = document.createElement('button');
                     callEditor.className = 'callEditor iconBox';
@@ -259,9 +267,9 @@ for (var [index, item] of setPrintArea.entries()) {
                     callEditor.span = document.createElement('span');
                     callEditor.span.textContent = 'Editar';
                     callEditor.appendChild(callEditor.span);
-                    
-                    var uppercase = e.text.onInput.uppercase === true ? true : false;
-                    input.value = uppercase ? targets[0].text().toUpperCase() : targets[0].text();
+
+                    //var uppercase = e.text.onInput.uppercase === true ? true : false;
+                    //uppercase ? targets[0].text().toUpperCase() : targets[0].text();
                     input.node = targets;
                     input.parent = inputBox;
                     input.configBox = document.createElement('div');
@@ -271,10 +279,10 @@ for (var [index, item] of setPrintArea.entries()) {
                     }
 
                     input.oninput = (value)=> {
-                        value = e.text.onInput.uppercase == true ?
+                        value = e.text.onInput.uppercase === true ?
                         input.value.toUpperCase() : input.value;
                         targets.forEach(e=> {
-                            e.setAttr('text', value.toUpperCase());
+                            e.setAttr('text', value);
                         });
                         if (e.text.onInput.onCenter == true) {
                             align('center');
@@ -286,11 +294,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         textClip(clip.url, clip.target, targets, clip.height, input, e.text.onInput.uppercase);
                     }
 
-                    targets[0].on('text', ()=> {
-                        console.log('text');
-                    });
-
-                    inputBox.append(input, callEditor);
+                    inputBox.append(selectText, input, callEditor);
                     box.appendChild(inputBox);
                 }
                 box.childElementCount > 0 ? edit.appendChild(box) : '';

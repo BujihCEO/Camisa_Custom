@@ -34,31 +34,25 @@ var setPrintArea = [
             name: 'Frente',
             add: [
                 {
-                    image: {
-                        position: {},
-                        mask: {
-                            url: 'assets/BG_In_Love_Front.svg',
-                            attrs: {
-                                fill: '#ff0000',
-                            },
-                            jsColor: '#ff0000',
-                        },
-                    }
-                },
-                {
                     tittle: 'Grade de fotos',
                     image: {
                         position: {
+                            y: 500,
                             height: 2000,
                             width: 2000,
                         },
                         upload: { 
-                            type: '',
+                            type: 'svg',
+                            attrs: {
+                                edit: {
+                                    fill: 'black',
+                                }
+                            },
                             add: [
-                                {x: 0, y: 0, width: 1000, height: 1000},
-                                {x: 1000, y: 0, width: 1000, height: 1000},
-                                {x: 0, y: 1000, width: 1000, height: 1000},
-                                {x: 1000, y: 1000, width: 1000, height: 1000},
+                                {x: 0, y: 0, width: 2000, height: 2000},
+                                //{x: 1000, y: 0, width: 1000, height: 1000},
+                                //{x: 0, y: 1000, width: 1000, height: 1000},
+                                //{x: 1000, y: 1000, width: 1000, height: 1000},
                             ],
                         },
                         clip: {
@@ -88,14 +82,30 @@ var setPrintArea = [
                     } 
                 },
                 {
+                    image: {
+                        position: {
+                            y: 500,
+                            width: 3253, 
+                            height: 2000,
+                        },
+                        mask: {
+                            url: 'assets/Star-2.svg',
+                            attrs: {
+                                fill: 'black',
+                            },
+                        },
+                    }
+                },
+                {
                     tittle: 'nome',
                     text: {
                         position: {
+                            y: 500,
                             height: 2000,
                             width: 2000,
                         },
                         onInput: {
-                            uppercase: true,
+                            uppercase: false,
                             onCenter: false,
                         },
                         attrs: {
@@ -106,7 +116,7 @@ var setPrintArea = [
                                 fontFamily: 'Lucidity',
                                 text: 'nome',
                                 
-                                strokeWidth: 1,
+                                strokeWidth: 20,
                                 
                                 shadowBlur: 0,
                                 shadowOpacity: 0,
@@ -116,20 +126,22 @@ var setPrintArea = [
                                 rotate: false,
                                 moveable: true,
                                 letterSpacing: 20,
+                                textBaseline: 'alphabetic',
                             },
                             edit: {
-                                stroke: 'blue',
+                                stroke: 'black',
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 0,
+                                moveable: true,
                             },
                         },
                         add: [
-                            {x: 0, y: 1500},
-                            {x: 1000, y: 300},
+                            {x: 0, y: 0},
+                            //{x: 1000, y: 300},
                         ],
                         clip: {
                             url: 'assets/Font_Lucidity_Psych.ttf', 
-                            target: ['1-2'],
+                            target: ['1-1'],
                             height: 312,
                         },
                     }

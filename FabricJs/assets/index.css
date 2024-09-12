@@ -279,7 +279,7 @@ body {
 .inputTextBox {
     display: flex;
     width: 100%;
-    max-width: 30rem;
+    max-width: 300px;
 }
 
 .inputTextBox.selected {
@@ -574,6 +574,10 @@ button {
 
 .callEditor::before {
     background: url(https://www.svgrepo.com/show/521620/edit.svg) center / 80% no-repeat white;
+}
+
+.findTarget::before {
+    background: url(https://www.svgrepo.com/show/479118/target-2.svg) center / 80% no-repeat white;
 }
 
 .fontSize::before {

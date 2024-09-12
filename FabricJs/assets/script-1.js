@@ -759,6 +759,7 @@ function textClip(url, targetID, text, height, input, uppercase = false, rule = 
             console.error('Erro ao carregar a fonte: ', err);
             return;
         }
+
         var fontSize = text[0].getAttr('fontSize');
         var letterSpacing = text[0].getAttr('letterSpacing');
         
@@ -783,9 +784,6 @@ function textClip(url, targetID, text, height, input, uppercase = false, rule = 
                     var newPath = new Path2D(pathData.toPathData());
                     path2D.addPath(newPath);
                     var glyph = font.charToGlyph(char);
-                    var bbox = glyph.getBoundingBox();
-                    var glyphHeight = (bbox.y2 - bbox.y1) * (fontSize / font.unitsPerEm);
-                    console.log(glyphHeight + ' - ' + e.height());
                     var advanceWidth = glyph.advanceWidth * (fontSize / font.unitsPerEm);
                     ltx += advanceWidth + letterSpacing;
                 });
@@ -863,7 +861,7 @@ function setClip(url, target, rule = 0) {
                 width: width,
                 fill: 'red',
             });
-            target.add(rect);
+            //target.add(rect);
 
         } else {
             console.error('no path found');
@@ -1322,6 +1320,7 @@ function createInput() {
         });
 
         box.input = buttonBox;
+        buttonBox.change = ()=> {};
 
         buttonBox.change = ()=> {
             var value = nodeTarget[0].getAttr(add.attr);
@@ -1350,6 +1349,10 @@ function createInput() {
         
         var btnBox = document.createElement('div');
         add.class ? btnBox.className = add.class : '';
+
+        box.input = btnBox;
+
+        btnBox.change = ()=> {};
 
         var list = [];
         add.btns.forEach(e => {
@@ -1677,6 +1680,7 @@ function createInput() {
                 [...e.box.children].forEach(c => {
                     if (attrs.includes(c.attr)) {
                         c.classList.remove('hidden');
+                        console.log(c, c.input);
                         c.input.change();
                     } else {
                         c.classList.add('hidden');
