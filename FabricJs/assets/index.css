@@ -247,7 +247,7 @@ body {
 
 .configBox > * {
     width: 10rem;
-    height: 50px;
+    height: 40px;
     border: 2px solid;
     border-radius: var(--base-border-radius);
     padding: 0.5rem;
@@ -267,7 +267,6 @@ body {
     content: '';
     display: block;
     height: 100%;
-    width: 100%;
     aspect-ratio: 1;
 }
 
@@ -379,6 +378,13 @@ body {
     justify-content: space-evenly;
     gap: 1rem;
     overflow-x: auto;
+}
+
+.adjustBox.none::after {
+    content: 'Nenhuma modificação disponivel';
+    text-align: center;
+    padding: 10px 0;
+    font-size: 20px;
 }
 
 .iconBtn {

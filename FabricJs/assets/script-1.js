@@ -537,7 +537,6 @@ function dragOn(target) {
     transformer.show();
 }
 
-
 function dragOff() {
     if (nodeTarget.length > 0) {
         onSelect();
@@ -753,96 +752,127 @@ function movePath(p, t) {
     p.draw();
 }
 
-function textClip(url, targetID, text, height, input, rule = 0) {
-    var font;
+function textClip(url, targetID, text, height, input, uppercase = false, rule = 0) {
     var target = stage.findOne(`#${targetID}`);
-    opentype.load(url, function(err, newfont) {
+    opentype.load(url, function(err, font) {
         if (err) {
             console.error('Erro ao carregar a fonte: ', err);
             return;
         }
-        font = newfont;
-    });
+        var fontSize = text[0].getAttr('fontSize');
+        var letterSpacing = text[0].getAttr('letterSpacing');
+        
+        if (target.getAttr('pathText')) {
+            var value = text[0].text();
+            var path2D = new Path2D();
+            text.forEach(e => {
+                var pathData = font.getPath(value, e.x(), e.y() + height, fontSize);
+                var newPath = new Path2D(pathData.toPathData());
+                path2D.addPath(newPath);
+            });
+            target.setAttr('pathText', path2D);
+        } else {
+            var value = text[0].text();
+            var path2D = new Path2D();
+            text.forEach(e => {
+                var x = e.x();
+                var y = e.y() + height;
+                var ltx = 0;
+                value.split('').forEach(char => {
+                    var pathData = font.getPath(char, x + ltx, y, fontSize);
+                    var newPath = new Path2D(pathData.toPathData());
+                    path2D.addPath(newPath);
+                    var glyph = font.charToGlyph(char);
+                    var bbox = glyph.getBoundingBox();
+                    var glyphHeight = (bbox.y2 - bbox.y1) * (fontSize / font.unitsPerEm);
+                    console.log(glyphHeight + ' - ' + e.height());
+                    var advanceWidth = glyph.advanceWidth * (fontSize / font.unitsPerEm);
+                    ltx += advanceWidth + letterSpacing;
+                });
+            });
+            rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+            var theight = target.height();
+            var twidth = target.width();
+            target.setAttrs({
+                pathText: path2D,
+                rule: rule,
+                clipFunc: function (ctx) {
+                    ctx.rect(0, 0, twidth, theight);
+                    var newPath = new Path2D();
+                    rule === 'evenodd' ? path2D.rect(0, 0, twidth, theight) : '';
+                    newPath.addPath(target.getAttr('pathText'));
+                    ctx._context.clip(newPath, rule);
+                },
+            });
+        }
     
-    var fontSize = text.getAttr('fontSize');
+        function update() {
+            var value = text[0].text();
+            var path2D = new Path2D();
+            text.forEach(e => {
+                var x = e.x();
+                var y = e.y() + height;
+                var ltx = 0;
+                value.split('').forEach(char => {
+                    var pathData = font.getPath(char, x + ltx, y, fontSize);
+                    var newPath = new Path2D(pathData.toPathData());
+                    path2D.addPath(newPath);
+                    var glyph = font.charToGlyph(char);
+                    var advanceWidth = glyph.advanceWidth * (fontSize / font.unitsPerEm);
+                    ltx += advanceWidth + letterSpacing;
+                });
+            });
+            target.setAttr('pathText', path2D);
+        }
     
-    // if (target.getAttr('pathText')) {
-    //     var pathData = font.getPath(text.text(), text.x(), text.y() + height, fontSize);
-    //     target.setAttr('pathText', new Path2D(pathData.toPathData()));
-    // } else {
-    //     rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
-    //     target.setAttrs({
-    //         pathText: pathText,
-    //         rule: rule,
-    //         clipFunc: function (ctx) {
-    //             ctx.rect(0, 0, width, height);
-    //             var path2D = new Path2D();
-    //             rule === 0 ? '' : path2D.rect(0, 0, width, height);
-    //             path2D.addPath(target.getAttr('pathText'));
-    //             ctx._context.clip(path2D, rule);
-    //         },
-    //     });
-    // }
-
-    input.addEventListener('input', ()=> {
-        var pathData = font.getPath(input.value.toUpperCase(), text.x(), text.y() + height, fontSize);
-        target.setAttr('pathText', new Path2D(pathData.toPathData()));
+        input.addEventListener('input', update);
+        text[0].on('dragmove', update);
     });
 }
 
 function setClip(url, target, rule = 0) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'document';
-
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            var svgDoc = xhr.response;
-            var pathElement = svgDoc.querySelector('path');
+    target.setAttr('pathClip', true);
+    return fetch(url)
+    .then(response => response.text())
+    .then(svgText => {
+        var parser = new DOMParser();
+        var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+        var pathElement = svgDoc.querySelector('path');
+        if (pathElement) {
+            var clip = pathElement.getAttribute('d');
+            var width = target.width();
+            var height = target.height();
+            var pathClip = new Path2D(clip);
             
-            if (pathElement) {
-                var clip = pathElement.getAttribute('d');
-                var width = target.width();
-                var height = target.height();
-                var pathClip = new Path2D(clip);
-                var pathText = new Path2D();
-                
-                rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
-                
-                target.setAttrs({
-                    pathClip: pathClip,
-                    pathText: pathText,
-                    rule: rule, 
-                    clipFunc: function (ctx) {
-                        ctx.rect(0, 0, width, height);
-                        var path2D = new Path2D();
-                        rule === 0 ? '' : path2D.rect(0, 0, width, height);
-                        path2D.addPath(target.getAttr('pathClip'));
-                        path2D.addPath(target.getAttr('pathText'));
-                        ctx._context.clip(path2D, rule);
-                    },
-                });
+            rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+            target.setAttrs({
+                pathClip: pathClip,
+                rule: rule,
+                clipFunc: function (ctx) {
+                    ctx.rect(0, 0, width, height);
+                    var path2D = new Path2D();
+                    rule === 'evenodd' ? path2D.rect(0, 0, width, height) : '';
+                    path2D.addPath(target.getAttr('pathClip'));
+                    target.getAttr('pathText') ? path2D.addPath(target.getAttr('pathText')) : '';
+                    ctx._context.clip(path2D, rule);
+                },
+            });
 
-                var rect = new Konva.Rect({
-                    height: height,
-                    width: width,
-                    fill: 'red',
-                });
-                //target.add(rect);
+            var rect = new Konva.Rect({
+                height: height,
+                width: width,
+                fill: 'red',
+            });
+            target.add(rect);
 
-            } else {
-                console.error("No path element found in the SVG.");
-            }
         } else {
-            console.error("Failed to load SVG. Status:", xhr.status);
+            console.error('no path found');
         }
-    };
-
-    xhr.onerror = function () {
-        console.error("Error during the request.");
-    };
-
-    xhr.send();
+    })
+    .catch(error => {
+        console.error("Error fetching or parsing SVG:", error);
+        throw error;
+    });
 }
 
 function NewPotrace(event, parent, icon, attrs) {
@@ -1123,6 +1153,7 @@ function createInput() {
     function createJsColor(parent, add) {
         var box = document.createElement('div');
         box.className = 'JsColorBox';
+        box.attr = add.attr;
         if (add.list) {
             var tittle = document.createElement('div');
             tittle.textContent = add.name;
@@ -1132,7 +1163,7 @@ function createInput() {
         var input = document.createElement('button');
         input.className = 'jscolor';
         input.setAttribute('data-jscolor', `{value:'#ff0000'}`);
-        parent.input.push(input);
+        box.input = input;
         box.appendChild(input);
         parent.appendChild(box);
 
@@ -1169,6 +1200,7 @@ function createInput() {
         var v = add.values;
         var box = document.createElement('div');
         box.className = 'rangeBox';
+        box.attr = add.attr;
         
         var title = document.createElement('div');
         title.textContent = add.name;
@@ -1181,7 +1213,7 @@ function createInput() {
             step: v.label ? (v.max - v.min) * 0.005 : 1 
         });
         
-        parent.input.push(inputRange);
+        box.input = inputRange;
         
         var inputText = document.createElement('input');
         inputText.type = 'text';
@@ -1253,6 +1285,7 @@ function createInput() {
     function createChooser(parent, add) {
         var box = document.createElement('div');
         box.className = 'chooserBox';
+        box.attr = add.attr;
         var tittle = document.createElement('div');
         tittle.textContent = add.name;
         
@@ -1288,7 +1321,8 @@ function createInput() {
             };
         });
 
-        parent.input.push(buttonBox);
+        box.input = buttonBox;
+
         buttonBox.change = ()=> {
             var value = nodeTarget[0].getAttr(add.attr);
             list.forEach(e => {
@@ -1307,6 +1341,7 @@ function createInput() {
     function btnFunc(parent, add) {
         var box = document.createElement('div');
         box.className = '';
+        box.attr = add.attr;
         if (add.name) {
             var tittle = document.createElement('div');
             tittle.textContent = add.name;
@@ -1560,7 +1595,6 @@ function createInput() {
 
     create.forEach((e) => {
         let box = document.createElement('div');
-        box.input = [];
         
         e.add.forEach(add => {
             if(add.type === 'color') {
@@ -1621,6 +1655,7 @@ function createInput() {
             if (i === 0) {
                 e.classList.add('selected');
                 e.box.classList.remove('hidden');
+                console.log(e.box.input);
                 aBox.b.textContent = e.textContent;
             } else {
                 e.classList.remove('selected');
@@ -1629,6 +1664,29 @@ function createInput() {
             e.box.input.forEach(input => {
                 input.change();
             });
+        });
+    };
+
+    updateSets = () => {
+        var attrs = nodeTarget[0].getAttr('edit');
+        cBox.setAttribute('type', nodeTarget[0].getClassName());
+        aBox.b.textContent = '';
+        listBtn.forEach(e => {
+            if (e.n.some(n => attrs.includes(n))) {
+                e.classList.remove('hidden');
+                [...e.box.children].forEach(c => {
+                    if (attrs.includes(c.attr)) {
+                        c.classList.remove('hidden');
+                        c.input.change();
+                    } else {
+                        c.classList.add('hidden');
+                    }
+                });
+            } else {
+                e.classList.add('hidden');
+            }
+            e.box.classList.remove('selected');
+            e.box.classList.add('hidden');
         });
     };
 }

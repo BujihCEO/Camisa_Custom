@@ -15,6 +15,7 @@ for (var [index, item] of setPrintArea.entries()) {
         btn.addEventListener('click', () => {
             btnList.forEach((e, i) => {
                 dragOff();
+                stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
                 if (e === btn) {
                     e.classList.add('selected');
                     editList[i].classList.remove('hidden');
@@ -186,7 +187,7 @@ for (var [index, item] of setPrintArea.entries()) {
                     if (att.clip) {
                         var clip = att.clip;
                         if (clip.url) {
-                            setClip(clip.url, group, clip.rule);
+                            setClip(clip.url, group, clip.rule ? clip.rule : 0)
                         }
                     }
 
@@ -242,9 +243,9 @@ for (var [index, item] of setPrintArea.entries()) {
                             group.add(text);
                             targets.push(text);
                             text.onSelect = ()=> {onSelect(text)};
+                            console.log(text.direction());
                         });
                     }
-
                     
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
@@ -259,6 +260,8 @@ for (var [index, item] of setPrintArea.entries()) {
                     callEditor.span.textContent = 'Editar';
                     callEditor.appendChild(callEditor.span);
                     
+                    var uppercase = e.text.onInput.uppercase === true ? true : false;
+                    input.value = uppercase ? targets[0].text().toUpperCase() : targets[0].text();
                     input.node = targets;
                     input.parent = inputBox;
                     input.configBox = document.createElement('div');
@@ -266,18 +269,26 @@ for (var [index, item] of setPrintArea.entries()) {
                     input.onclick = ()=> {
                         onSelect(input, true);
                     }
-                    
-                    input.oninput = ()=> {
+
+                    input.oninput = (value)=> {
+                        value = e.text.onInput.uppercase == true ?
+                        input.value.toUpperCase() : input.value;
                         targets.forEach(e=> {
-                            e.setAttr('text', input.value.toUpperCase());
-                            align('center');
+                            e.setAttr('text', value.toUpperCase());
                         });
+                        if (e.text.onInput.onCenter == true) {
+                            align('center');
+                        }
                     }
 
                     if (att.clip) {
                         var clip = att.clip;
-                        textClip(clip.url, clip.target, targets[0], clip.height, input);
+                        textClip(clip.url, clip.target, targets, clip.height, input, e.text.onInput.uppercase);
                     }
+
+                    targets[0].on('text', ()=> {
+                        console.log('text');
+                    });
 
                     inputBox.append(input, callEditor);
                     box.appendChild(inputBox);
