@@ -62,25 +62,29 @@ showPopup.addEventListener('click', ()=> {
 document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
 
-var mainShow = true; 
-var mainHeight = mainEdit.innerHeight;
+var mainShow = true;
 controlY.addEventListener('click', (e) => {
     if (mainShow) {
         mainShow = false;
-        var offset = -mainEdit.offsetHeight;
-        popupBottom.style.bottom = offset + 'px';
-        console.log(offset);
+        mainEdit.style.height = 0;
+        controlY.style.opacity = '0%';
+        controlY.style.translate = '0 100%';
+        controlY.icon.style.transform = 'rotate(180deg)';
         setTimeout(() => {
             controlY.span.classList.remove('hidden');
-            controlY.icon.style.transform = 'rotate(180deg)';
-            popupBottom.style.bottom = (offset + 75)+'px';
+            controlY.style.opacity = '';
+            controlY.style.translate = '0';
         }, 300);
     } else {
         mainShow = true;
+        controlY.style.opacity = '0%';
+        controlY.style.translate = '0 100%';
         controlY.span.classList.add('hidden');
-        popupBottom.style.bottom = '';
+        mainEdit.style.height = '';
         setTimeout(() => {
             controlY.icon.style.transform = '';
+            controlY.style.opacity = '';
+            controlY.style.translate = '0';
         }, 300);
     }
 });
