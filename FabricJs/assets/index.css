@@ -101,22 +101,15 @@ body {
     transition: 0.3s;
 }
 
-.popupBottom::after {
-    content: '';
-    height: 6rem;
-    width: 100%;
-}
-
 .popupBtnWrap {
-    position: fixed;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    bottom: 0;
     height: 6rem;
     width: 100%;
     background: white;
     border-top: 1px solid;
+    z-index: 2;
 }
 
 .popupBtnWrap > button {
@@ -189,20 +182,22 @@ body {
     display: flex;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     box-sizing: border-box;
     border-radius: 1rem;
-    overflow: auto;
-    padding: 0 1rem;
     transition: 0.3s;
 }
 
 .customBox {
     position: relative;
     display: grid;
-    gap: 2rem;
     align-items: center;
+    gap: 2rem;
     width: 100%;
     height: 100%;
+    padding: 0 10px 10px;
+    overflow: auto;
+    box-sizing: border-box;
     --base-border-radius: 1.5rem;
 }
 

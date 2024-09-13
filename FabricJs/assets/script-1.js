@@ -43,15 +43,15 @@ controlY.append(controlY.icon, controlY.span);
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
 
-popupBottom.append(controlY, mainEdit);
-
 var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
+
+popupBottom.append(controlY, mainEdit, popupBtnWrap);
 
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
 
-popupEditor.append(popupBtnWrap, adjustBox);
+popupEditor.append(adjustBox);
 
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
