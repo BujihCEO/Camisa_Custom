@@ -29,27 +29,29 @@ var popupBottom = document.createElement('div');
 popupBottom.className = 'popupBottom';
 popupEditor.appendChild(popupBottom);
 
-var controlX = document.createElement('div');
-controlX.className = 'controlX';
-popupBottom.appendChild(controlX);
+var controlY = document.createElement('div');
+controlY.className = 'controlY';
 
-controlX.c1 = document.createElement('div');
-controlX.appendChild(controlX.c1);
+controlY.icon = document.createElement('div');
 
-var inputX = document.createElement('div');
-controlX.c1.appendChild(inputX);
+controlY.span = document.createElement('span');
+controlY.span.textContent = 'Ver elementos';
+controlY.span.className = 'hidden';
+
+controlY.append(controlY.icon, controlY.span);
 
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
-popupBottom.appendChild(mainEdit);
+
+popupBottom.append(controlY, mainEdit);
 
 var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
-popupBottom.appendChild(popupBtnWrap);
 
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
-popupEditor.appendChild(adjustBox);
+
+popupEditor.append(popupBtnWrap, adjustBox);
 
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
@@ -60,29 +62,27 @@ showPopup.addEventListener('click', ()=> {
 document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
 
-let initialHeight = mainEdit.offsetHeight;
-let maxHeight = window.innerHeight / 2;
-let initialY = 0;
-
-controlX.addEventListener('dragstart', (e) => {
-    e.preventDefault();
-    initialY = e.clientY; // Pega a posição inicial do arraste
-    console.log('dragstart');
-});
-
-controlX.addEventListener('drag', (e) => {
-    if (e.clientY === 0) return; // Ignorar valores inválidos
-
-    // Calcula a diferença de arrasto vertical
-    let deltaY = e.clientY - initialY;
-
-    // Ajusta a altura de mainEdit de acordo com o movimento vertical
-    mainEdit.style.height = `${initialHeight + deltaY}px`;
-});
-
-controlX.addEventListener('dragend', () => {
-    // Atualiza a altura inicial após o arraste terminar
-    initialHeight = mainEdit.offsetHeight;
+var mainShow = true; 
+var mainHeight = mainEdit.innerHeight;
+controlY.addEventListener('click', (e) => {
+    if (mainShow) {
+        mainShow = false;
+        var offset = -mainEdit.offsetHeight;
+        popupBottom.style.bottom = offset + 'px';
+        console.log(offset);
+        setTimeout(() => {
+            controlY.span.classList.remove('hidden');
+            controlY.icon.style.transform = 'rotate(180deg)';
+            popupBottom.style.bottom = (offset + 75)+'px';
+        }, 300);
+    } else {
+        mainShow = true;
+        controlY.span.classList.add('hidden');
+        popupBottom.style.bottom = '';
+        setTimeout(() => {
+            controlY.icon.style.transform = '';
+        }, 300);
+    }
 });
 
 Konva.hitOnDragEnabled = true;
