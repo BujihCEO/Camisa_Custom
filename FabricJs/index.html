@@ -17,15 +17,7 @@
 <script src="assets/script-1.js"></script>
 <script>
 
-const font = new FontFace('Lucidity', 'url(assets/Font_Lucidity_Psych.ttf)');
-
-font.load().then(() => {
-  document.fonts.add(font);
-  console.log('Fonte carregada e pronta para uso!');
-
-}).catch((error) => {
-  console.error('Erro ao carregar a fonte:', error);
-});
+newFont('Lucidity', 'assets/Font_Lucidity_Psych.ttf');
 
 var setPrintArea = [
     {
@@ -34,7 +26,7 @@ var setPrintArea = [
             name: 'Frente',
             add: [
                 {
-                    tittle: 'Grade de fotos',
+                    tittle: 'Foto',
                     image: {
                         position: {
                             y: 500,
@@ -62,7 +54,7 @@ var setPrintArea = [
                     },
                 },
                 {
-                    tittle: 'Foto',
+                    tittle: 'Grade de fotos',
                     image: {
                         position: {
                             x: 0,
@@ -97,7 +89,7 @@ var setPrintArea = [
                     }
                 },
                 {
-                    tittle: 'nome',
+                    tittle: 'Nome',
                     text: {
                         position: {
                             y: 500,
@@ -105,14 +97,13 @@ var setPrintArea = [
                             width: 2000,
                         },
                         onInput: {
-                            uppercase: false,
+                            uppercase: true,
                             onCenter: false,
                         },
                         attrs: {
                             noEdit: {
                                 text: '',
                                 fill: 'transparent',
-                                fontSize: 400,
                                 fontFamily: 'Lucidity',
                                 text: 'nome',
                                 
@@ -126,9 +117,9 @@ var setPrintArea = [
                                 rotate: false,
                                 moveable: true,
                                 letterSpacing: 20,
-                                textBaseline: 'alphabetic',
                             },
                             edit: {
+                                fontSize: 400,
                                 stroke: 'black',
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 0,
@@ -139,11 +130,15 @@ var setPrintArea = [
                             {x: 0, y: 0},
                             //{x: 1000, y: 300},
                         ],
-                        clip: {
+                        textClip: {
                             url: 'assets/Font_Lucidity_Psych.ttf', 
                             target: ['1-1'],
-                            height: 312,
+                            height: 0.78,
                         },
+                        // clip: {
+                        //     url: 'assets/Star.svg',
+                        //     rule: 1,
+                        // }, 
                     }
                 }
             ]

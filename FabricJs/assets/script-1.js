@@ -658,6 +658,15 @@ function newUpload(e, parent, icon, attrs) {
     reader.readAsDataURL(file);
 };
 
+function newFont(name, url) {
+    var font = new FontFace(name, `url(${url})`);
+    font.load().then(() => {
+        document.fonts.add(font);
+    }).catch((error) => {
+        console.error(`Erro ao carregar fonte '${name}'`, error);
+    });
+}
+
 var jsColorList = [];
 
 function getColor(id, attrs = []) {
@@ -791,7 +800,7 @@ function movePath(p, t) {
     p.draw();
 }
 
-function textClip(url, targetID, text, height, input, uppercase = false, rule = 0) {
+function textClip(url, targetID, text, height, rule) {
     var target = stage.findOne(`#${targetID}`);
     opentype.load(url, function(err, font) {
         if (err) {
@@ -799,24 +808,14 @@ function textClip(url, targetID, text, height, input, uppercase = false, rule = 
             return;
         }
 
-        var fontSize = text[0].getAttr('fontSize');
-        var letterSpacing = text[0].getAttr('letterSpacing');
-        
-        if (target.getAttr('pathText')) {
-            var value = text[0].text();
-            var path2D = new Path2D();
-            text.forEach(e => {
-                var pathData = font.getPath(value, e.x(), e.y() + height, fontSize);
-                var newPath = new Path2D(pathData.toPathData());
-                path2D.addPath(newPath);
-            });
-            target.setAttr('pathText', path2D);
-        } else {
+        function update() {
+            var fontSize = text[0].getAttr('fontSize');
+            var letterSpacing = text[0].getAttr('letterSpacing');
             var value = text[0].text();
             var path2D = new Path2D();
             text.forEach(e => {
                 var x = e.x();
-                var y = e.y() + height;
+                var y = e.y() + (height * fontSize);
                 var ltx = 0;
                 value.split('').forEach(char => {
                     var pathData = font.getPath(char, x + ltx, y, fontSize);
@@ -827,43 +826,33 @@ function textClip(url, targetID, text, height, input, uppercase = false, rule = 
                     ltx += advanceWidth + letterSpacing;
                 });
             });
+            target.setAttr('pathText', path2D);
+        }
+
+        if (target.getAttr('pathClip')) {
+            update();
+            console.log(1);
+        } else {
+            update();
+            console.log(2);
             rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
             var theight = target.height();
             var twidth = target.width();
             target.setAttrs({
-                pathText: path2D,
                 rule: rule,
                 clipFunc: function (ctx) {
                     ctx.rect(0, 0, twidth, theight);
                     var newPath = new Path2D();
-                    rule === 'evenodd' ? path2D.rect(0, 0, twidth, theight) : '';
+                    rule === 'evenodd' ? newPath.rect(0, 0, twidth, theight) : '';
                     newPath.addPath(target.getAttr('pathText'));
                     ctx._context.clip(newPath, rule);
                 },
             });
         }
-    
-        function update() {
-            var value = text[0].text();
-            var path2D = new Path2D();
-            text.forEach(e => {
-                var x = e.x();
-                var y = e.y() + height;
-                var ltx = 0;
-                value.split('').forEach(char => {
-                    var pathData = font.getPath(char, x + ltx, y, fontSize);
-                    var newPath = new Path2D(pathData.toPathData());
-                    path2D.addPath(newPath);
-                    var glyph = font.charToGlyph(char);
-                    var advanceWidth = glyph.advanceWidth * (fontSize / font.unitsPerEm);
-                    ltx += advanceWidth + letterSpacing;
-                });
-            });
-            target.setAttr('pathText', path2D);
-        }
-    
-        input.addEventListener('input', update);
-        text[0].on('dragmove', update);
+
+        text[0].on('fontSizeChange textChange xChange yChange', function() {
+            update();
+        });
     });
 }
 
@@ -966,9 +955,6 @@ function NewPotrace(event, parent, icon, attrs) {
                 clickTap(shape, () => {
                     dragOn([shape]);
                     adjShow();
-                });
-                shape.on('dragstart', ()=> {
-                    console.log(true);
                 });
                 icon.appendChild(img);
                 icon.node = [shape];

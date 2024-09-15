@@ -187,7 +187,7 @@ for (var [index, item] of setPrintArea.entries()) {
                     if (att.clip) {
                         var clip = att.clip;
                         if (clip.url) {
-                            setClip(clip.url, group, clip.rule ? clip.rule : 0)
+                            setClip(clip.url, group, clip.rule ? clip.rule : 0);
                         }
                     }
 
@@ -268,8 +268,12 @@ for (var [index, item] of setPrintArea.entries()) {
                     callEditor.span.textContent = 'Editar';
                     callEditor.appendChild(callEditor.span);
 
-                    //var uppercase = e.text.onInput.uppercase === true ? true : false;
-                    //uppercase ? targets[0].text().toUpperCase() : targets[0].text();
+                    var uppercase = e.text.onInput.uppercase;
+                    if (uppercase === true) {
+                        targets.forEach(node => {
+                            node.text(node.text().toUpperCase());
+                        });
+                    }
                     input.node = targets;
                     input.parent = inputBox;
                     input.configBox = document.createElement('div');
@@ -279,19 +283,29 @@ for (var [index, item] of setPrintArea.entries()) {
                     }
 
                     input.oninput = (value)=> {
-                        value = e.text.onInput.uppercase === true ?
+                        value = uppercase === true ?
                         input.value.toUpperCase() : input.value;
                         targets.forEach(e=> {
                             e.setAttr('text', value);
                         });
-                        if (e.text.onInput.onCenter == true) {
+                    }
+                    
+                    if (e.text.onInput.onCenter == true) {
+                        targets[0].on('fontSizeChange textChange xChange yChange', function() {
                             align('center');
-                        }
+                        }); 
+                    }
+
+                    if (att.textClip) {
+                        var clip = att.textClip;
+                        textClip(clip.url, clip.target, targets, clip.height);
                     }
 
                     if (att.clip) {
                         var clip = att.clip;
-                        textClip(clip.url, clip.target, targets, clip.height, input, e.text.onInput.uppercase);
+                        if (clip.url) {
+                            setClip(clip.url, group, clip.rule ? clip.rule : 0);
+                        }
                     }
 
                     inputBox.append(selectText, input, callEditor);
