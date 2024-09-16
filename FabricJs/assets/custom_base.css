@@ -35,7 +35,7 @@
 }
 
 .addImage {
-    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / 5rem no-repeat white;
+    background: url(https://www.svgrepo.com/show/506770/upload.svg) center / 50% no-repeat white;
 }
 
 .addImage.empty {
@@ -329,37 +329,6 @@
     font-size: 1.8rem;
     text-align: center;
     box-sizing: border-box;
-}
-
-.slider {
-    position: relative;
-    display: flex;
-    align-items: center;
-    overflow-x: auto;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-.slider >* {
-    flex: none;
-    height: calc(80% - 5px);
-    margin: 0 .4rem;
-    border-radius: var(--base-border-radius);
-    box-shadow: 0 0 3px 1px black;
-}
-
-.slider > :first-child {
-    margin-left: 0.8rem;
-}
-
-.slider > :last-child {
-    margin-right: 0.8rem;
-}
-
-.slider > .selected {
-    height: calc(100% - 5px);
-    box-shadow: 0 0 3px 0px red;
-    border: 2px solid red;
 }
 
 .addIcon {

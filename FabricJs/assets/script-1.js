@@ -23,16 +23,22 @@ popupEditor.appendChild(closePopup);
 
 var mainMenu = document.createElement('div');
 mainMenu.className = 'mainMenu';
+
+mainMenuList = document.createElement('div');
+mainMenuList.className = 'iconListBox';
+
+mainMenu.append(mainMenuList);
+
 popupEditor.appendChild(mainMenu);
 
 function addMainMenu(className, text, func) {
     var button = document.createElement('button');
-    button.className = className;
+    button.className = `iconBtn ${className}`;
     button.onclick = func;
     var span = document.createElement('span');
     span.textContent = text;
     button.append(span);
-    mainMenu.append(button);
+    mainMenuList.append(button);
 }
 
 var mainDesign = document.createElement('div');
@@ -66,12 +72,14 @@ document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
 
 var onShow = mainMenu;
+var previous;
 
 function toShow(show, refreshing = false) {
     if (show === onShow && refreshing === false) {
         return;
     }
     onShow.classList.add('toDown');
+    previous = onShow;
     setTimeout(() => {
         if (typeof refreshing === 'function') {
             refreshing();
@@ -1394,7 +1402,7 @@ function createInput() {
     aBox.b = document.createElement('div');
     aBox.c = document.createElement('button');
     aBox.c.addEventListener('click', ()=> {
-        toShow(mainDesign);
+        toShow(previous);
     });
     aBox.append(aBox.a, aBox.b, aBox.c);
 
@@ -1626,16 +1634,21 @@ function createInput() {
         listBtn.push(button);
 
         button.onclick = ()=> {
-            listBtn.forEach(e => {
-                if (e === button) {
-                    e.classList.add('selected');
-                    e.box.classList.remove('hidden');
-                    aBox.b.textContent = e.textContent;
-                } else {
-                    e.classList.remove('selected');
-                    e.box.classList.add('hidden');
+            if (button === listBtn.selected) {
+                button.classList.remove('selected');
+                button.box.classList.add('hidden');
+                aBox.b.textContent = '';
+                listBtn.selected = undefined;
+            } else {
+                if (listBtn.selected) {
+                    listBtn.selected.classList.remove('selected');
+                    listBtn.selected.box.classList.add('hidden');
                 }
-            });
+                listBtn.selected = button;
+                button.classList.add('selected');
+                button.box.classList.remove('hidden');
+                aBox.b.textContent = button.textContent;
+            }
         };
 
         box.btn = button;
@@ -1661,6 +1674,7 @@ function createInput() {
             } else {
                 e.classList.add('hidden');
             }
+            btnList.selected = undefined;
             e.classList.remove('selected');
             e.box.classList.remove('selected');
             e.box.classList.add('hidden');

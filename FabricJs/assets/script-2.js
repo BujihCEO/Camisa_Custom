@@ -83,7 +83,7 @@ for (var [index, item] of setPrintArea.entries()) {
                             input.click();
                         });              
                         changeImg.span = document.createElement('span');
-                        changeImg.span.textContent = 'Mudar imagem';
+                        changeImg.span.textContent = 'Trocar imagem';
                         changeImg.appendChild(changeImg.span);
                         configBox.appendChild(changeImg);
 
@@ -255,7 +255,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         onSelect(input, true);
                     });
                     selectText.span = document.createElement('span');
-                    selectText.span.textContent = 'Mirar';
+                    selectText.span.textContent = 'Selecionar';
                     selectText.appendChild(selectText.span);
                     
                     var callEditor = document.createElement('button');
@@ -308,7 +308,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         }
                     }
 
-                    inputBox.append(selectText, input, callEditor);
+                    inputBox.append(input, selectText, callEditor);
                     box.appendChild(inputBox);
                 }
                 if (e.colorPiker) {
