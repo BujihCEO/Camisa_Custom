@@ -21,24 +21,27 @@ closePopup.addEventListener('click', ()=> {
 });
 popupEditor.appendChild(closePopup);
 
-var popupTop = document.createElement('div');
-popupTop.className = 'popupTop';
-popupEditor.appendChild(popupTop);
+var mainMenu = document.createElement('div');
+mainMenu.className = 'mainMenu';
+popupEditor.appendChild(mainMenu);
 
-var popupBottom = document.createElement('div');
-popupBottom.className = 'popupBottom';
-popupEditor.appendChild(popupBottom);
+function addMainMenu(className, text, func) {
+    var button = document.createElement('button');
+    button.className = className;
+    button.onclick = func;
+    var span = document.createElement('span');
+    span.textContent = text;
+    button.append(span);
+    mainMenu.append(button);
+}
 
-var controlY = document.createElement('div');
-controlY.className = 'controlY';
+var mainDesign = document.createElement('div');
+mainDesign.className = 'mainDesign toDown';
+popupEditor.appendChild(mainDesign);
 
-controlY.icon = document.createElement('div');
-
-controlY.span = document.createElement('span');
-controlY.span.textContent = 'Ver elementos';
-controlY.span.className = 'hidden';
-
-controlY.append(controlY.icon, controlY.span);
+mainDesign.close = document.createElement('div');
+mainDesign.close.icon = document.createElement('div');
+mainDesign.close.append(mainDesign.close.icon);
 
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
@@ -46,7 +49,7 @@ mainEdit.className = 'mainEdit';
 var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
 
-popupBottom.append(controlY, mainEdit, popupBtnWrap);
+mainDesign.append(mainDesign.close, mainEdit, popupBtnWrap);
 
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
@@ -62,32 +65,32 @@ showPopup.addEventListener('click', ()=> {
 document.body.appendChild(showPopup);
 document.body.appendChild(popupEditor);
 
-var mainShow = true;
-controlY.addEventListener('click', (e) => {
-    if (mainShow) {
-        mainShow = false;
-        mainEdit.style.height = 0;
-        controlY.style.opacity = '0%';
-        controlY.style.translate = '0 100%';
-        controlY.icon.style.transform = 'rotate(180deg)';
-        setTimeout(() => {
-            controlY.span.classList.remove('hidden');
-            controlY.style.opacity = '';
-            controlY.style.translate = '0';
-        }, 300);
-    } else {
-        mainShow = true;
-        controlY.style.opacity = '0%';
-        controlY.style.translate = '0 100%';
-        controlY.span.classList.add('hidden');
-        mainEdit.style.height = '';
-        setTimeout(() => {
-            controlY.icon.style.transform = '';
-            controlY.style.opacity = '';
-            controlY.style.translate = '0';
-        }, 300);
+var onShow = mainMenu;
+
+function toShow(show, refreshing = false) {
+    if (show === onShow && refreshing === false) {
+        return;
     }
+    onShow.classList.add('toDown');
+    setTimeout(() => {
+        if (typeof refreshing === 'function') {
+            refreshing();
+        }
+        show.classList.remove('toDown');
+        onShow = show;
+    }, 300);
+}
+
+addMainMenu('callDesign', 'Design', ()=> toShow(mainDesign));
+
+addMainMenu('initial', 'Centralizar', ()=> {
+    stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
 });
+
+mainDesign.close.onclick = ()=> {
+    dragOff();
+    toShow(mainMenu);
+}
 
 Konva.hitOnDragEnabled = true;
 
@@ -399,34 +402,6 @@ backArea.add(backPrint);
 backArea.add(backOverlay);
 productLayer.add(backArea);
 
-var adjBox = false;
-function adjShow(v = true) {
-    if (v) {
-        if (adjBox === true) {
-            adjustBox.classList.add('toDown');
-            setTimeout(()=> {
-                updateSets();
-                adjustBox.classList.remove('toDown');
-                adjBox = true;
-            }, 300);
-        } else {
-            popupBottom.classList.add('toDown'); 
-            setTimeout(()=> {
-                updateSets();
-                adjustBox.classList.remove('toDown');
-                adjBox = true;
-            }, 300);
-        }
-
-    } else {
-        adjustBox.classList.add('toDown');
-        setTimeout(()=> {
-            popupBottom.classList.remove('toDown');
-            adjBox = false;
-        }, 300);
-    }
-}
-
 function createLoading() {
     var loadingContainer = document.createElement('div');
     loadingContainer.className = "LoadingCustom hidden ProductLoad";
@@ -592,7 +567,7 @@ clickTap(stage, (e)=> {
         return;
     }
     dragOff();
-    adjShow(false);
+    toShow(mainMenu);
 });
 
 var needDraw = ['overFill', 'brightness', 'contrast'];
@@ -643,7 +618,7 @@ function newUpload(e, parent, icon, attrs) {
             kvImg.onSelect = ()=> {onSelect(kvImg)};
             clickTap(kvImg, () => {
                 dragOn([kvImg]);
-                adjShow();
+                toShow(adjustBox, updateSets);
             });
             icon.appendChild(img);
             icon.node = [kvImg];
@@ -954,7 +929,7 @@ function NewPotrace(event, parent, icon, attrs) {
                 shape.onSelect = ()=> {onSelect(shape)};
                 clickTap(shape, () => {
                     dragOn([shape]);
-                    adjShow();
+                    toShow(adjustBox, updateSets);
                 });
                 icon.appendChild(img);
                 icon.node = [shape];
@@ -1419,7 +1394,7 @@ function createInput() {
     aBox.b = document.createElement('div');
     aBox.c = document.createElement('button');
     aBox.c.addEventListener('click', ()=> {
-        adjShow(false);
+        toShow(mainDesign);
     });
     aBox.append(aBox.a, aBox.b, aBox.c);
 
@@ -1643,7 +1618,9 @@ function createInput() {
 
         let button = document.createElement('button');
         button.className = `iconBtn  ${e.class}`;
-        button.textContent = e.name;
+        button.span = document.createElement('span');
+        button.span.textContent = e.name;
+        button.append(button.span);
         button.box = box;
         button.n = e.add.map(e => e.attr);
         listBtn.push(button);
@@ -1669,35 +1646,6 @@ function createInput() {
     updateSets = () => {
         var attrs = nodeTarget[0].getAttr('edit');
         cBox.setAttribute('type', nodeTarget[0].getClassName());
-        var available = [];
-        listBtn.forEach(e => {
-            if (e.n.some(n => attrs.includes(n))) {
-                available.push(e);
-                e.classList.remove('hidden');
-            } else {
-                e.classList.add('hidden');
-                e.box.classList.add('hidden');
-            }
-        });
-        available.forEach((e, i) => {
-            if (i === 0) {
-                e.classList.add('selected');
-                e.box.classList.remove('hidden');
-                console.log(e.box.input);
-                aBox.b.textContent = e.textContent;
-            } else {
-                e.classList.remove('selected');
-                e.box.classList.add('hidden');
-            }
-            e.box.input.forEach(input => {
-                input.change();
-            });
-        });
-    };
-
-    updateSets = () => {
-        var attrs = nodeTarget[0].getAttr('edit');
-        cBox.setAttribute('type', nodeTarget[0].getClassName());
         aBox.b.textContent = '';
         listBtn.forEach(e => {
             if (e.n.some(n => attrs.includes(n))) {
@@ -1713,6 +1661,7 @@ function createInput() {
             } else {
                 e.classList.add('hidden');
             }
+            e.classList.remove('selected');
             e.box.classList.remove('selected');
             e.box.classList.add('hidden');
         });

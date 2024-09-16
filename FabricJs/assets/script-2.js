@@ -90,7 +90,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         var callEditor = document.createElement('button');
                         callEditor.className = 'callEditor iconBox';
                         callEditor.addEventListener('click', ()=> {
-                            adjShow();
+                            toShow(adjustBox, updateSets);
                         });
                         callEditor.span = document.createElement('span');
                         callEditor.span.textContent = 'Editar';
@@ -238,7 +238,7 @@ for (var [index, item] of setPrintArea.entries()) {
                             canSelect.push(text);
                             clickTap(text, () => {
                                 dragOn(targets);
-                                adjShow();
+                                toShow(adjustBox, updateSets);
                             });
                             group.add(text);
                             targets.push(text);
@@ -262,7 +262,7 @@ for (var [index, item] of setPrintArea.entries()) {
                     callEditor.className = 'callEditor iconBox';
                     callEditor.addEventListener('click', ()=> {
                         dragOn(targets);
-                        adjShow();
+                        toShow(adjustBox, updateSets);
                     });
                     callEditor.span = document.createElement('span');
                     callEditor.span.textContent = 'Editar';
@@ -310,6 +310,9 @@ for (var [index, item] of setPrintArea.entries()) {
 
                     inputBox.append(selectText, input, callEditor);
                     box.appendChild(inputBox);
+                }
+                if (e.colorPiker) {
+
                 }
                 box.childElementCount > 0 ? edit.appendChild(box) : '';
             });
