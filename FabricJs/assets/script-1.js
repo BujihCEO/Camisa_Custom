@@ -1402,7 +1402,7 @@ function createInput() {
     aBox.b = document.createElement('div');
     aBox.c = document.createElement('button');
     aBox.c.addEventListener('click', ()=> {
-        toShow(previous);
+        toShow(previous === adjustBox ? mainMenu : previous);
     });
     aBox.append(aBox.a, aBox.b, aBox.c);
 

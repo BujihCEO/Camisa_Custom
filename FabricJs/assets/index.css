@@ -135,19 +135,19 @@ body {
     position: absolute;
     border-radius: 8px;
     flex: none;
-    height: 8px;
+    height: 6px;
     width: 30px;
-    background: black;
+    background: currentColor;
 }
 
 .mainDesign > div:nth-child(1) > div:nth-child(1)::before {
     transform: rotate(30deg);
-    translate: -10px 0;
+    translate: -11px 0;
 }
 
 .mainDesign > div:nth-child(1) > div:nth-child(1)::after {
     transform: rotate(-30deg);
-    translate: 10px 0;
+    translate: 11px 0;
 }
 
 .popupBtnWrap {
@@ -200,7 +200,7 @@ body {
     gap: 20px;
     width: 100%;
     height: 100%;
-    padding: 10px;
+    padding: 0px 10px 10px;
     overflow: auto;
     box-sizing: border-box;
     --base-border-radius: 15px;
