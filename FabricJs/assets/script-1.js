@@ -4,22 +4,39 @@ var canvasPreview = document.createElement('div');
 canvasPreview.className = 'canvasPreview';
 previewWrap.appendChild(canvasPreview);
 
+var editorApp = document.createElement('div');
+editorApp.className = 'editorApp hidden';
+
 var popupEditor = document.createElement('div');
-popupEditor.className = 'popupEditor hidden';
+popupEditor.className = 'popupEditor';
+
+editorApp.append(popupEditor);
 
 var canvaBox = document.createElement('div');
 canvaBox.className = 'canvaBox';
 popupEditor.appendChild(canvaBox);
 
-var closePopup = document.createElement('div');
-closePopup.className = 'close';
-closePopup.addEventListener('click', ()=> {
-    popupEditor.classList.add('hidden');
-    Array.from(productLayer.children).forEach((e, i) => {
-        //setPreviews(e, canvasPreview, i);
+var onTopBox = document.createElement('div');
+onTopBox.className = 'onTopApp';
+
+var popupBtnWrap = document.createElement('div');
+popupBtnWrap.className = 'popupBtnWrap';
+
+var closeApp = document.createElement('div');
+closeApp.className = 'close';
+
+[closeApp].forEach(e => {
+    e.addEventListener('click', ()=> {
+        editorApp.classList.add('hidden');
+        Array.from(productLayer.children).forEach((e, i) => {
+            //setPreviews(e, canvasPreview, i);
+        });
     });
 });
-popupEditor.appendChild(closePopup);
+
+onTopBox.append(popupBtnWrap, closeApp);
+
+popupEditor.appendChild(onTopBox);
 
 var mainMenu = document.createElement('div');
 mainMenu.className = 'mainMenu';
@@ -52,10 +69,7 @@ mainDesign.close.append(mainDesign.close.icon);
 var mainEdit = document.createElement('div');
 mainEdit.className = 'mainEdit';
 
-var popupBtnWrap = document.createElement('div');
-popupBtnWrap.className = 'popupBtnWrap';
-
-mainDesign.append(mainDesign.close, mainEdit, popupBtnWrap);
+mainDesign.append(mainDesign.close, mainEdit);
 
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
@@ -66,10 +80,10 @@ var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
 showPopup.textContent = 'personalizar';
 showPopup.addEventListener('click', ()=> {
-    popupEditor.classList.remove('hidden');
+    editorApp.classList.remove('hidden');
 });
 document.body.appendChild(showPopup);
-document.body.appendChild(popupEditor);
+document.body.appendChild(editorApp);
 
 var onShow = mainMenu;
 var previous;
@@ -105,7 +119,7 @@ Konva.hitOnDragEnabled = true;
 
 var stage = new Konva.Stage({
     container: canvaBox,
-    width: window.innerWidth,
+    width: Math.min(769, Math.max(window.innerWidth)),
     height: window.innerHeight,
     draggable: true,
 });
@@ -222,7 +236,9 @@ stage.on('touchend', function (e) {
     lastCenter = null;
 });
 
-var layer = new Konva.Layer();
+var layer = new Konva.Layer({
+    y: 52,
+});
 stage.add(layer);
 
 function createMaskedImage(group, url, fillColor, addStyle) {
@@ -323,6 +339,13 @@ var productLayer = new Konva.Group({
     y: 0,
 });
 layer.add(productLayer);
+
+window.addEventListener('resize', ()=> {
+    stage.setAttrs({
+        width: Math.min(769, Math.max(window.innerWidth)),
+        height: window.innerHeight,
+    });
+});
 
 var scaleLayer = (productLayer.width() * 0.4) / 3508;
 
@@ -706,6 +729,7 @@ function getPath(url, parent, attrs) {
                     },
                 });
                 parent.add(shape);
+                console.log(parent);
             } else {
                 throw new Error("No path element found in the SVG.");
             }
@@ -1680,7 +1704,7 @@ function createInput() {
             } else {
                 e.classList.add('hidden');
             }
-            btnList.selected = undefined;
+            listBtn.selected = undefined;
             e.classList.remove('selected');
             e.box.classList.remove('selected');
             e.box.classList.add('hidden');

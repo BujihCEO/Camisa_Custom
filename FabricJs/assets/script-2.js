@@ -1,31 +1,42 @@
 var editList = [];
-var btnList = [];
+var btnAreaList = [];
 for (var [index, item] of iniciar.entries()) {
     if (item.area.node) {
         let a = item.area;
         let p = a.node.getParent();
         let btn = document.createElement('button');
         btn.textContent = a.name;
-        btnList.push(btn);
+        btnAreaList.push(btn);
         popupBtnWrap.appendChild(btn);
         let edit = document.createElement('div');
         edit.className = 'customBox';
         editList.push(edit);
         mainEdit.appendChild(edit);
         btn.addEventListener('click', () => {
-            btnList.forEach((e, i) => {
-                dragOff();
-                stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
-                if (e === btn) {
-                    e.classList.add('selected');
-                    editList[i].classList.remove('hidden');
-                    iniciar[i].area.node.getParent().show();
-                } else {
-                    e.classList.remove('selected');
-                    editList[i].classList.add('hidden');
-                    iniciar[i].area.node.getParent().hide();
+            dragOff();
+            stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
+            function change() {
+                btnAreaList.forEach((e, i) => {
+                    if (e === btn) {
+                        e.classList.add('selected');
+                        editList[i].classList.remove('hidden');
+                        iniciar[i].area.node.getParent().show();
+                    } else {
+                        e.classList.remove('selected');
+                        editList[i].classList.add('hidden');
+                        iniciar[i].area.node.getParent().hide();
+                    }
+                });
+            }
+            if (onShow == mainDesign) { 
+                toShow(mainDesign, change);
+            } else {
+                if (onShow == adjustBox) { 
+                    toShow(previous);
+                    change();
                 }
-            });
+                else { change(); }
+            }
         });
 
         previewList.push(p);
@@ -128,7 +139,7 @@ for (var [index, item] of iniciar.entries()) {
                             upBox.appendChild(iconsBox);
 
                             add.forEach((e, i) => {
-                                let div = document.createElement('div');
+                                let div = document.createElement('button');
 
                                 let imgIcon = document.createElement('div');
                                 imgIcon.className = 'addImage';
