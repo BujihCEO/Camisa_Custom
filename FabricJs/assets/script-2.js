@@ -1,6 +1,6 @@
 var editList = [];
 var btnList = [];
-for (var [index, item] of setPrintArea.entries()) {
+for (var [index, item] of iniciar.entries()) {
     if (item.area.node) {
         let a = item.area;
         let p = a.node.getParent();
@@ -19,11 +19,11 @@ for (var [index, item] of setPrintArea.entries()) {
                 if (e === btn) {
                     e.classList.add('selected');
                     editList[i].classList.remove('hidden');
-                    setPrintArea[i].area.node.getParent().show();
+                    iniciar[i].area.node.getParent().show();
                 } else {
                     e.classList.remove('selected');
                     editList[i].classList.add('hidden');
-                    setPrintArea[i].area.node.getParent().hide();
+                    iniciar[i].area.node.getParent().hide();
                 }
             });
         });
@@ -71,7 +71,7 @@ for (var [index, item] of setPrintArea.entries()) {
                         var input = document.createElement('input');
                         input.className = 'inputHidden';
                         input.type = 'file';
-                        input.accept = 'image/*';
+                        input.accept = 'image/png, image/jpeg, image/webp';
                         upBox.appendChild(input);
                         
                         var configBox = document.createElement('div');
@@ -248,9 +248,13 @@ for (var [index, item] of setPrintArea.entries()) {
                     
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
+                    input.configBox = document.createElement('div');
                     
+                    var configBox = document.createElement('div');
+                    configBox.className = 'configBox';
+
                     var selectText = document.createElement('button');
-                    selectText.className = 'findTarget iconBox';
+                    selectText.className = 'findTarget';
                     selectText.addEventListener('click', ()=> {
                         onSelect(input, true);
                     });
@@ -259,7 +263,7 @@ for (var [index, item] of setPrintArea.entries()) {
                     selectText.appendChild(selectText.span);
                     
                     var callEditor = document.createElement('button');
-                    callEditor.className = 'callEditor iconBox';
+                    callEditor.className = 'callEditor';
                     callEditor.addEventListener('click', ()=> {
                         dragOn(targets);
                         toShow(adjustBox, updateSets);
@@ -276,7 +280,6 @@ for (var [index, item] of setPrintArea.entries()) {
                     }
                     input.node = targets;
                     input.parent = inputBox;
-                    input.configBox = document.createElement('div');
                     
                     input.onclick = ()=> {
                         onSelect(input, true);
@@ -290,9 +293,9 @@ for (var [index, item] of setPrintArea.entries()) {
                         });
                     }
                     
-                    if (e.text.onInput.onCenter == true) {
+                    if (e.text.onInput.align) {
                         targets[0].on('fontSizeChange textChange xChange yChange', function() {
-                            align('center');
+                            align(e.text.onInput.align);
                         }); 
                     }
 
@@ -308,15 +311,19 @@ for (var [index, item] of setPrintArea.entries()) {
                         }
                     }
 
-                    inputBox.append(input, selectText, callEditor);
+                    configBox.append(selectText, callEditor);
+                    inputBox.append(input, configBox);
                     box.appendChild(inputBox);
-                }
-                if (e.colorPiker) {
-
                 }
                 box.childElementCount > 0 ? edit.appendChild(box) : '';
             });
         }
 
     }
+}
+
+if (colorMenu) {
+    colorMenu.forEach(c => {
+        createJsColor(mainMenuList, c.fill, c.targets);
+    });
 }

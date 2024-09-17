@@ -79,7 +79,9 @@ function toShow(show, refreshing = false) {
         return;
     }
     onShow.classList.add('toDown');
-    previous = onShow;
+    if (show !== onShow) {
+        previous = onShow;
+    }
     setTimeout(() => {
         if (typeof refreshing === 'function') {
             refreshing();
@@ -91,12 +93,11 @@ function toShow(show, refreshing = false) {
 
 addMainMenu('callDesign', 'Design', ()=> toShow(mainDesign));
 
-addMainMenu('initial', 'Centralizar', ()=> {
+addMainMenu('initial', 'Reajustar', ()=> {
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
 });
 
 mainDesign.close.onclick = ()=> {
-    dragOff();
     toShow(mainMenu);
 }
 
@@ -489,41 +490,27 @@ limiter.hide();
 
 var transformer = new Konva.Transformer({
     shouldOverdrawWholeArea: true,
-    anchorSize: 5,
+    rotationEnabled: false,
+    anchorSize: 10,
     anchorStyleFunc: (anchor) => {
         anchor.cornerRadius(10);
         if (anchor.hasName('top-center') || anchor.hasName('bottom-center')) {
-          anchor.height(8);
-          anchor.offsetY(4);
-          anchor.width(20);
-          anchor.offsetX(10);
+          anchor.height(16);
+          anchor.offsetY(8);
+          anchor.width(40);
+          anchor.offsetX(20);
         }
         if (anchor.hasName('middle-left') || anchor.hasName('middle-right')) {
-          anchor.height(20);
-          anchor.offsetY(10);
-          anchor.width(8);
-          anchor.offsetX(4);
+          anchor.height(40);
+          anchor.offsetY(20);
+          anchor.width(16);
+          anchor.offsetX(8);
         }
     },
 });
+transformer.rotateEnabled(false);
 layer.add(transformer);
 transformer.hide();
-
-transformer.on('transformstart', () => {
-    limiter.show();
-});
-
-transformer.on('transformend', () => {
-    limiter.hide();
-});
-
-transformer.on('dragstart', (e) => {
-    limiter.show();
-});
-
-transformer.on('dragend', (e) => {
-    limiter.hide();
-});
 
 var dontMove = () => {
     transformer.centeredScaling(true);
@@ -650,13 +637,7 @@ function newFont(name, url) {
     });
 }
 
-var jsColorList = [];
-
-function getColor(id, attrs = []) {
-
-}
-
-function createJsColor(parent, target = [], color, setAtt = false) {
+function createJsColor(parent, color, tsName) {
     var box = document.createElement('div');
     var jscolorButton = document.createElement('button');
     box.className = 'JsColorBox';
@@ -667,33 +648,41 @@ function createJsColor(parent, target = [], color, setAtt = false) {
 
     jscolor.install();
 
+    var targets = [];
+
+    tsName.forEach(id => {
+        var group = stage.findOne(`#${id}`);
+        console.log(group.children);
+        group.getChildren().forEach(node => {
+            //console.log(node);
+            targets.push(node);
+            node.setAttr('onColor', true);
+            node.on('fillChange', function() {
+                node.getChildren().forEach(filho => {
+                    console.log(filho);
+                    if (filho.getAttr('fill')) {
+                        filho.setAttr('fill', node.getAttr('fill'));
+                    }
+                });
+            });
+        });
+    });
+    
+
+    console.log(targets);
+    
     var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.attributeName === 'data-current-color') {
                 var newColor = mutation.target.getAttribute('data-current-color');
-                target.forEach(e => {
+                targets.forEach(e => {
                     e.setAttrs({ fill: newColor });
                 });
-                var nextSibling = jscolorButton.nextElementSibling;
-                if (nextSibling) {
-                    nextSibling.style.background = newColor;
-                }
             }
         });
     });
 
     observer.observe(jscolorButton, { attributes: true });
-
-    if (setAtt) {
-        updateOptionsFunctions.push(() => {
-            var tgt = target();
-            if (tgt instanceof Element) {
-                var color = tgt.getAttribute(setAtt);
-                jscolorButton.style.background = color;
-                jscolorButton.setAttribute('data-current-color', color);
-            }
-        });
-    }
 }
 
 function getPath(url, parent, attrs) {
@@ -705,11 +694,18 @@ function getPath(url, parent, attrs) {
             var pathElement = svgDoc.querySelector('path');
             if (pathElement) {
                 var pathData = pathElement.getAttribute('d');
-                var svgPath = new Konva.Path({ 
-                    data: pathData,
-                    ...attrs
+                var path2D = new Path2D(pathData);
+                var shape = new Konva.Shape({
+                    height: parent.height(),
+                    width: parent.width(),
+                    ...attrs,
+                    sceneFunc: function (ctx) {
+                        ctx.clip(path2D);
+                        ctx.fillStyle = shape.fill();
+                        ctx.fillRect(0, 0, shape.width(), shape.height());
+                    },
                 });
-                parent.add(svgPath);
+                parent.add(shape);
             } else {
                 throw new Error("No path element found in the SVG.");
             }
@@ -814,10 +810,8 @@ function textClip(url, targetID, text, height, rule) {
 
         if (target.getAttr('pathClip')) {
             update();
-            console.log(1);
         } else {
             update();
-            console.log(2);
             rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
             var theight = target.height();
             var twidth = target.width();
@@ -916,6 +910,7 @@ function NewPotrace(event, parent, icon, attrs) {
                     ...edit,
                     edit: Object.keys(edit),
                 });
+                parent.add(shape);
 
                 shape.getAttr('func') ? shape.getAttr('func')() : '';
             
@@ -930,9 +925,23 @@ function NewPotrace(event, parent, icon, attrs) {
                         ctx.fillStrokeShape(shape);
                     },
                 });
-                
+
+                var clone = new Konva.Shape({
+                    width: parent.width(),
+                    height: parent.height(),
+                    listening: false,
+                    sceneFunc: function (ctx) {
+                        ctx.fillStyle = shape.fill();
+                        var path = new Path2D();
+                        path.rect(0, 0, clone.width(), clone.height());
+                        path.rect(shape.x(), shape.y(), shape.width() * shape.scaleX(), shape.height() * shape.scaleY());
+                        ctx.clip(path, 'evenodd');
+                        ctx.fillRect(0, 0, clone.width(), clone.height());
+                    },
+                });
+                parent.add(clone);
+
                 objectCover(shape, img, parent);
-                parent.add(shape);
                 canSelect.push(shape);
                 shape.onSelect = ()=> {onSelect(shape)};
                 clickTap(shape, () => {
@@ -1254,7 +1263,7 @@ function createInput() {
             v.label ? mapToRange(inputRange.value) : inputText.value = inputRange.value;
         };
     
-        inputText.addEventListener('input', () => {
+        inputText.addEventListener('change', () => {
             var value = parseFloat(inputText.value);
             if (isNaN(value)) {
                 value = v.min;
@@ -1267,22 +1276,19 @@ function createInput() {
             inputRange.dispatchEvent(new Event('input'));
         });
     
-        inputText.addEventListener('keydown', (e) => {
-            var step = parseFloat(inputRange.step) || 1;
-            var value = parseFloat(inputText.value);
+        // inputText.addEventListener('keydown', (e) => {
+        //     var step = parseFloat(inputRange.step) || 1;
+        //     var value = parseFloat(inputText.value);
     
-            if (isNaN(value)) value = v.min;
-    
-            if (e.key === 'ArrowUp') {
-                value = Math.min(value + step, v.max);
-            } else if (e.key === 'ArrowDown') {
-                value = Math.max(value - step, v.min);
-            }
-    
-            inputText.value = value;
-            inputRange.value = value;
-            inputRange.dispatchEvent(new Event('input'));
-        });
+        //     if (e.key === 'ArrowUp') {
+        //         value = value + step;
+        //     } else if (e.key === 'ArrowDown') {
+        //         value = value - step;
+        //     }
+            
+        //     inputRange.value = value;
+        //     inputRange.dispatchEvent(new Event('input'));
+        // });
     
         box.append(title, inputRange, inputText);
         parent.appendChild(box);
@@ -1402,7 +1408,7 @@ function createInput() {
     aBox.b = document.createElement('div');
     aBox.c = document.createElement('button');
     aBox.c.addEventListener('click', ()=> {
-        toShow(previous === adjustBox ? mainMenu : previous);
+        toShow(previous);
     });
     aBox.append(aBox.a, aBox.b, aBox.c);
 
@@ -1693,7 +1699,6 @@ function onSelect(target = undefined, icon = false) {
         iconsList.selected.configBox.classList.add('hidden');
         iconsList.selected = undefined;
         nodesBox.selected = undefined;
-        console.log(4);
         return;
     }
     if (icon) {
@@ -1710,15 +1715,12 @@ function onSelect(target = undefined, icon = false) {
             transformer.nodes([]);
             transformer.hide();
             target.input.click();
-            console.log(1);
         } else {
             var text = target.node[0].getClassName() === 'Text';
             if (iconsList.selected === target && !text) {
                 dragOff();
-                console.log(2);
             } else {
                 dragOn(target.node);
-                console.log(3);
             }
         }
     } else {
@@ -1729,7 +1731,6 @@ function onSelect(target = undefined, icon = false) {
             iconsList.selected.configBox.classList.add('hidden');
             iconsList.selected = undefined;
             nodesBox.selected = undefined;
-            console.log(4);
         } else {
             if (iconsList.selected) {
                 iconsList.selected.parent.classList.remove('selected');
@@ -1739,7 +1740,6 @@ function onSelect(target = undefined, icon = false) {
             icon.configBox.classList.remove('hidden');
             iconsList.selected = icon;
             nodesBox.selected = target.getParent();
-            console.log(5);
         }
     }
 }
