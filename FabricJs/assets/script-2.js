@@ -1,3 +1,9 @@
+if (colorMenu) {
+    colorMenu.forEach((c, i) => {
+        createJsColor(mainMenuList, c.color, i + 1);
+    });
+}
+
 var editList = [];
 var btnAreaList = [];
 for (var [index, item] of iniciar.entries()) {
@@ -247,6 +253,7 @@ for (var [index, item] of iniciar.entries()) {
                                 moveable: true,
                             });
                             canSelect.push(text);
+                            colorAnalize(text, noEditAttrs);
                             clickTap(text, () => {
                                 dragOn(targets);
                                 toShow(adjustBox, updateSets);
@@ -331,10 +338,4 @@ for (var [index, item] of iniciar.entries()) {
         }
 
     }
-}
-
-if (colorMenu) {
-    colorMenu.forEach(c => {
-        createJsColor(mainMenuList, c.fill, c.targets);
-    });
 }

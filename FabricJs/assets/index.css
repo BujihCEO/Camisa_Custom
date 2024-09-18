@@ -484,6 +484,15 @@ body {
     aspect-ratio: 1;
 }
 
+.iconBtn.jsColor > .jscolor {
+    height: 90%;
+    aspect-ratio: 1;
+}
+
+.iconBtn.jsColor::before {
+    content: none;
+}
+
 .flex-list {
     display: flex;
     flex-direction: column;

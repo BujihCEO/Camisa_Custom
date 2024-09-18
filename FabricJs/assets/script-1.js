@@ -29,7 +29,7 @@ closeApp.className = 'close';
     e.addEventListener('click', ()=> {
         editorApp.classList.add('hidden');
         Array.from(productLayer.children).forEach((e, i) => {
-            //setPreviews(e, canvasPreview, i);
+            setPreviews(e, canvasPreview, i);
         });
     });
 });
@@ -79,9 +79,13 @@ popupEditor.append(adjustBox);
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
 showPopup.textContent = 'personalizar';
-showPopup.addEventListener('click', ()=> {
-    editorApp.classList.remove('hidden');
+
+[previewWrap, showPopup].forEach(e => {
+    e.addEventListener('click', ()=> {
+        editorApp.classList.remove('hidden');
+    });
 });
+
 document.body.appendChild(showPopup);
 document.body.appendChild(editorApp);
 
@@ -615,6 +619,8 @@ function newUpload(e, parent, icon, attrs) {
                 edit: Object.keys(edit),
             });
 
+            colorAnalize(kvImg, noEdit);
+
             var filters = ['brightness', 'contrast'];
             var filter = filters.map(e => `${e}(\${kvImg.getAttr('${e}')})`).join(' ');
             canvas.draw = () => {
@@ -660,52 +666,70 @@ function newFont(name, url) {
     });
 }
 
-function createJsColor(parent, color, tsName) {
-    var box = document.createElement('div');
+function createJsColor(parent, color, id) {
+    var box = document.createElement('button');
     var jscolorButton = document.createElement('button');
-    box.className = 'JsColorBox';
+    box.className = 'iconBtn jsColor';
     jscolorButton.className = 'jscolor';
     jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
-    box.appendChild(jscolorButton);
-    parent.appendChild(box);
-
-    jscolor.install();
-
-    var targets = [];
-
-    tsName.forEach(id => {
-        var group = stage.findOne(`#${id}`);
-        console.log(group.children);
-        group.getChildren().forEach(node => {
-            //console.log(node);
-            targets.push(node);
-            node.setAttr('onColor', true);
-            node.on('fillChange', function() {
-                node.getChildren().forEach(filho => {
-                    console.log(filho);
-                    if (filho.getAttr('fill')) {
-                        filho.setAttr('fill', node.getAttr('fill'));
-                    }
-                });
-            });
-        });
-    });
+    jscolorButton.targets = [];
+    jscolorButton.id = id;
+    menuColorList.push(jscolorButton);
     
+    var span = document.createElement('span');
+    span.textContent = `Cor ${id}`;
+    
+    box.onclick = () => { jscolorButton.jscolor.show(); };
 
-    console.log(targets);
+    box.append(jscolorButton, span);
+    parent.append(box);
     
     var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.attributeName === 'data-current-color') {
                 var newColor = mutation.target.getAttribute('data-current-color');
-                targets.forEach(e => {
-                    e.setAttrs({ fill: newColor });
+                jscolorButton.targets.forEach(e => {
+                    e.onColor[id].forEach(attr => {
+                        e.setAttr(attr, newColor);
+                        if (needDraw.includes(attr)) {
+                            e.image().draw();
+                        }
+                    });
                 });
             }
         });
     });
 
     observer.observe(jscolorButton, { attributes: true });
+}
+
+function colorAnalize(target, attrs) {
+    if (attrs.jsColor) {
+        target.onColor = target.onColor || {};
+        attrs.jsColor.forEach(a => {
+            menuColorList.forEach(btn => {
+                if (btn.id == a.id) {
+                    function finish() {
+                        target.onColor[a.id] = a.attrs;
+                        a.attrs.forEach(attr => {
+                            target.setAttr(attr, btn.jscolor.toHEXString());
+                        });
+                        btn.targets.push(target);
+                    }
+                    if (btn.jscolor && typeof btn.jscolor.toHEXString === 'function') {
+                        finish();
+                    } else{
+                        var interval = setInterval(() => {
+                            if (btn.jscolor && typeof btn.jscolor.toHEXString === 'function') {
+                                clearInterval(interval);
+                                finish();
+                            }
+                        }, 200);
+                    }
+                }
+            })
+        });
+    }
 }
 
 function getPath(url, parent, attrs) {
@@ -728,8 +752,8 @@ function getPath(url, parent, attrs) {
                         ctx.fillRect(0, 0, shape.width(), shape.height());
                     },
                 });
+                colorAnalize(shape, attrs);
                 parent.add(shape);
-                console.log(parent);
             } else {
                 throw new Error("No path element found in the SVG.");
             }
@@ -936,6 +960,8 @@ function NewPotrace(event, parent, icon, attrs) {
                 });
                 parent.add(shape);
 
+                colorAnalize(shape, noEdit);
+
                 shape.getAttr('func') ? shape.getAttr('func')() : '';
             
                 shape.setAttrs({
@@ -1076,6 +1102,8 @@ jscolor.presets.default = {
     width:250, height:165, closeButton:true, closeText:'', sliderSize:20
 };
 
+jscolor.install();
+
 function btnHold(element, action) {
     if (element || action) {
         let timer = null;
@@ -1206,7 +1234,7 @@ function createInput() {
         box.appendChild(input);
         parent.appendChild(box);
 
-        jscolor.install();
+        //jscolor.install();
         
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -1767,3 +1795,5 @@ function onSelect(target = undefined, icon = false) {
         }
     }
 }
+
+var menuColorList = [];
