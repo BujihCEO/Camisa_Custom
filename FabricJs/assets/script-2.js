@@ -211,7 +211,37 @@ for (var [index, item] of iniciar.entries()) {
                     if (att.mask) {
                         var mask = att.mask;
                         if (mask.url) {
-                            getPath(mask.url, group, {...mask.attrs});
+                            if (Array.isArray(mask.url)) {
+                                var maskBox = document.createElement('div');
+                                maskBox.className = 'slider imgChooser';
+                                mask.url.forEach((url, i) => {
+                                    var button = document.createElement('button');
+                                    var img = new Image();
+                                    img.src = url;
+                                    if (i === 0) {
+                                        getPath(url, group, {...mask.attrs});
+                                        button.classList.add('selected');
+                                        maskBox.selected = button;
+                                    }
+                                    button.onclick = ()=> {
+                                        if (button === maskBox.selected) {
+                                            return;
+                                        } else {
+                                            getPath(url, group, {...mask.attrs});
+                                            maskBox.selected.classList.remove('selected');
+                                            button.classList.add('selected');
+                                            maskBox.selected = button;
+                                        }
+
+                                    };
+                                    button.append(img);
+                                    maskBox.append(button);
+                                });
+                                box.append(maskBox);
+                                console.log('array');
+                            } else {
+                                getPath(mask.url, group, {...mask.attrs});
+                            }
                         }
                     }
                     
@@ -237,7 +267,7 @@ for (var [index, item] of iniciar.entries()) {
                     let targets = [];
                     
                     var input = document.createElement('input');
-                    Object.assign(input, {type: 'text'});
+                    Object.assign(input, {type: 'text', placeholder: 'Escreva aqui...'});
 
                     var noEditAttrs = {...att.attrs.noEdit};
                     var editAttrs = {...att.attrs.edit};

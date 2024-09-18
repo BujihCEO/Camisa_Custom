@@ -733,6 +733,7 @@ function colorAnalize(target, attrs) {
 }
 
 function getPath(url, parent, attrs) {
+    parent.destroyChildren();
     return fetch(url)
         .then(response => response.text())
         .then(svgText => {
