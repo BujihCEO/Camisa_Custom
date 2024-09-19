@@ -9,8 +9,9 @@ var btnAreaList = [];
 for (var [index, item] of iniciar.entries()) {
     if (item.area.node) {
         let a = item.area;
-        let p = a.node.getParent();
+        let p = a.node;
         let btn = document.createElement('button');
+        let print = a.node.print;
         btn.textContent = a.name;
         btnAreaList.push(btn);
         popupBtnWrap.appendChild(btn);
@@ -26,11 +27,11 @@ for (var [index, item] of iniciar.entries()) {
                     if (e === btn) {
                         e.classList.add('selected');
                         editList[i].classList.remove('hidden');
-                        iniciar[i].area.node.getParent().show();
+                        iniciar[i].area.node.show();
                     } else {
                         e.classList.remove('selected');
                         editList[i].classList.add('hidden');
-                        iniciar[i].area.node.getParent().hide();
+                        iniciar[i].area.node.hide();
                     }
                 });
             }
@@ -65,20 +66,20 @@ for (var [index, item] of iniciar.entries()) {
                 }
                 if (e.image) {
                     var att = e.image;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
+                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : print.width();
+                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : print.height();
                     var group = new Konva.Group({
                         id: `${index + 1}-${i + 1}`,
                         width: width,
                         height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
+                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (print.width() / 2) - (width / 2),
+                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (print.height() / 2) - (height / 2),
                         clip: {
                             width: width,
                             height: height,
                         },
                     });
-                    a.node.add(group);
+                    print.add(group);
 
                     if (att.upload) {
                         var upload = att.upload;
@@ -232,37 +233,37 @@ for (var [index, item] of iniciar.entries()) {
                                             button.classList.add('selected');
                                             maskBox.selected = button;
                                         }
-
                                     };
                                     button.append(img);
                                     maskBox.append(button);
                                 });
                                 box.append(maskBox);
-                                console.log('array');
                             } else {
                                 getPath(mask.url, group, {...mask.attrs});
                             }
+                        } else {
+                            console.error(`Sem url em 'Mask`);
                         }
                     }
                     
                 }
                 if (e.text) {
                     var att = e.text;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : a.node.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : a.node.height();
+                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : print.width();
+                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : print.height();
                     var group = new Konva.Group({
                         id: `${index + 1}-${i + 1}`,
                         width: width,
                         height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (a.node.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (a.node.height() / 2) - (height / 2),
+                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (print.width() / 2) - (width / 2),
+                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (print.height() / 2) - (height / 2),
                         clip: {
                             width: width,
                             height: height,
                         },
                     });
                     group.setAttrs(att.setAttrs);
-                    a.node.add(group);
+                    print.add(group);
 
                     let targets = [];
                     

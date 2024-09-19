@@ -14,7 +14,6 @@ editorApp.append(popupEditor);
 
 var canvaBox = document.createElement('div');
 canvaBox.className = 'canvaBox';
-popupEditor.appendChild(canvaBox);
 
 var onTopBox = document.createElement('div');
 onTopBox.className = 'onTopApp';
@@ -36,17 +35,16 @@ closeApp.className = 'close';
 
 onTopBox.append(popupBtnWrap, closeApp);
 
-popupEditor.appendChild(onTopBox);
-
 var mainMenu = document.createElement('div');
 mainMenu.className = 'mainMenu';
+
+mainMenu.sub = document.createElement('div');
+mainMenu.sub.className = 'hidden';
 
 mainMenuList = document.createElement('div');
 mainMenuList.className = 'iconListBox';
 
-mainMenu.append(mainMenuList);
-
-popupEditor.appendChild(mainMenu);
+mainMenu.append(mainMenu.sub, mainMenuList);
 
 function addMainMenu(className, text, func) {
     var button = document.createElement('button');
@@ -60,7 +58,6 @@ function addMainMenu(className, text, func) {
 
 var mainDesign = document.createElement('div');
 mainDesign.className = 'mainDesign toDown';
-popupEditor.appendChild(mainDesign);
 
 mainDesign.close = document.createElement('div');
 mainDesign.close.icon = document.createElement('div');
@@ -74,7 +71,7 @@ mainDesign.append(mainDesign.close, mainEdit);
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
 
-popupEditor.append(adjustBox);
+popupEditor.append(canvaBox, onTopBox, mainMenu, mainDesign, adjustBox);
 
 var showPopup = document.createElement('div');
 showPopup.className = 'showPopup';
@@ -111,7 +108,7 @@ function toShow(show, refreshing = false) {
 
 addMainMenu('callDesign', 'Design', ()=> toShow(mainDesign));
 
-addMainMenu('initial', 'Reajustar', ()=> {
+addMainMenu('initial', 'Enquadrar', ()=> {
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
 });
 
@@ -286,7 +283,7 @@ function setOverlay(group, url) {
             width: group.width(),
             height: group.height(),
             globalCompositeOperation: 'multiply',
-            listening: false,
+            //listening: false,
         });
         group.add(background);
         layer.draw();
@@ -350,93 +347,6 @@ window.addEventListener('resize', ()=> {
         height: window.innerHeight,
     });
 });
-
-var scaleLayer = (productLayer.width() * 0.4) / 3508;
-
-var frontArea = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-});
-
-var frontBg = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-    listening: false,
-});
-createMaskedImage(frontBg, `assets/Camiseta-Front.png`, '#FDF5E6', {
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffset: { x: 5, y: 5},
-    shadowOpacity: 0.3,
-});
-
-var frontPrint = new Konva.Group({
-    width: 3508,
-    height: 4961,
-    x: (productLayer.width() / 2) - ((3508  * scaleLayer) / 2),
-    y: (productLayer.height() / 2) - ((4961  * scaleLayer) / 2),
-    scale: { 
-        x: scaleLayer,
-        y: scaleLayer,
-    },
-    clip: {
-        width: 3508,
-        height: 4961,
-    }
-});
-
-var frontOverlay = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-});
-setOverlay(frontOverlay, `assets/Camiseta-Front.png`);
-
-frontArea.add(frontBg);
-frontArea.add(frontPrint);
-frontArea.add(frontOverlay);
-productLayer.add(frontArea);
-
-var backArea = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-});
-var backBg = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-    listening: false,
-});
-createMaskedImage(backBg, `assets/Camiseta-Back.png`, '#FDF5E6', {
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffset: { x: 5, y: 5},
-    shadowOpacity: 0.3,
-}
-);
-var backPrint = new Konva.Group({
-    width: 3508,
-    height: 4961,
-    x: (productLayer.width() / 2) - ((3508  * scaleLayer) / 2),
-    y: (productLayer.height() * 0.14),
-    scale: { 
-        x: scaleLayer, 
-        y: scaleLayer,
-    },
-    clip: {
-        x: 0,
-        y: 0,
-        width: 3508,
-        height: 4961,
-    }
-});
-var backOverlay = new Konva.Group({
-    width: productLayer.width(),
-    height: productLayer.height(),
-});
-setOverlay(backOverlay, `assets/Camiseta-Back.png`);
-backArea.add(backBg);
-backArea.add(backPrint);
-backArea.add(backOverlay);
-productLayer.add(backArea);
 
 function createLoading() {
     var loadingContainer = document.createElement('div');
@@ -539,6 +449,30 @@ transformer.rotateEnabled(false);
 layer.add(transformer);
 transformer.hide();
 
+// const callEditTr = new Konva.Circle({
+//     radius: 10,
+//     fill: 'red'
+// });
+
+// transformer.add(callEditTr);
+
+// callEditTr.newPos = ()=>{
+//     callEditTr.setAttrs({
+//         x: transformer.width() / 2,
+//         y: transformer.height() + 30,
+//     })
+//     console.log(transformer);
+// }
+
+// transformer.on('transform', () => {
+//     callEditTr.newPos();
+// });
+  
+// callEditTr.on('click', () => {
+//     if (onShow === adjustBox) {return}
+//     else {toShow(adjustBox, updateSets);}
+// });
+
 var dontMove = () => {
     transformer.centeredScaling(true);
     transformer.setAttrs({
@@ -570,6 +504,7 @@ function dragOn(target) {
         nodes: nodeTarget,
         enabledAnchors: nodeTarget[0].getAttr('anchors') ? nodeTarget[0].getAttr('anchors') : anchors.basic,
     });
+    //callEditTr.newPos();
     transformer.show();
 }
 
@@ -1456,19 +1391,21 @@ function createInput() {
     }
 
     var aBox = document.createElement('div');
-    adjustBox.appendChild(aBox);
     aBox.a = document.createElement('div');
     aBox.b = document.createElement('div');
-    aBox.c = document.createElement('button');
-    aBox.c.addEventListener('click', ()=> {
-        toShow(previous);
-    });
-    aBox.append(aBox.a, aBox.b, aBox.c);
+    aBox.append(aBox.a, aBox.b);
 
     var bBox = document.createElement('div');
-    adjustBox.appendChild(bBox);
-    var cBox = document.createElement('div');
-    adjustBox.appendChild(cBox);
+    bBox.a = document.createElement('div');
+    bBox.a.a = document.createElement('div');
+    bBox.a.append(bBox.a.a);
+    bBox.b = document.createElement('button');
+    bBox.b.addEventListener('click', ()=> {
+        toShow(previous);
+    });
+    bBox.append(bBox.a, bBox.b);
+
+    adjustBox.append(aBox, bBox);
 
     var create = [
         {
@@ -1652,10 +1589,10 @@ function createInput() {
                     attr: 'moveable',
                     btnHold: 'moveNode(value)',
                     btns: [
-                        {value: {n: 'up', v: 1 / scaleLayer}, class: 'up'},
-                        {value: {n: 'down', v: 1 / scaleLayer}, class: 'down'},
-                        {value: {n: 'left', v: 1 / scaleLayer}, class: 'left'},
-                        {value: {n: 'right', v: 1 / scaleLayer}, class: 'right'},
+                        {value: {n: 'up', v: 1}, class: 'up'},
+                        {value: {n: 'down', v: 1}, class: 'down'},
+                        {value: {n: 'left', v: 1}, class: 'left'},
+                        {value: {n: 'right', v: 1}, class: 'right'},
                     ],
                 },
             ]
@@ -1681,7 +1618,7 @@ function createInput() {
             }
         });
 
-        bBox.appendChild(box);
+        aBox.b.appendChild(box);
 
         let button = document.createElement('button');
         button.className = `iconBtn  ${e.class}`;
@@ -1696,8 +1633,9 @@ function createInput() {
             if (button === listBtn.selected) {
                 button.classList.remove('selected');
                 button.box.classList.add('hidden');
-                aBox.b.textContent = '';
+                aBox.a.textContent = '';
                 listBtn.selected = undefined;
+                aBox.classList.add('hidden');
             } else {
                 if (listBtn.selected) {
                     listBtn.selected.classList.remove('selected');
@@ -1706,19 +1644,20 @@ function createInput() {
                 listBtn.selected = button;
                 button.classList.add('selected');
                 button.box.classList.remove('hidden');
-                aBox.b.textContent = button.textContent;
+                aBox.a.textContent = button.textContent;
+                aBox.classList.remove('hidden');
             }
         };
 
         box.btn = button;
 
-        cBox.appendChild(button);
+        bBox.a.a.appendChild(button);
     });
 
     updateSets = () => {
         var attrs = nodeTarget[0].getAttr('edit');
-        cBox.setAttribute('type', nodeTarget[0].getClassName());
-        aBox.b.textContent = '';
+        bBox.a.a.setAttribute('type', nodeTarget[0].getClassName());
+        aBox.a.textContent = '';
         listBtn.forEach(e => {
             if (e.n.some(n => attrs.includes(n))) {
                 e.classList.remove('hidden');
@@ -1737,6 +1676,7 @@ function createInput() {
             e.classList.remove('selected');
             e.box.classList.remove('selected');
             e.box.classList.add('hidden');
+            aBox.classList.add('hidden');
         });
     };
 }
@@ -1798,3 +1738,74 @@ function onSelect(target = undefined, icon = false) {
 }
 
 var menuColorList = [];
+
+const Camiseta = {
+    areas: {
+        Frente: {
+            url: 'assets/Camiseta-Front.png',
+            tamanho: {escala: 40, l: 3508, a: 4961},
+            posição: {x: true, y: true},
+        }, 
+        Costa: {
+            url: 'assets/Camiseta-Back.png',
+            tamanho: {escala: 40, l: 3508, a: 4961},
+            posição: {x: true, y: 14},
+        }
+    },
+    cores: [
+        {name: 'Off-White', color: '#FDF5E6'},
+        {name: 'Branco', color: '#ffffff'},
+        {name: 'Preto', color: '#212121'},
+    ],
+};
+
+var Produtos = [Camiseta];
+
+function createProduct() {
+    Produtos.forEach(e => {
+        Object.keys(e.areas).forEach(areaName => {
+            const area = e.areas[areaName];
+            var tamanho = area.tamanho;
+            var pos = area.posição;
+            var scale = ((productLayer.width() * tamanho.escala) / 100) / tamanho.l;
+            e[areaName] = new Konva.Group({
+                ...productLayer.size(),
+                clip: productLayer.size(),
+            });
+            e[areaName].cor = new Konva.Group({
+                ...productLayer.size(),
+                listening: false,
+            });
+            createMaskedImage(e[areaName].cor, area.url, e.cores[0].color, {
+                shadowColor: 'black',
+                shadowBlur: 10,
+                shadowOffset: { x: 5, y: 5},
+                shadowOpacity: 0.3,
+            });
+            e[areaName].print = new Konva.Group({
+                width: tamanho.l,
+                height: tamanho.a,
+                x: typeof pos.x === "number" ? ((productLayer.width() * pos.y) / 100) :
+                (productLayer.width() / 2) - ((tamanho.l  * scale) / 2),
+                y: typeof pos.y === "number" ? ((productLayer.height() * pos.y) / 100) :
+                (productLayer.height() / 2) - ((tamanho.a  * scale) / 2),
+                scale: { 
+                    x: scale,
+                    y: scale,
+                },
+                clip: {
+                    width: tamanho.l,
+                    height: tamanho.a,
+                }
+            });
+            e[areaName].overlay = new Konva.Group({
+                ...productLayer.size(),
+                listening: false,
+            });
+            setOverlay(e[areaName].overlay, area.url);
+            e[areaName].add(e[areaName].cor, e[areaName].print, e[areaName].overlay);
+            productLayer.add(e[areaName]);
+        });
+    });
+}
+createProduct();

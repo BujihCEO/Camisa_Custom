@@ -82,9 +82,15 @@ body {
     overflow: hidden;
 }
 
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 768px) {
     .popupEditor {
         border-radius: 30px;
+    }
+    .customBox {
+        display: flex !important;
+    }
+    .customBox > * {
+        min-width: 33.333%;
     }
 }
 
@@ -321,7 +327,7 @@ body {
     height: 40px;
     padding: 5px;
     width: calc(50% - 5px);
-    gap: 8px;
+    gap: 5px;
     border-radius: var(--base-border-radius);
     background-color: rgba(57, 76, 96, .15);
 }
@@ -344,14 +350,14 @@ body {
     width: 100%;
     max-width: 340px;
     gap: 10px 5px;
-    border: 2px solid transparent;
+    border-radius: var(--base-border-radius);
     box-sizing: border-box;
+    padding: 5px;
     transition: 0.3s;
 }
 
 .inputTextBox.selected {
     box-shadow: 0 0 5px 0px red;
-    border: 2px solid red;
 } 
 
 .inputTextBox > .callEditor {
@@ -395,57 +401,77 @@ body {
 
 .adjustBox {
     position: absolute;
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
     width: 100%;
     bottom: 0;
     padding: 10px;
-    background: white;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 0 15px #0000004d;
     box-sizing: border-box;
     transition: 0.3s;
 }
 
 .adjustBox > div:nth-child(1) {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 10px;
-    background: white;
-}
-
-.adjustBox > div:nth-child(1) > div:nth-child(1), .adjustBox > div:nth-child(1) > button:nth-child(3) {
-    height: 100%;
-    aspect-ratio: 1;
-}
-
-.adjustBox > div:nth-child(1) > div:nth-child(2) {
+    display: grid;
+    gap: 15px;
     width: 100%;
+    font-size: 15px;
+    padding: 10px;
+    border-radius: var(--base-border-radius);
+    background: white;
+    justify-items: center;
+    box-sizing: border-box;
+}
+
+.adjustBox > *:nth-child(1) > *:nth-child(1) {
+    font-weight: 600;
     text-align: center;
 }
 
-.adjustBox > div:nth-child(1) > button:nth-child(3) {
+.adjustBox > *:nth-child(1) > * {
+    display: grid;
+    width: 100%;
+    grid-row-gap: 14px;
+}
+
+.adjustBox > *:nth-child(2) {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: white;
+    border-radius: var(--base-border-radius);
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.adjustBox > *:nth-child(2) > *:nth-child(1) {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    left: 0;
+    width: 100%;
+    overflow: auto;
+}
+
+.adjustBox > *:nth-child(2) > *:nth-child(1) > *:nth-child(1) {
+    display: flex;
+    height: 70px;
+    gap: 5px;
+    margin-right: 55px;
+}
+
+.adjustBox > *:nth-child(2) > *:nth-child(2) {
+    position: absolute;
+    right: 10px;
+    height: 50px;
+    aspect-ratio: 1;
     border-radius: 50%;
     background: url(https://www.svgrepo.com/show/510922/close-sm.svg) center / contain no-repeat;
-    background-color: rgba(57, 76, 96, .15);
-}
-
-.adjustBox > div:nth-child(2) > div {
-    display: grid;
-    grid-row-gap: 14px;
-    max-height: 30vh;
-    overflow-y: auto;
-}
-
-.adjustBox > div:nth-child(3) {
-    display: flex;
-    justify-content: space-evenly;
-    gap: 10px;
-    height: 70px;
-    overflow-x: auto;
+    background-color: rgb(229 229 229);
+    box-shadow: 0 0 10px 10px #ffffff;
 }
 
 .adjustBox.none::after {
@@ -747,14 +773,14 @@ button {
 }
 
 .imgChooser {
-    padding: 10px;
     gap: 10px;
+    height: 100px;
 }
 
 .imgChooser > button {
-    padding: 10px;
+    padding: 5px;
 }
 
 .imgChooser > button > img {
-    height: 100px;
+    height: 100%;
 }
