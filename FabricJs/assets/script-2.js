@@ -1,6 +1,6 @@
 if (colorMenu) {
     colorMenu.forEach((c, i) => {
-        createJsColor(mainMenuList, c.color, i + 1);
+        createMenuColor(mainMenuList, c.color, i + 1);
     });
 }
 

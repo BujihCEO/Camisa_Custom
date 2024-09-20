@@ -1,8 +1,9 @@
-var previewWrap = document.querySelector('.previewWrap');
+var initial = document.querySelector('.initial');
 
-var canvasPreview = document.createElement('div');
-canvasPreview.className = 'canvasPreview';
-previewWrap.appendChild(canvasPreview);
+var prPreview = document.createElement('div');
+prPreview.className = 'prPreview';
+
+initial.append(prPreview);
 
 var editorApp = document.createElement('div');
 editorApp.className = 'editorApp hidden';
@@ -15,8 +16,8 @@ editorApp.append(popupEditor);
 var canvaBox = document.createElement('div');
 canvaBox.className = 'canvaBox';
 
-var onTopBox = document.createElement('div');
-onTopBox.className = 'onTopApp';
+var onTopApp = document.createElement('div');
+onTopApp.className = 'onTopApp';
 
 var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
@@ -28,12 +29,12 @@ closeApp.className = 'close';
     e.addEventListener('click', ()=> {
         editorApp.classList.add('hidden');
         Array.from(productLayer.children).forEach((e, i) => {
-            setPreviews(e, canvasPreview, i);
+            setPreviews(e, prPreview, i);
         });
     });
 });
 
-onTopBox.append(popupBtnWrap, closeApp);
+onTopApp.append(popupBtnWrap, closeApp);
 
 var mainMenu = document.createElement('div');
 mainMenu.className = 'mainMenu';
@@ -46,14 +47,42 @@ mainMenuList.className = 'iconListBox';
 
 mainMenu.append(mainMenu.sub, mainMenuList);
 
-function addMainMenu(className, text, func) {
+function addMainMenu(className, text, func, canSelect = false) {
     var button = document.createElement('button');
     button.className = `iconBtn ${className}`;
-    button.onclick = func;
+    button.tittle = text;
+    button.onclick = ()=> {
+        typeof func === 'function' && func();
+        selectMainMenu(mainMenu, button, canSelect);
+    };
     var span = document.createElement('span');
     span.textContent = text;
     button.append(span);
     mainMenuList.append(button);
+    return button;
+}
+
+function selectMainMenu(parent, target, canSelect = false) {
+    if (parent.selected === target) {
+        parent.selected.classList.remove('selected');
+        parent.sub.classList.add('hidden');
+        parent.selected.box.remove();
+        parent.selected = undefined;
+    } else {
+        if(parent.selected) {
+            parent.selected.classList.remove('selected');
+            parent.selected.box.remove();
+        }
+        if (canSelect) {
+            target.classList.add('selected');
+            parent.sub.classList.remove('hidden');
+            parent.sub.append(target.box);
+            parent.selected = target;
+        } else {
+            parent.sub.classList.add('hidden');
+            parent.selected = undefined;
+        }
+    }
 }
 
 var mainDesign = document.createElement('div');
@@ -71,25 +100,43 @@ mainDesign.append(mainDesign.close, mainEdit);
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
 
-popupEditor.append(canvaBox, onTopBox, mainMenu, mainDesign, adjustBox);
+popupEditor.append(canvaBox, onTopApp, mainMenu, mainDesign, adjustBox);
 
-var showPopup = document.createElement('div');
+var pageBtnWrap = document.createElement('div');
+pageBtnWrap.className = 'pageBtnWrap';
+
+var showPopup = document.createElement('button');
 showPopup.className = 'showPopup';
-showPopup.textContent = 'personalizar';
+showPopup.textContent = 'Personalizar';
 
-[previewWrap, showPopup].forEach(e => {
+[prPreview, showPopup].forEach(e => {
     e.addEventListener('click', ()=> {
         editorApp.classList.remove('hidden');
     });
 });
 
-document.body.appendChild(showPopup);
-document.body.appendChild(editorApp);
+var addCartBtn = document.createElement('button');
+addCartBtn.className = 'addCartBtn';
+addCartBtn.textContent = 'Adicionar ao carrinho';
+
+var buyBtn = document.createElement('button');
+buyBtn.className = 'buyBtn';
+buyBtn.textContent = 'Comprar agora';
+
+pageBtnWrap.append(showPopup, addCartBtn, buyBtn);
+
+document.body.append(pageBtnWrap, editorApp);
 
 var onShow = mainMenu;
 var previous;
 
 function toShow(show, refreshing = false) {
+    if (show.selected) {
+        show.selected.classList.remove('selected');
+        show.selected.box.remove();
+        show.sub.classList.add('hidden');
+        show.selected = undefined;
+    }
     if (show === onShow && refreshing === false) {
         return;
     }
@@ -106,7 +153,7 @@ function toShow(show, refreshing = false) {
     }, 300);
 }
 
-addMainMenu('callDesign', 'Design', ()=> toShow(mainDesign));
+addMainMenu('callDesign', 'Design', ()=> {toShow(mainDesign)});
 
 addMainMenu('initial', 'Enquadrar', ()=> {
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
@@ -242,51 +289,45 @@ var layer = new Konva.Layer({
 });
 stage.add(layer);
 
-function createMaskedImage(group, url, fillColor, addStyle) {
-    group.destroyChildren();
-    layer.draw();
+function setPrColor(target, url, fillColor, size) {
     var img = new Image();
     img.onload = function() {
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext("2d");
         canvas.width = img.width;
         canvas.height = img.height;
-        ctx.fillStyle = fillColor;
-        ctx.drawImage(img, 0, 0);
-        ctx.globalCompositeOperation = "source-in";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        var maskedImg = new Image();
-        maskedImg.onload = function() {
-            var konvaMask = new Konva.Image({
-                image: maskedImg,
-                x: 0,
-                y: 0,
-                width: group.width(),
-                height: group.height(),
-                ...addStyle,
-            });
-            group.add(konvaMask);
-            layer.draw();
-        };
-        maskedImg.src = canvas.toDataURL();
+        canvas.draw = (color)=> {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = color;
+            ctx.drawImage(img, 0, 0);
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = "source-over";
+            target.getLayer().draw();
+        }
+        canvas.draw(fillColor);
+
+        target.setAttrs({
+            image: canvas,
+            ...size,
+            shadowColor: 'black',
+            shadowBlur: 10,
+            shadowOffset: { x: 5, y: 5},
+            shadowOpacity: 0.3,
+            listening: false,
+        });
     };
     img.src = url;
 }
 
-function setOverlay(group, url) {
-    group.destroyChildren();
-    layer.draw();
+function setPrOverlay(target, url) {
     var img = new Image();
     img.onload = function() {
-        var background = new Konva.Image({
+        target.setAttrs({
             image: img,
-            width: group.width(),
-            height: group.height(),
             globalCompositeOperation: 'multiply',
-            //listening: false,
+            listening: false,
         });
-        group.add(background);
-        layer.draw();
     };
     img.src = url;
 }
@@ -601,10 +642,10 @@ function newFont(name, url) {
     });
 }
 
-function createJsColor(parent, color, id) {
+function createMenuColor(parent, color, id) {
     var box = document.createElement('button');
-    var jscolorButton = document.createElement('button');
     box.className = 'iconBtn jsColor';
+    var jscolorButton = document.createElement('button');
     jscolorButton.className = 'jscolor';
     jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
     jscolorButton.targets = [];
@@ -614,7 +655,10 @@ function createJsColor(parent, color, id) {
     var span = document.createElement('span');
     span.textContent = `Cor ${id}`;
     
-    box.onclick = () => { jscolorButton.jscolor.show(); };
+    box.onclick = () => { 
+        jscolorButton.jscolor.show(); 
+        selectMainMenu(mainMenu, box, false);
+    };
 
     box.append(jscolorButton, span);
     parent.append(box);
@@ -649,6 +693,7 @@ function colorAnalize(target, attrs) {
                         a.attrs.forEach(attr => {
                             target.setAttr(attr, btn.jscolor.toHEXString());
                         });
+                        btn.targets = btn.targets.filter(node => node.parent !== null);
                         btn.targets.push(target);
                     }
                     if (btn.jscolor && typeof btn.jscolor.toHEXString === 'function') {
@@ -1038,8 +1083,6 @@ jscolor.presets.default = {
     width:250, height:165, closeButton:true, closeText:'', sliderSize:20
 };
 
-jscolor.install();
-
 function btnHold(element, action) {
     if (element || action) {
         let timer = null;
@@ -1169,8 +1212,6 @@ function createInput() {
         box.input = input;
         box.appendChild(input);
         parent.appendChild(box);
-
-        //jscolor.install();
         
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -1755,11 +1796,21 @@ const Camiseta = {
     cores: [
         {name: 'Off-White', color: '#FDF5E6'},
         {name: 'Branco', color: '#ffffff'},
-        {name: 'Preto', color: '#212121'},
+        {name: 'Preto', color: '#2b2b2b'},
+    ],
+    tamanho: [
+        {t: 'P', l:40, a: 44},
+        {t: 'M', l:42, a: 46},
+        {t: 'G', l:44, a: 48},
+        {t: 'GG', l:46, a: 50},
+        {t: 'XGG', l:48, a: 52},
     ],
 };
 
 var Produtos = [Camiseta];
+
+var prColor;
+var prSizes;
 
 function createProduct() {
     Produtos.forEach(e => {
@@ -1772,16 +1823,10 @@ function createProduct() {
                 ...productLayer.size(),
                 clip: productLayer.size(),
             });
-            e[areaName].cor = new Konva.Group({
-                ...productLayer.size(),
-                listening: false,
-            });
-            createMaskedImage(e[areaName].cor, area.url, e.cores[0].color, {
-                shadowColor: 'black',
-                shadowBlur: 10,
-                shadowOffset: { x: 5, y: 5},
-                shadowOpacity: 0.3,
-            });
+
+            e[areaName].cor = new Konva.Image({ ...productLayer.size() });
+            setPrColor(e[areaName].cor, area.url, e.cores[0].color),
+
             e[areaName].print = new Konva.Group({
                 width: tamanho.l,
                 height: tamanho.a,
@@ -1798,14 +1843,38 @@ function createProduct() {
                     height: tamanho.a,
                 }
             });
-            e[areaName].overlay = new Konva.Group({
-                ...productLayer.size(),
-                listening: false,
-            });
-            setOverlay(e[areaName].overlay, area.url);
+
+            e[areaName].overlay = new Konva.Image({ ...productLayer.size() });
+            setPrOverlay(e[areaName].overlay, area.url);
+
             e[areaName].add(e[areaName].cor, e[areaName].print, e[areaName].overlay);
             productLayer.add(e[areaName]);
         });
+        if (prColor === undefined) {
+            prColor = addMainMenu('color', 'Cor do produto', false, true);
+            prColor.style.setProperty('--color', e.cores[0].color);
+            prColor.box = document.createElement('div');
+            prColor.box.className = 'iconListBox';
+            Camiseta.cores.forEach(cor => {
+                var button = document.createElement('button');
+                button.className = `iconBtn color`;
+                button.color = cor.color;
+                button.style.setProperty('--color', cor.color);
+                button.onclick = ()=>{
+                    prColor.style.setProperty('--color', cor.color);
+                    Object.keys(e.areas).forEach(areaName => {
+                        e[areaName].cor.image().draw(cor.color);
+                    });
+                };
+                var span = document.createElement('span');
+                span.textContent = cor.name;
+                button.append(span);
+                prColor.box.append(button);
+            })
+        }
+        if (prColor === undefined) {
+
+        }
     });
 }
 createProduct();
