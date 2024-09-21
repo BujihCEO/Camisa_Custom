@@ -66,17 +66,19 @@ function selectMainMenu(parent, target, canSelect = false) {
     if (parent.selected === target) {
         parent.selected.classList.remove('selected');
         parent.sub.classList.add('hidden');
-        parent.selected.box.remove();
+        parent.selected.box && parent.selected.box.remove();
         parent.selected = undefined;
     } else {
         if(parent.selected) {
             parent.selected.classList.remove('selected');
-            parent.selected.box.remove();
+            parent.selected.box && parent.selected.box.remove();
         }
         if (canSelect) {
             target.classList.add('selected');
-            parent.sub.classList.remove('hidden');
-            parent.sub.append(target.box);
+            if (target.box) {
+                parent.sub.classList.remove('hidden');
+                parent.sub.append(target.box);
+            } else {parent.sub.classList.add('hidden')}
             parent.selected = target;
         } else {
             parent.sub.classList.add('hidden');
@@ -133,7 +135,7 @@ var previous;
 function toShow(show, refreshing = false) {
     if (show.selected) {
         show.selected.classList.remove('selected');
-        show.selected.box.remove();
+        show.selected.box && show.selected.box.remove();
         show.sub.classList.add('hidden');
         show.selected = undefined;
     }
@@ -144,6 +146,7 @@ function toShow(show, refreshing = false) {
     if (show !== onShow) {
         previous = onShow;
     }
+    show === mainMenu && dragOff();
     setTimeout(() => {
         if (typeof refreshing === 'function') {
             refreshing();
@@ -163,6 +166,12 @@ mainDesign.close.onclick = ()=> {
     toShow(mainMenu);
 }
 
+jscolor.presets.default = {
+    width: Math.min(460, Math.max(window.innerWidth - 57)), height:165, 
+    closeButton: true, closeText: '', sliderSize: 15
+};
+var colorPickers = [];
+
 Konva.hitOnDragEnabled = true;
 
 var stage = new Konva.Stage({
@@ -170,6 +179,39 @@ var stage = new Konva.Stage({
     width: Math.min(769, Math.max(window.innerWidth)),
     height: window.innerHeight,
     draggable: true,
+});
+
+var minScale = 1; // escala mínima permitida
+var maxScale = 4; // escala máxima permitida
+
+stage.on('wheel', function (e) {
+    e.evt.preventDefault();
+    var scaleBy = 1.1;
+    var oldScale = stage.scaleX();
+
+    var pointer = stage.getPointerPosition();
+
+    var mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    // Calcula o novo valor de escala
+    var newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+    // Limita o valor da escala entre 1 e 5
+    newScale = Math.max(minScale, Math.min(newScale, maxScale));
+
+    // Aplica a nova escala
+    stage.scale({ x: newScale, y: newScale });
+
+    var newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+    };
+
+    stage.position(newPos);
+    stage.batchDraw();
 });
 
 function getDistance(p1, p2) {
@@ -186,46 +228,22 @@ function getCenter(p1, p2) {
 var lastCenter = null;
 var lastDist = 0;
 var dragStopped = false;
+var minPinchDistance = 10; // distância mínima para considerar como movimento de pinça
 
-stage.on('wheel', function (e) {
-    e.evt.preventDefault();
-    var scaleBy = 1.1;
-    var oldScale = stage.scaleX();
-
-    var pointer = stage.getPointerPosition();
-
-    var mousePointTo = {
-        x: (pointer.x - stage.x()) / oldScale,
-        y: (pointer.y - stage.y()) / oldScale,
-    };
-
-    var newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-
-    stage.scale({ x: newScale, y: newScale });
-
-    var newPos = {
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
-    };
-
-    stage.position(newPos);
-    stage.batchDraw();
-});
 
 stage.on('touchmove', function (e) {
     e.evt.preventDefault();
     var touch1 = e.evt.touches[0];
     var touch2 = e.evt.touches[1];
 
-    // we need to restore dragging, if it was cancelled by multi-touch
+    // Restaura o drag se ele foi interrompido
     if (touch1 && !touch2 && !stage.isDragging() && dragStopped) {
         stage.startDrag();
         dragStopped = false;
     }
 
     if (touch1 && touch2) {
-        // if the stage was under Konva's drag&drop
-        // we need to stop it, and implement our own pan logic with two pointers
+        // Se o stage estava sob drag & drop, precisamos parar
         if (stage.isDragging()) {
             dragStopped = true;
             stage.stopDrag();
@@ -240,30 +258,34 @@ stage.on('touchmove', function (e) {
             y: touch2.clientY,
         };
 
-        if (!lastCenter) {
-            lastCenter = getCenter(p1, p2);
-            return;
-        }
-        var newCenter = getCenter(p1, p2);
-
+        // Calcula a distância inicial entre os dois toques
         var dist = getDistance(p1, p2);
 
-        if (!lastDist) {
+        // Apenas inicia o zoom se a distância for suficiente para evitar toques acidentais
+        if (dist < minPinchDistance) return;
+
+        if (!lastCenter) {
+            lastCenter = getCenter(p1, p2);
             lastDist = dist;
+            return;
         }
 
-        // local coordinates of center point
+        var newCenter = getCenter(p1, p2);
+
+        // Localiza as coordenadas do centro do zoom
         var pointTo = {
             x: (newCenter.x - stage.x()) / stage.scaleX(),
             y: (newCenter.y - stage.y()) / stage.scaleX(),
         };
 
+        // Calcula a nova escala, e limita entre os valores permitidos
         var scale = stage.scaleX() * (dist / lastDist);
+        scale = Math.max(minScale, Math.min(maxScale, scale)); // Limita entre minScale e maxScale
 
-        stage.scaleX(scale);
-        stage.scaleY(scale);
+        // Aplica a nova escala
+        stage.scale({ x: scale, y: scale });
 
-        // calculate new position of the stage
+        // Calcula o novo posicionamento do stage
         var dx = newCenter.x - lastCenter.x;
         var dy = newCenter.y - lastCenter.y;
 
@@ -273,7 +295,9 @@ stage.on('touchmove', function (e) {
         };
 
         stage.position(newPos);
+        stage.batchDraw();
 
+        // Atualiza as variáveis para a próxima iteração
         lastDist = dist;
         lastCenter = newCenter;
     }
@@ -372,22 +396,15 @@ function setPreviews(node, parent, index) {
     visible || node.hide();
 }
 
+var layerMath = Math.min(layer.height() - 90 - 52, Math.max(layer.width()));
 var productLayer = new Konva.Group({
-    //width: Math.min(layer.width(), 400),
-    //height: Math.min(layer.width(), 400),
-    width: layer.width(),
-    height: layer.width(),
-    x: 0,
+    layerMath: layerMath,
+    width: layerMath,
+    height: layerMath,
+    x: (layer.width() / 2) - (layerMath / 2) ,
     y: 0,
 });
 layer.add(productLayer);
-
-window.addEventListener('resize', ()=> {
-    stage.setAttrs({
-        width: Math.min(769, Math.max(window.innerWidth)),
-        height: window.innerHeight,
-    });
-});
 
 function createLoading() {
     var loadingContainer = document.createElement('div');
@@ -459,12 +476,12 @@ var anchors = {
     ],
 }
 
-var limiter = new Konva.Rect({
-    stroke: 'red',
-    strokeWidth: 20,
-});
-layer.add(limiter);
-limiter.hide();
+// var limiter = new Konva.Rect({
+//     stroke: 'red',
+//     strokeWidth: 20,
+// });
+// layer.add(limiter);
+// limiter.hide();
 
 var transformer = new Konva.Transformer({
     shouldOverdrawWholeArea: true,
@@ -564,7 +581,6 @@ clickTap(stage, (e)=> {
     if (canSelect.includes(e.target)) {
         return;
     }
-    dragOff();
     toShow(mainMenu);
 });
 
@@ -643,43 +659,40 @@ function newFont(name, url) {
 }
 
 function createMenuColor(parent, color, id) {
-    var box = document.createElement('button');
-    box.className = 'iconBtn jsColor';
-    var jscolorButton = document.createElement('button');
-    jscolorButton.className = 'jscolor';
-    jscolorButton.setAttribute('data-jscolor', `{value:'${color}'}`);
+    var jscolorButton = document.createElement('input');
+    new JSColor(jscolorButton, {
+        value: color,
+        closeButton: false,
+    });
     jscolorButton.targets = [];
     jscolorButton.id = id;
     menuColorList.push(jscolorButton);
+    colorPickers.push(jscolorButton);
     
-    var span = document.createElement('span');
-    span.textContent = `Cor ${id}`;
-    
-    box.onclick = () => { 
-        jscolorButton.jscolor.show(); 
-        selectMainMenu(mainMenu, box, false);
-    };
+    var button = addMainMenu('jsColor color', `Cor ${id}`, ()=> {
+        if (mainMenu.selected !== button) {
+            console.log(jscolorButton.jscolor);
+            jscolorButton.jscolor.show();
+        }
+    }, true);
+    button.style.setProperty('--color', color);
 
-    box.append(jscolorButton, span);
-    parent.append(box);
-    
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'data-current-color') {
-                var newColor = mutation.target.getAttribute('data-current-color');
-                jscolorButton.targets.forEach(e => {
-                    e.onColor[id].forEach(attr => {
-                        e.setAttr(attr, newColor);
-                        if (needDraw.includes(attr)) {
-                            e.image().draw();
-                        }
-                    });
-                });
-            }
+
+    button.append(jscolorButton);
+    parent.append(button);
+
+    jscolorButton.oninput = ()=> {
+        var newColor = jscolorButton.jscolor.toHEXString();
+        button.style.setProperty('--color', newColor);
+        jscolorButton.targets.forEach(e => {
+            e.onColor[id].forEach(attr => {
+                e.setAttr(attr, newColor);
+                if (needDraw.includes(attr)) {
+                    e.image().draw();
+                }
+            });
         });
-    });
-
-    observer.observe(jscolorButton, { attributes: true });
+    };
 }
 
 function colorAnalize(target, attrs) {
@@ -1079,10 +1092,6 @@ var colorOrder = [
     '800080',
 ];
 
-jscolor.presets.default = {
-    width:250, height:165, closeButton:true, closeText:'', sliderSize:20
-};
-
 function btnHold(element, action) {
     if (element || action) {
         let timer = null;
@@ -1209,6 +1218,7 @@ function createInput() {
         var input = document.createElement('button');
         input.className = 'jscolor';
         input.setAttribute('data-jscolor', `{value:'#ff0000'}`);
+        colorPickers.push(input);
         box.input = input;
         box.appendChild(input);
         parent.appendChild(box);
@@ -1807,6 +1817,33 @@ const Camiseta = {
     ],
 };
 
+const BabyLook = {
+    areas: {
+        Frente: {
+            url: 'assets/Camiseta-Front.png',
+            tamanho: {escala: 40, l: 3508, a: 4961},
+            posição: {x: true, y: true},
+        }, 
+        Costa: {
+            url: 'assets/Camiseta-Back.png',
+            tamanho: {escala: 40, l: 3508, a: 4961},
+            posição: {x: true, y: 14},
+        }
+    },
+    cores: [
+        {name: 'Off-White', color: '#FDF5E6'},
+        {name: 'Branco', color: '#ffffff'},
+        {name: 'Preto', color: '#2b2b2b'},
+    ],
+    tamanho: [
+        {t: 'P', l:40, a: 44},
+        {t: 'M', l:42, a: 46},
+        {t: 'G', l:44, a: 48},
+        {t: 'GG', l:46, a: 50},
+        {t: 'XGG', l:48, a: 52},
+    ],
+};
+
 var Produtos = [Camiseta];
 
 var prColor;
@@ -1819,6 +1856,7 @@ function createProduct() {
             var tamanho = area.tamanho;
             var pos = area.posição;
             var scale = ((productLayer.width() * tamanho.escala) / 100) / tamanho.l;
+
             e[areaName] = new Konva.Group({
                 ...productLayer.size(),
                 clip: productLayer.size(),
@@ -1878,3 +1916,13 @@ function createProduct() {
     });
 }
 createProduct();
+
+window.addEventListener('resize', ()=> {
+    stage.setAttrs({
+        width: Math.min(769, Math.max(window.innerWidth)),
+        height: window.innerHeight,
+    });
+    colorPickers.forEach(e => {
+        e.jscolor.width = Math.min(460, Math.max(window.innerWidth - 57));
+    });
+});

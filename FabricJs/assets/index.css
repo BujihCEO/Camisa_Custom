@@ -503,6 +503,7 @@ button {
 }
 
 .iconBtn {
+    position: relative;
     display: grid;
     align-items: center;
     justify-items: center;
@@ -526,13 +527,12 @@ button {
 }
 
 .iconBtn.jsColor > .jscolor {
-    height: 100%;
-    aspect-ratio: 1;
-    border: 1px solid;
-}
-
-.iconBtn.jsColor::before {
-    content: none;
+    position: absolute;
+    top: 0;
+    height: 0;
+    width: 0;
+    border: 0px solid;
+    visibility: hidden;
 }
 
 .flex-list {
@@ -698,7 +698,8 @@ button {
 }
 
 .jscolor-wrap {
-    left: calc(50% - 156px) !important;
+    left: 50% !important;
+    translate: -50% -10px;
 }
 
 .jscolor-wrap .jscolor-btn {
