@@ -22,7 +22,7 @@ onTopApp.className = 'onTopApp';
 var popupBtnWrap = document.createElement('div');
 popupBtnWrap.className = 'popupBtnWrap';
 
-var closeApp = document.createElement('div');
+var closeApp = document.createElement('button');
 closeApp.className = 'close';
 
 [closeApp].forEach(e => {
@@ -91,7 +91,8 @@ var mainDesign = document.createElement('div');
 mainDesign.className = 'mainDesign toDown';
 
 mainDesign.close = document.createElement('div');
-mainDesign.close.icon = document.createElement('div');
+mainDesign.close.icon = document.createElement('button');
+mainDesign.close.icon.className = 'close';
 mainDesign.close.append(mainDesign.close.icon);
 
 var mainEdit = document.createElement('div');
@@ -642,6 +643,7 @@ function newUpload(e, parent, icon, attrs) {
             nodesBox.selected = undefined;
             e.target.value = '';
             dragOn([kvImg]);
+            toShow(adjustBox, updateSets);
         };
         img.src = reader.result;
     };
@@ -995,8 +997,9 @@ function NewPotrace(event, parent, icon, attrs) {
                 iconsList.selected = undefined;
                 nodesBox.selected = undefined;
                 event.target.value = '';
-                dragOn([shape]);
                 loadOff();
+                dragOn([shape]);
+                toShow(adjustBox, updateSets);
             });
         };
         img.src = reader.result;
@@ -1428,6 +1431,7 @@ function createInput() {
     bBox.a.a = document.createElement('div');
     bBox.a.append(bBox.a.a);
     bBox.b = document.createElement('button');
+    bBox.b.className = 'close';
     bBox.b.addEventListener('click', ()=> {
         toShow(previous);
     });

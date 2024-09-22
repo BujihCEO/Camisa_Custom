@@ -177,8 +177,8 @@ button {
 .mainDesign {
     position: absolute;
     display: grid;
-    align-items: end;
-    grid-template: 3fr / 1fr;
+    justify-items: center;
+    grid-template: 2fr / 1fr;
     width: 100%;
     max-height: 50%;
     bottom: 0;
@@ -187,38 +187,14 @@ button {
 }
 
 .mainDesign > div:nth-child(1) {
-    display: grid;
-    justify-content: center;
-    width: 100%;
-    cursor: pointer;
+    padding: 5px;
 }
 
-.mainDesign > div:nth-child(1) > div:nth-child(1) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.mainDesign > div:nth-child(1) > button {
     height: 30px;
-}
-
-.mainDesign > div:nth-child(1) > div:nth-child(1)::before, 
-.mainDesign > div:nth-child(1) > div:nth-child(1)::after {
-    content: "";
-    position: absolute;
-    border-radius: 8px;
-    flex: none;
-    height: 6px;
     width: 30px;
-    background: currentColor;
-}
-
-.mainDesign > div:nth-child(1) > div:nth-child(1)::before {
-    transform: rotate(30deg);
-    translate: -11px 0;
-}
-
-.mainDesign > div:nth-child(1) > div:nth-child(1)::after {
-    transform: rotate(-30deg);
-    translate: 11px 0;
+    background-color: white;
+    border-radius: 50%;
 }
 
 .mainEdit {
@@ -226,9 +202,11 @@ button {
     display: flex;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     box-sizing: border-box;
-    border-radius: 10px;
+    border-radius: 15px 15px 0 0;
+    background: white;
+    box-shadow: 0px 0px 20px 0px #b6b6b6;
+    overflow: hidden;
     transition: 0.3s;
 }
 
@@ -236,13 +214,12 @@ button {
     position: relative;
     display: grid;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     width: 100%;
     height: 100%;
-    padding: 0px 10px 10px;
+    padding: 10px;
     overflow: auto;
     box-sizing: border-box;
-    --base-border-radius: 15px;
 }
 
 .customBox >* {
@@ -254,16 +231,8 @@ button {
     padding: 10px;
     border-radius: var(--base-border-radius);
     box-sizing: border-box;
-    border: 2px solid;
+    box-shadow: 0 0 5px #6c6c6c;
 }
-
-/* .customBox >* >* {
-    max-width: 100%;
-    box-shadow: 0px 0px 5px black;
-    padding: 10px;
-    border-radius: var(--base-border-radius);
-    box-sizing: border-box;
-} */
 
 .inputHidden {
     position: fixed;
@@ -483,10 +452,9 @@ button {
 }
 
 .adjustBox > *:nth-child(2) > *:nth-child(2) {
-    height: 50px;
+    height: 40px;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: url(https://www.svgrepo.com/show/510922/close-sm.svg) center / contain no-repeat;
     background-color: rgba(57, 76, 96, .15);
 }
 
@@ -588,27 +556,27 @@ button {
 }
 
 .onTop::before {
-    background: url(https://www.svgrepo.com/show/509720/align-shapes-top.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509720/align-shapes-top.svg) center / contain no-repeat;
 }
 
 .onLeft::before {
-    background: url(https://www.svgrepo.com/show/509716/align-shapes-left.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509716/align-shapes-left.svg) center / contain no-repeat;
 }
 
 .onMiddle::before {
-    background: url(https://www.svgrepo.com/show/509715/align-shapes-middle.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509715/align-shapes-middle.svg) center / contain no-repeat;
 }
 
 .onCenter::before {
-    background: url(https://www.svgrepo.com/show/509718/align-shapes-center.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509718/align-shapes-center.svg) center / contain no-repeat;
 }
 
 .onBottom::before {
-    background: url(https://www.svgrepo.com/show/509713/align-shapes-bottom.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509713/align-shapes-bottom.svg) center / contain no-repeat;
 }
 
 .onRight::before {
-    background: url(https://www.svgrepo.com/show/509719/align-shapes-right.svg) center / contain no-repeat white;
+    background: url(https://www.svgrepo.com/show/509719/align-shapes-right.svg) center / contain no-repeat;
 }
 
 .flex.position {
@@ -736,6 +704,10 @@ button.invert {
     border: none !important;
 }
 
+button.close {
+    background: url(https://www.svgrepo.com/show/510922/close-sm.svg) center / contain no-repeat;
+}
+
 .jscolor-btn-close {
     background: url(https://www.svgrepo.com/show/521564/close.svg) center / contain no-repeat !important;
 }
@@ -794,7 +766,7 @@ button.invert {
 }
 
 .Adjust::before {
-    background: url(https://www.svgrepo.com/show/509064/config.svg) center / 80% no-repeat white;
+    background: url(https://www.svgrepo.com/show/509064/config.svg) center / 80% no-repeat;
 }
 
 .svgEfect::before {
