@@ -159,6 +159,7 @@ button {
 .mainMenu {
     position: absolute;
     display: grid;
+    justify-content: center;
     gap: 15px;
     width: 100%;
     bottom: 0;
@@ -166,9 +167,11 @@ button {
     box-shadow: 0px 0px 20px 0px #b6b6b6;
     padding: 10px;
     box-sizing: border-box;
-    overflow: auto;
     transition: 0.3s;
-    justify-content: center;
+}
+
+.mainMenu > * {
+    overflow: auto;
 }
 
 .mainDesign {
@@ -640,6 +643,32 @@ button {
 
 .right::before {
     background: url(https://www.svgrepo.com/show/533621/arrow-sm-right.svg) center / contain no-repeat;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.iconBtn.flex {
+    display: flex;
+}
+
+button.invert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: rgba(57, 76, 96, .15);
+    padding: 10px;
+    border-radius: var(--base-border-radius);
+}
+
+.popupEditor svg {
+    height: 100%;
+    width: auto;
 }
 
 .slider {

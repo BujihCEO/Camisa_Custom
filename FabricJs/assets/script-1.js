@@ -671,12 +671,10 @@ function createMenuColor(parent, color, id) {
     
     var button = addMainMenu('jsColor color', `Cor ${id}`, ()=> {
         if (mainMenu.selected !== button) {
-            console.log(jscolorButton.jscolor);
             jscolorButton.jscolor.show();
         }
     }, true);
     button.style.setProperty('--color', color);
-
 
     button.append(jscolorButton);
     parent.append(button);
@@ -1332,63 +1330,6 @@ function createInput() {
         box.append(title, inputRange, inputText);
         parent.appendChild(box);
     }
-    
-    function createChooser(parent, add) {
-        var box = document.createElement('div');
-        box.className = 'chooserBox';
-        box.attr = add.attr;
-        var tittle = document.createElement('div');
-        tittle.textContent = add.name;
-        
-        var list = [];
-        var buttonBox = document.createElement('div');
-        buttonBox.className = 'slider';
-
-        add.values.forEach(e => {
-            var button = document.createElement('div');
-            Object.assign(button, {textContent: e.name, value: e.value});
-            list.push(button);
-            buttonBox.appendChild(button);
-
-            button.onclick = ()=> {
-                if (button === list.selected) {return};
-                list.forEach(e => {
-                    if (e === button) {
-                        e.classList.add('selected');
-                        list.selected = e;
-                        if (nodeTarget.length > 0) {
-                            nodeTarget.forEach(e => {
-                                e.setAttr(add.attr, button.value);
-                                add.func ? eval(add.func) : '';
-                                if (needDraw.includes(add.attr)) {
-                                    e.image().draw();
-                                }
-                            });
-                        }
-                    } else {
-                        e.classList.remove('selected');
-                    }
-                });
-            };
-        });
-
-        box.input = buttonBox;
-        buttonBox.change = ()=> {};
-
-        buttonBox.change = ()=> {
-            var value = nodeTarget[0].getAttr(add.attr);
-            list.forEach(e => {
-                if (e.value == value) {
-                    e.classList.add('selected');
-                    list.selected = e;
-                } else {
-                    e.classList.remove('selected');
-                }
-            });
-        };
-        box.append(tittle, buttonBox);
-        parent.appendChild(box);
-    }
 
     function btnFunc(parent, add) {
         var box = document.createElement('div');
@@ -1405,7 +1346,10 @@ function createInput() {
 
         box.input = btnBox;
 
-        btnBox.change = ()=> {};
+        btnBox.change = ()=> {
+            var value = nodeTarget[0].getAttr(add.attr);
+            btnBox.value = value;
+        };
 
         var list = [];
         add.btns.forEach(e => {
@@ -1418,6 +1362,22 @@ function createInput() {
                 span.textContent = e.text;
                 btn.append(span);
             }
+            if (e.icon) {
+                fetch(e.icon)
+                    .then(response => response.text())
+                    .then(svgContent => {
+                        const svgElement = document.createElement('div');
+                        svgElement.innerHTML = svgContent;
+                        const svg = svgElement.querySelector('svg');
+                        
+                        if (svg) {
+                            btn.append(svg);
+                        } else {
+                            console.error("SVG não encontrado no arquivo.");
+                        }
+                    })
+                    .catch(error => console.error('Erro ao carregar o SVG:', error));
+            }            
             if (add.btnHold) {
                 var func = ()=> {
                     nodeTarget.forEach(e => {
@@ -1427,14 +1387,30 @@ function createInput() {
                 };
                 btnHold(btn, func);
             } else {
-                btn.onclick = ()=> {
-                    nodeTarget.forEach(e => {
-                        (add.attr ? e.setAttr(add.attr, value) : '');
-                        (add.func ? eval(add.func) : '');
-                    });
-                };
+                if (Array.isArray(value)) {
+                    btn.onclick = ()=> {
+                        var newValue;
+                        value.forEach(e => {
+                            if (e !== btnBox.value) {
+                                newValue = e;
+                            }
+                        });
+                        btnBox.value = newValue;
+                        nodeTarget.forEach(e => {
+                            (add.attr ? e.setAttr(add.attr, newValue) : '');
+                            (add.func ? eval(add.func) : '');
+                        });
+                    };
+                } else {
+                    btn.onclick = ()=> {
+                        nodeTarget.forEach(e => {
+                            (add.attr ? e.setAttr(add.attr, value) : '');
+                            (add.func ? eval(add.func) : '');
+                        });
+                    };
+                }
             }
-            btnBox.appendChild(btn);
+            btnBox.append(btn);
         });
         
         box.append(btnBox);
@@ -1442,6 +1418,7 @@ function createInput() {
     }
 
     var aBox = document.createElement('div');
+    adjustBox.sub = aBox;
     aBox.a = document.createElement('div');
     aBox.b = document.createElement('div');
     aBox.append(aBox.a, aBox.b);
@@ -1523,17 +1500,15 @@ function createInput() {
                     attr: 'sharpen',
                     onChange: true,
                     func: 'upPotrace()',
-                    values: {min: 0, max: 2, label: {min: 0, max: 100}},
+                    values: {min: 0, max: 2, label: {min: 0, max: 10}},
                 },
                 {
-                    name: 'inverter',
-                    class: 'flex',
+                    class: 'flex-center',
                     type: 'btnFunc',
                     attr: 'invert',
                     func: 'upPotrace()',
                     btns: [
-                        {text: 'Não', value: '0', class: ''}, 
-                        {text: 'Sim', value: '1', class: ''},
+                        {text: 'Inverter', value: ['0', '1'], icon: 'assets/invert-svg.svg', class: 'invert'},
                     ],
                 },
             ]
@@ -1660,9 +1635,6 @@ function createInput() {
             }
             if(add.type === 'range') {
                 rangeInput(box, add);
-            }
-            if(add.type === 'chooser') {
-                createChooser(box, add);
             }
             if(add.type === 'btnFunc') {
                 btnFunc(box, add);
@@ -1804,9 +1776,13 @@ const Camiseta = {
         }
     },
     cores: [
-        {name: 'Off-White', color: '#FDF5E6'},
         {name: 'Branco', color: '#ffffff'},
+        {name: 'Off-White', color: '#FDF5E6'},
         {name: 'Preto', color: '#2b2b2b'},
+        {name: 'Cinza Mescla', color: '#d3d3d3'},
+        {name: 'Azul Marinho', color: '#191970'},
+        {name: 'Azul Claro', color: '#87ceeb'},
+        {name: 'Vermelho', color: '#ff0000'},
     ],
     tamanho: [
         {t: 'P', l:40, a: 44},
@@ -1909,9 +1885,6 @@ function createProduct() {
                 button.append(span);
                 prColor.box.append(button);
             })
-        }
-        if (prColor === undefined) {
-
         }
     });
 }
