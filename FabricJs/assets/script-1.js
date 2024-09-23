@@ -1420,6 +1420,30 @@ function createInput() {
         parent.append(box);
     }
 
+    function textInput(parent, add) {
+        var box = document.createElement('div');
+        box.className = 'inputTextBox';
+        box.attr = add.attr;
+
+        var input = document.createElement('input');
+        Object.assign(input, {type: 'text'});
+
+        box.input = input;
+
+        input.change = ()=> {
+            var value = nodeTarget[0].getAttr(add.attr);
+            input.value = value;
+            var target = nodeTarget[0].input;
+            input.oninput = ()=> {
+                target.value = input.value;
+                target.dispatchEvent(new Event('input'));
+            };
+        };
+
+        box.append(input);
+        parent.append(box);
+    }
+
     var aBox = document.createElement('div');
     adjustBox.sub = aBox;
     aBox.a = document.createElement('div');
@@ -1440,6 +1464,16 @@ function createInput() {
     adjustBox.append(aBox, bBox);
 
     var create = [
+        {
+            name: 'Editar',
+            class: 'type-text',
+            add: [
+                {
+                    type: 'text',
+                    attr: 'text',
+                }
+            ]
+        },
         {
             name: 'Cor',
             class: 'color',
@@ -1528,7 +1562,7 @@ function createInput() {
                     name: 'Tamanho da fonte',
                     type: 'range',
                     attr: 'fontSize',
-                    values: {min: 1, max: 150, scale: true},
+                    values: {min: 1, max: 200, scale: true},
                 },
             ]
         },
@@ -1642,6 +1676,9 @@ function createInput() {
             }
             if(add.type === 'btnFunc') {
                 btnFunc(box, add);
+            }
+            if(add.type === 'text') {
+                textInput(box, add);
             }
         });
 

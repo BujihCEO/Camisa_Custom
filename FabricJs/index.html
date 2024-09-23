@@ -110,12 +110,14 @@ var iniciar = [
                         onInput: {
                             uppercase: true,
                             //align: 'middle',
+                            // func: (e)=> {
+                            //     console.log(e.target.node);
+                            // }, 
                         },
                         attrs: {
                             noEdit: {
                                 text: '',
                                 fontFamily: 'Lucidity',
-                                text: 'nome',
                                 fill: 'transparent',
                                 strokeWidth: 20,
                                 shadowBlur: 0,
@@ -125,12 +127,13 @@ var iniciar = [
                                 rotate: false,
                                 moveable: true,
                                 letterSpacing: 20,
-
+                                
                                 jsColor: [
                                     { attrs: ['stroke'], id: 1 },
                                 ],
                             },
                             edit: {
+                                text: 'nome',
                                 fontSize: 400,
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 0,

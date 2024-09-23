@@ -294,7 +294,8 @@ for (var [index, item] of iniciar.entries()) {
                             text.onSelect = ()=> {onSelect(text)};
                         });
                     }
-                    
+                    targets[0].input = input;
+
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
                     input.configBox = document.createElement('div');
@@ -334,12 +335,15 @@ for (var [index, item] of iniciar.entries()) {
                         onSelect(input, true);
                     }
 
-                    input.oninput = (value)=> {
-                        value = uppercase === true ?
+                    input.oninput = (e)=> {
+                        var value = uppercase === true ?
                         input.value.toUpperCase() : input.value;
                         targets.forEach(e=> {
                             e.setAttr('text', value);
                         });
+                        if (typeof att.onInput.func === 'function') {
+                            att.onInput.func(e);
+                        }
                     }
                     
                     if (e.text.onInput.align) {
