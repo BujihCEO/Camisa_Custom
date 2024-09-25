@@ -512,11 +512,6 @@ label {
     cursor: pointer;
 }
 
-.colorBox::before {
-    content: '';
-    aspect-ratio: 1/1;
-}
-
 .LoadingCustom {
     position: fixed;
     top: 0px;

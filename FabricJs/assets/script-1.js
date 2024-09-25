@@ -28,9 +28,7 @@ closeApp.className = 'close';
 [closeApp].forEach(e => {
     e.addEventListener('click', ()=> {
         editorApp.classList.add('hidden');
-        Array.from(productLayer.children).forEach((e, i) => {
-            setPreviews(e, prPreview, i);
-        });
+        setPreviews();
     });
 });
 
@@ -53,7 +51,7 @@ function addMainMenu(className, text, func, canSelect = false) {
     button.tittle = text;
     button.onclick = ()=> {
         typeof func === 'function' && func();
-        selectMainMenu(mainMenu, button, canSelect);
+        selectMenu(mainMenu, button, canSelect);
     };
     var span = document.createElement('span');
     span.textContent = text;
@@ -62,7 +60,7 @@ function addMainMenu(className, text, func, canSelect = false) {
     return button;
 }
 
-function selectMainMenu(parent, target, canSelect = false) {
+function selectMenu(parent, target, canSelect = false) {
     if (parent.selected === target) {
         parent.selected.classList.remove('selected');
         parent.sub.classList.add('hidden');
@@ -78,6 +76,9 @@ function selectMainMenu(parent, target, canSelect = false) {
             if (target.box) {
                 parent.sub.classList.remove('hidden');
                 parent.sub.append(target.box);
+                if (parent.sub.tittle) {
+                    parent.sub.tittle.textContent = target.tittle;
+                }
             } else {parent.sub.classList.add('hidden')}
             parent.selected = target;
         } else {
@@ -125,10 +126,32 @@ addCartBtn.textContent = 'Adicionar ao carrinho';
 var buyBtn = document.createElement('button');
 buyBtn.className = 'buyBtn';
 buyBtn.textContent = 'Comprar agora';
+buyBtn.onclick = ()=> {createPrint()};
 
 pageBtnWrap.append(showPopup, addCartBtn, buyBtn);
 
 document.body.append(pageBtnWrap, editorApp);
+
+function createPrint() {
+    productLayer.getChildren().forEach(node => {
+        var visible = node.isVisible();
+        if (!visible) node.show();
+        var target = node.print;
+        var scale = target.scale();
+        target.setAttrs({scale: {x:1, y:1}});
+        target.toImage({
+            ...target.size(),
+            x: target.x(),
+            y: target.y(),
+            callback(img) {
+                img.style = 'width: 100%';
+                document.body.append(img);
+            }
+        });
+        target.setAttr('scale', scale);
+        if (!visible) node.hide();
+    });
+}
 
 var onShow = mainMenu;
 var previous;
@@ -182,8 +205,8 @@ var stage = new Konva.Stage({
     draggable: true,
 });
 
-var minScale = 1; // escala mínima permitida
-var maxScale = 4; // escala máxima permitida
+var minScale = 1;
+var maxScale = 4;
 
 stage.on('wheel', function (e) {
     e.evt.preventDefault();
@@ -229,7 +252,7 @@ function getCenter(p1, p2) {
 var lastCenter = null;
 var lastDist = 0;
 var dragStopped = false;
-var minPinchDistance = 10; // distância mínima para considerar como movimento de pinça
+var minPinchDistance = 10;
 
 
 stage.on('touchmove', function (e) {
@@ -387,14 +410,34 @@ function clickTap(target, callback) {
 
 var previewList = [];
 
-function setPreviews(node, parent, index) {
-    var visible = node.isVisible();
+function setPreviews(cnv = true) {
+    var parent = prPreview;
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
-    visible || node.show();
-    var canvas = node.toCanvas();
-    canvas.style = '';
-    parent.children[index] ? parent.replaceChild(canvas, parent.children[index]) : parent.appendChild(canvas);
-    visible || node.hide();
+    productLayer.children.forEach((node, index) => {
+        var visible = node.isVisible();
+        if (cnv) {
+            visible || node.show();
+            var canvas = node.toCanvas({
+                ...node.size(),
+                x: node.x(),
+                y: 52,
+            });
+            canvas.style = '';
+            parent.children[index] ? parent.replaceChild(canvas, parent.children[index]) : parent.appendChild(canvas);
+        } else {
+            node.toImage({
+                ...node.size(),
+                x: node.x(),
+                y: 52,
+                callback(img) {
+                    img.style = 'width: 100%';
+                    img.width = Math.min(500, Math.max(img.width));
+                    parent.children[index] ? parent.replaceChild(img, parent.children[index]) : parent.appendChild(img);
+                }
+            });
+        }
+        visible || node.hide();
+    });
 }
 
 var layerMath = Math.min(layer.height() - 90 - 52, Math.max(layer.width()));
@@ -477,13 +520,6 @@ var anchors = {
     ],
 }
 
-// var limiter = new Konva.Rect({
-//     stroke: 'red',
-//     strokeWidth: 20,
-// });
-// layer.add(limiter);
-// limiter.hide();
-
 var transformer = new Konva.Transformer({
     shouldOverdrawWholeArea: true,
     rotationEnabled: false,
@@ -507,30 +543,6 @@ var transformer = new Konva.Transformer({
 transformer.rotateEnabled(false);
 layer.add(transformer);
 transformer.hide();
-
-// const callEditTr = new Konva.Circle({
-//     radius: 10,
-//     fill: 'red'
-// });
-
-// transformer.add(callEditTr);
-
-// callEditTr.newPos = ()=>{
-//     callEditTr.setAttrs({
-//         x: transformer.width() / 2,
-//         y: transformer.height() + 30,
-//     })
-//     console.log(transformer);
-// }
-
-// transformer.on('transform', () => {
-//     callEditTr.newPos();
-// });
-  
-// callEditTr.on('click', () => {
-//     if (onShow === adjustBox) {return}
-//     else {toShow(adjustBox, updateSets);}
-// });
 
 var dontMove = () => {
     transformer.centeredScaling(true);
@@ -563,7 +575,6 @@ function dragOn(target) {
         nodes: nodeTarget,
         enabledAnchors: nodeTarget[0].getAttr('anchors') ? nodeTarget[0].getAttr('anchors') : anchors.basic,
     });
-    //callEditTr.newPos();
     transformer.show();
 }
 
@@ -580,10 +591,29 @@ var canSelect = [];
 
 clickTap(stage, (e)=> {
     if (canSelect.includes(e.target)) {
+        dragOn(e.target.dragOn);
+        toShow(adjustBox, updateSets);
         return;
     }
     toShow(mainMenu);
 });
+
+function setAttrs(t, a) {
+    var p = t.getParent();
+    if (a.width === 'full') {
+        a.width = p.width();
+    }
+    if (a.height === 'full') {
+        a.height = p.height();
+    }
+    if (a.x === 'center') {
+        a.x = (p.width() / 2) - ((a.width ? a.width: t.width()) / 2);
+    }
+    if (a.y === 'center') {
+        a.y = (p.height() / 2) - ((a.height ? a.height: t.height()) / 2);
+    }
+    t.setAttrs(a);
+}
 
 var needDraw = ['overFill', 'brightness', 'contrast'];
 
@@ -631,12 +661,9 @@ function newUpload(e, parent, icon, attrs) {
             canvas.draw();
             objectCover(kvImg, img, parent);
             parent.add(kvImg);
-            canSelect.push(kvImg);
             kvImg.onSelect = ()=> {onSelect(kvImg)};
-            clickTap(kvImg, () => {
-                dragOn([kvImg]);
-                toShow(adjustBox, updateSets);
-            });
+            canSelect.push(kvImg);
+            kvImg.dragOn = [kvImg];
             icon.appendChild(img);
             icon.node = [kvImg];
             iconsList.selected = undefined;
@@ -944,6 +971,7 @@ function NewPotrace(event, parent, icon, attrs) {
                 Object.assign(edit, { potrace: 1, invert: 0, sharpen: 0, moveable: true, });
 
                 var shape = new Konva.Shape({
+                    id: 'svg-test',
                     width: img.width,
                     height: img.height,
                     icon: icon,
@@ -951,24 +979,30 @@ function NewPotrace(event, parent, icon, attrs) {
                     ...noEdit,
                     ...edit,
                     edit: Object.keys(edit),
+                    listening: false,
                 });
-                parent.add(shape);
 
                 colorAnalize(shape, noEdit);
+                
+                var hitShape = new Konva.Rect();
 
-                shape.getAttr('func') ? shape.getAttr('func')() : '';
-            
                 shape.setAttrs({
                     sceneFunc: function (ctx) {
+                        hitShape.setAttrs({
+                            ...shape.size(),
+                            ...shape.position(),
+                            scale: shape.scale(),
+                        });
                         ctx.clip(shape.getAttr('path2D'));
                         ctx.fillStyle = shape.fill();
-                        ctx.fillRect(0, 0, shape.width(), shape.height());
-                    },
-                    hitFunc: (ctx) => {
-                        ctx.rect(0, 0, shape.width(), shape.height());
+                        ctx.fillRect(0, 0, img.width, img.height);
                         ctx.fillStrokeShape(shape);
+                        console.log(Camiseta.Frente.getClientRect());
                     },
                 });
+                
+                var ph = parent.height();
+                var pw = parent.width();
 
                 var clone = new Konva.Shape({
                     width: parent.width(),
@@ -977,21 +1011,24 @@ function NewPotrace(event, parent, icon, attrs) {
                     sceneFunc: function (ctx) {
                         ctx.fillStyle = shape.fill();
                         var path = new Path2D();
-                        path.rect(0, 0, clone.width(), clone.height());
-                        path.rect(shape.x(), shape.y(), shape.width() * shape.scaleX(), shape.height() * shape.scaleY());
+                        path.rect(0, 0, pw, ph);
+                        path.rect(shape.x(), shape.y(), (shape.width() - 1) * shape.scaleX(), (shape.height() - 1) * shape.scaleY());
                         ctx.clip(path, 'evenodd');
-                        ctx.fillRect(0, 0, clone.width(), clone.height());
+                        ctx.fillRect(0, 0, pw, ph);
                     },
                 });
-                parent.add(clone);
+
+                parent.add(shape, clone, hitShape);
 
                 objectCover(shape, img, parent);
-                canSelect.push(shape);
+                
+                canSelect.push(hitShape);
+                hitShape.dragOn = [shape];
                 shape.onSelect = ()=> {onSelect(shape)};
-                clickTap(shape, () => {
-                    dragOn([shape]);
-                    toShow(adjustBox, updateSets);
-                });
+                // clickTap(hitShape, () => {
+                //     dragOn([shape]);
+                //     toShow(adjustBox, updateSets);
+                // });
                 icon.appendChild(img);
                 icon.node = [shape];
                 iconsList.selected = undefined;
@@ -1208,47 +1245,49 @@ function createInput() {
 
     function createJsColor(parent, add) {
         var box = document.createElement('div');
-        box.className = 'JsColorBox';
+        box.className = 'colorBox';
         box.attr = add.attr;
         if (add.list) {
             var tittle = document.createElement('div');
             tittle.textContent = add.name;
             box.classList.add('list');
-            box.appendChild(tittle);
+            box.append(tittle);
         }
-        var input = document.createElement('button');
-        input.className = 'jscolor';
-        input.setAttribute('data-jscolor', `{value:'#ff0000'}`);
+        parent.list.push(box);
+        
+        var button = document.createElement('button');
+        button.className = 'colorBtn';
+        var input = document.createElement('input');
+        new JSColor(input, {
+            previewElement: button
+        });
         colorPickers.push(input);
         box.input = input;
-        box.appendChild(input);
-        parent.appendChild(box);
+        button.onclick = ()=> {input.jscolor.show()};
+        button.append(input);
+        box.append(button);
         
-        var observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'data-current-color') {
-                    var newColor = mutation.target.getAttribute('data-current-color');
-                    if (nodeTarget.length > 0) {
-                        nodeTarget.forEach(e => {
-                            e.setAttr(add.attr, newColor);
-                            parent.btn.style.setProperty('--color', newColor);
-                            if (needDraw.includes(add.attr)) {
-                                e.image().draw();
-                            }
-                        });
+        input.oninput = ()=> {
+            var newColor = input.jscolor.toHEXString();
+            if (nodeTarget.length > 0) {
+                nodeTarget.forEach(e => {
+                    e.setAttr(add.attr, newColor);
+                    parent.btn.style.setProperty('--color', newColor);
+                    if (needDraw.includes(add.attr)) {
+                        e.image().draw();
                     }
-                }
-            });
-        });
+                });
+            }
+        }
         
-        observer.observe(input, { attributes: true });
-        
-        input.change = ()=> {
+        input.change = () => {
             var value = nodeTarget[0].getAttr(add.attr);
+            input.jscolor.fromString(value);
             parent.btn.style.setProperty('--color', value);
-            input.setAttribute('data-jscolor', `{value: ${value}}`);
-            input.style.background = value;
+            button.style.background = value;
+            input.value = value;
         };
+        
     }
 
     function rangeInput(parent, add) {
@@ -1331,7 +1370,7 @@ function createInput() {
         // });
     
         box.append(title, inputRange, inputText);
-        parent.appendChild(box);
+        parent.list.push(box);
     }
 
     function btnFunc(parent, add) {
@@ -1417,7 +1456,7 @@ function createInput() {
         });
         
         box.append(btnBox);
-        parent.append(box);
+        parent.list.push(box);
     }
 
     function textInput(parent, add) {
@@ -1441,14 +1480,15 @@ function createInput() {
         };
 
         box.append(input);
-        parent.append(box);
+        parent.list.push(box);
     }
 
     var aBox = document.createElement('div');
     adjustBox.sub = aBox;
+    aBox.className = 'hidden';
     aBox.a = document.createElement('div');
-    aBox.b = document.createElement('div');
-    aBox.append(aBox.a, aBox.b);
+    adjustBox.sub.tittle = aBox.a;
+    aBox.append(aBox.a);
 
     var bBox = document.createElement('div');
     bBox.a = document.createElement('div');
@@ -1666,6 +1706,7 @@ function createInput() {
 
     create.forEach((e) => {
         let box = document.createElement('div');
+        box.list = [];
         
         e.add.forEach(add => {
             if(add.type === 'color') {
@@ -1682,10 +1723,9 @@ function createInput() {
             }
         });
 
-        aBox.b.appendChild(box);
-
         let button = document.createElement('button');
         button.className = `iconBtn  ${e.class}`;
+        button.tittle = e.name;
         button.span = document.createElement('span');
         button.span.textContent = e.name;
         button.append(button.span);
@@ -1694,23 +1734,7 @@ function createInput() {
         listBtn.push(button);
 
         button.onclick = ()=> {
-            if (button === listBtn.selected) {
-                button.classList.remove('selected');
-                button.box.classList.add('hidden');
-                aBox.a.textContent = '';
-                listBtn.selected = undefined;
-                aBox.classList.add('hidden');
-            } else {
-                if (listBtn.selected) {
-                    listBtn.selected.classList.remove('selected');
-                    listBtn.selected.box.classList.add('hidden');
-                }
-                listBtn.selected = button;
-                button.classList.add('selected');
-                button.box.classList.remove('hidden');
-                aBox.a.textContent = button.textContent;
-                aBox.classList.remove('hidden');
-            }
+            selectMenu(adjustBox, button, true);
         };
 
         box.btn = button;
@@ -1722,25 +1746,21 @@ function createInput() {
         var attrs = nodeTarget[0].getAttr('edit');
         bBox.a.a.setAttribute('type', nodeTarget[0].getClassName());
         aBox.a.textContent = '';
+        bBox.a.a.innerHTML = '';
         listBtn.forEach(e => {
             if (e.n.some(n => attrs.includes(n))) {
-                e.classList.remove('hidden');
-                [...e.box.children].forEach(c => {
+                bBox.a.a.append(e);
+                e.box.list.forEach(c => {
                     if (attrs.includes(c.attr)) {
-                        c.classList.remove('hidden');
+                        e.box.append(c);
                         c.input.change();
                     } else {
-                        c.classList.add('hidden');
+                        c.remove();
                     }
                 });
             } else {
-                e.classList.add('hidden');
+                e.remove();
             }
-            listBtn.selected = undefined;
-            e.classList.remove('selected');
-            e.box.classList.remove('selected');
-            e.box.classList.add('hidden');
-            aBox.classList.add('hidden');
         });
     };
 }
@@ -1865,6 +1885,7 @@ var Produtos = [Camiseta];
 
 var prColor;
 var prSizes;
+const input = document.createElement('input');
 
 function createProduct() {
     Produtos.forEach(e => {

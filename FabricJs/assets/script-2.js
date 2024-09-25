@@ -12,6 +12,8 @@ for (var [index, item] of iniciar.entries()) {
         let p = a.node;
         let btn = document.createElement('button');
         let print = a.node.print;
+        let rect = new Konva.Rect({...print.size()});
+        print.add(rect);
         btn.textContent = a.name;
         btnAreaList.push(btn);
         popupBtnWrap.appendChild(btn);
@@ -66,20 +68,13 @@ for (var [index, item] of iniciar.entries()) {
                 }
                 if (e.image) {
                     var att = e.image;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : print.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : print.height();
                     var group = new Konva.Group({
-                        id: `${index + 1}-${i + 1}`,
-                        width: width,
-                        height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (print.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (print.height() / 2) - (height / 2),
-                        clip: {
-                            width: width,
-                            height: height,
-                        },
+                        id: `${index + 1}-${i + 1}`
                     });
                     print.add(group);
+                    setAttrs(group, att.position);
+                    var width = group.width();
+                    var height = group.height();
 
                     if (att.upload) {
                         var upload = att.upload;
@@ -202,6 +197,14 @@ for (var [index, item] of iniciar.entries()) {
                         
                     }
 
+                    if (att.image) {
+                        var imageBox = new Konva.Group(att.image.attrs);
+                        group.add(imageBox);
+                        Konva.Image.fromURL(att.image.url, function(image){
+                            imageBox.add(image);
+                        });
+                    }
+
                     if (att.clip) {
                         var clip = att.clip;
                         if (clip.url) {
@@ -285,10 +288,7 @@ for (var [index, item] of iniciar.entries()) {
                             });
                             canSelect.push(text);
                             colorAnalize(text, noEditAttrs);
-                            clickTap(text, () => {
-                                dragOn(targets);
-                                toShow(adjustBox, updateSets);
-                            });
+                            text.dragOn = [text];
                             group.add(text);
                             targets.push(text);
                             text.onSelect = ()=> {onSelect(text)};

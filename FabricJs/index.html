@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="assets/index.css">
     <link rel="stylesheet" type="text/css" href="assets/custom_base.css">
-    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+    <script src="assets/konva.min.js"></script>
     <script src="assets/potrace.js"></script>
     <script src="assets/jscolor.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.3/opentype.min.js"></script>
+    <script src="assets/opentype.min.js"></script>
     <title>index</title>
 </head>
 <body>
@@ -30,6 +30,7 @@ var iniciar = [
                     image: {
                         position: {
                             y: 500,
+                            x: 'center',
                             height: 2000,
                             width: 2000,
                         },
@@ -85,9 +86,10 @@ var iniciar = [
                 {
                     image: {
                         position: {
-                            y: 500,
-                            width: 3253, 
-                            height: 2000,
+                            y: 407,
+                            x: 537,
+                            width: 2457, 
+                            height: 2093,
                         },
                         mask: {
                             url: ['assets/Star-2.svg', 'assets/Star-2.svg'],
@@ -119,6 +121,7 @@ var iniciar = [
                                 text: '',
                                 fontFamily: 'Lucidity',
                                 fill: 'transparent',
+                                aligh: 'center',
                                 strokeWidth: 20,
                                 shadowBlur: 0,
                                 shadowOpacity: 0,
@@ -206,6 +209,18 @@ var iniciar = [
                                 jsColor: [
                                     { attrs: ['fill'], id: 1 },
                                 ],
+                            },
+                        },
+                    }
+                },
+                {
+                    image: {
+                        position: {},
+                        image: {
+                            url: 'assets/Foto.png',
+                            attrs: {
+                                x: 0,
+                                y: 3000,
                             },
                         },
                     }
