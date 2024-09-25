@@ -214,16 +214,28 @@ for (var [index, item] of iniciar.entries()) {
 
                     if (att.mask) {
                         var mask = att.mask;
-                        if (mask.url) {
-                            if (Array.isArray(mask.url)) {
+                        var maskTarget;
+                        if (mask.box) {
+                            maskTarget = new Konva.Group({
+                                ...mask.box
+                            });
+                            group.add(maskTarget);
+                        } else {maskTarget = group}
+                        if (mask.btn && mask.url) {return console.error(`Mask: Contém 'btn' e 'url'`)} else {
+                            if (mask.btn) {
+                                var btn = mask.btn;
                                 var maskBox = document.createElement('div');
                                 maskBox.className = 'slider imgChooser';
-                                mask.url.forEach((url, i) => {
+                                btn.forEach((btn, i) => {
                                     var button = document.createElement('button');
                                     var img = new Image();
-                                    img.src = url;
+                                    img.src = btn.url;
                                     if (i === 0) {
-                                        getPath(url, group, {...mask.attrs});
+                                        getPath(btn.url, maskTarget, {...mask.attrs});
+                                        if (btn.clip) {
+                                            if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
+                                            else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
+                                        }
                                         button.classList.add('selected');
                                         maskBox.selected = button;
                                     }
@@ -231,7 +243,11 @@ for (var [index, item] of iniciar.entries()) {
                                         if (button === maskBox.selected) {
                                             return;
                                         } else {
-                                            getPath(url, group, {...mask.attrs});
+                                            getPath(btn.url, maskTarget, {...mask.attrs});
+                                            if (btn.clip) {
+                                                if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
+                                                else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
+                                            }
                                             maskBox.selected.classList.remove('selected');
                                             button.classList.add('selected');
                                             maskBox.selected = button;
@@ -241,32 +257,23 @@ for (var [index, item] of iniciar.entries()) {
                                     maskBox.append(button);
                                 });
                                 box.append(maskBox);
-                            } else {
-                                getPath(mask.url, group, {...mask.attrs});
                             }
-                        } else {
-                            console.error(`Sem url em 'Mask`);
+                            if (mask.url) {
+                                getPath(mask.url, maskTarget, {...mask.attrs});
+                            }
                         }
                     }
                     
                 }
                 if (e.text) {
                     var att = e.text;
-                    var width = att.position.width !== undefined && att.position.width !== null ? att.position.width : print.width();
-                    var height = att.position.height !== undefined && att.position.height !== null ? att.position.height : print.height();
                     var group = new Konva.Group({
-                        id: `${index + 1}-${i + 1}`,
-                        width: width,
-                        height: height,
-                        x: att.position.x !== undefined && att.position.x !== null ? att.position.x : (print.width() / 2) - (width / 2),
-                        y: att.position.y !== undefined && att.position.y !== null ? att.position.y : (print.height() / 2) - (height / 2),
-                        clip: {
-                            width: width,
-                            height: height,
-                        },
+                        id: `${index + 1}-${i + 1}`
                     });
-                    group.setAttrs(att.setAttrs);
                     print.add(group);
+                    setAttrs(group, att.position);
+                    var width = group.width();
+                    var height = group.height();
 
                     let targets = [];
                     
@@ -284,6 +291,7 @@ for (var [index, item] of iniciar.entries()) {
                                 ...noEditAttrs,
                                 ...editAttrs,
                                 edit: Object.keys(editAttrs),
+                                fillAfterStrokeEnabled: true,
                                 moveable: true,
                             });
                             canSelect.push(text);
@@ -354,7 +362,7 @@ for (var [index, item] of iniciar.entries()) {
 
                     if (att.textClip) {
                         var clip = att.textClip;
-                        textClip(clip.url, clip.target, targets, clip.height);
+                        textClip(clip.url, clip.target, targets, clip.height, clip.rule);
                     }
 
                     if (att.clip) {

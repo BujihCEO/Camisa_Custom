@@ -849,7 +849,11 @@ function movePath(p, t) {
 }
 
 function textClip(url, targetID, text, height, rule) {
-    var target = stage.findOne(`#${targetID}`);
+    var targets = [];
+    targetID.forEach(id => {
+        t = stage.findOne(`#${id}`);
+        targets.push(t);
+    });
     opentype.load(url, function(err, font) {
         if (err) {
             console.error('Erro ao carregar a fonte: ', err);
@@ -874,27 +878,31 @@ function textClip(url, targetID, text, height, rule) {
                     ltx += advanceWidth + letterSpacing;
                 });
             });
-            target.setAttr('pathText', path2D);
-        }
-
-        if (target.getAttr('pathClip')) {
-            update();
-        } else {
-            update();
-            rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
-            var theight = target.height();
-            var twidth = target.width();
-            target.setAttrs({
-                rule: rule,
-                clipFunc: function (ctx) {
-                    ctx.rect(0, 0, twidth, theight);
-                    var newPath = new Path2D();
-                    rule === 'evenodd' ? newPath.rect(0, 0, twidth, theight) : '';
-                    newPath.addPath(target.getAttr('pathText'));
-                    ctx._context.clip(newPath, rule);
-                },
+            targets.forEach(t => {
+                t.setAttr('pathText', path2D);
             });
         }
+
+        targets.forEach(target => {
+            if (target.getAttr('pathClip')) {
+                update();
+            } else {
+                update();
+                rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+                var theight = target.height();
+                var twidth = target.width();
+                target.setAttrs({
+                    rule: rule,
+                    clipFunc: function (ctx) {
+                        ctx.rect(0, 0, twidth, theight);
+                        var newPath = new Path2D();
+                        rule === 'evenodd' ? newPath.rect(0, 0, twidth, theight) : '';
+                        newPath.addPath(target.getAttr('pathText'));
+                        ctx._context.clip(newPath, rule);
+                    },
+                });
+            }
+        });
 
         text[0].on('fontSizeChange textChange xChange yChange', function() {
             update();
@@ -903,7 +911,6 @@ function textClip(url, targetID, text, height, rule) {
 }
 
 function setClip(url, target, rule = 0) {
-    target.setAttr('pathClip', true);
     return fetch(url)
     .then(response => response.text())
     .then(svgText => {
@@ -923,19 +930,19 @@ function setClip(url, target, rule = 0) {
                 clipFunc: function (ctx) {
                     ctx.rect(0, 0, width, height);
                     var path2D = new Path2D();
-                    rule === 'evenodd' ? path2D.rect(0, 0, width, height) : '';
+                    rule === 'evenodd' && path2D.rect(0, 0, width, height);
                     path2D.addPath(target.getAttr('pathClip'));
-                    target.getAttr('pathText') ? path2D.addPath(target.getAttr('pathText')) : '';
+                    target.getAttr('pathText') && path2D.addPath(target.getAttr('pathText'));
                     ctx._context.clip(path2D, rule);
                 },
             });
 
-            var rect = new Konva.Rect({
-                height: height,
-                width: width,
-                fill: 'red',
-            });
-            //target.add(rect);
+            // var rect = new Konva.Rect({
+            //     height: height,
+            //     width: width,
+            //     fill: 'red',
+            // });
+            // //target.add(rect);
 
         } else {
             console.error('no path found');
@@ -997,14 +1004,13 @@ function NewPotrace(event, parent, icon, attrs) {
                         ctx.fillStyle = shape.fill();
                         ctx.fillRect(0, 0, img.width, img.height);
                         ctx.fillStrokeShape(shape);
-                        console.log(Camiseta.Frente.getClientRect());
                     },
                 });
                 
                 var ph = parent.height();
                 var pw = parent.width();
 
-                var clone = new Konva.Shape({
+                var fillBg = new Konva.Shape({
                     width: parent.width(),
                     height: parent.height(),
                     listening: false,
@@ -1012,23 +1018,19 @@ function NewPotrace(event, parent, icon, attrs) {
                         ctx.fillStyle = shape.fill();
                         var path = new Path2D();
                         path.rect(0, 0, pw, ph);
-                        path.rect(shape.x(), shape.y(), (shape.width() - 1) * shape.scaleX(), (shape.height() - 1) * shape.scaleY());
+                        path.rect(shape.x() + 1, shape.y() + 1, (shape.width() - 1) * shape.scaleX(), (shape.height() - 1) * shape.scaleY());
                         ctx.clip(path, 'evenodd');
                         ctx.fillRect(0, 0, pw, ph);
                     },
                 });
 
-                parent.add(shape, clone, hitShape);
+                parent.add(shape, fillBg, hitShape);
 
                 objectCover(shape, img, parent);
                 
                 canSelect.push(hitShape);
                 hitShape.dragOn = [shape];
                 shape.onSelect = ()=> {onSelect(shape)};
-                // clickTap(hitShape, () => {
-                //     dragOn([shape]);
-                //     toShow(adjustBox, updateSets);
-                // });
                 icon.appendChild(img);
                 icon.node = [shape];
                 iconsList.selected = undefined;
@@ -1615,7 +1617,7 @@ function createInput() {
                     name: 'Espessura',
                     type: 'range',
                     attr: 'strokeWidth',
-                    values: {min: 0, max: 20, scale: true},
+                    values: {min: 0, max: 200},
                 },
                 {
                     name: 'Cor',
