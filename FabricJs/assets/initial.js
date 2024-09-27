@@ -27,37 +27,49 @@ var setPrintArea = [
                     },
                     text: {
                         position: {
-                            height: 2000,
-                            width: 2000,
+                            height: 'full',
+                            width: 'full',
+                        },
+                        onInput: {
+                            uppercase: true,
+                            align: 'center', // Dont work fine w/ multi konva texts'
+                            func: (e)=> {
+                                 console.log(e.target.node);
+                            },
                         },
                         attrs: {
                             noEdit: {
-                                text: '',
-                                fontFamily: 'Lucidity',
-                                fill: 'transparent',
-                                anchors: anchors.none,
-                                rotate: false,
-                                fontSize: 400,
-                                moveable: true,
-                                align: 'center',
-                                strokeWidth: 25,
-                                shadowBlur: 0,
-                                stroke: 'blue',
-                                shadowColor: 'black',
-                                shadowOffset: { x: 0, y: 0 },
-                                shadowOpacity: 0,
+                                fontFamily: 'font name',
+                                verticalAlign: '', // top, middle or bottom
+                                align: '', // left, center, or right
+                                anchors: anchors, // .none, .all, .basic
+                                jsColor: [
+                                    { attrs: ['stroke'], id: 1 },
+                                ],
                             },
                             edit: {
-
+                                text: 'texto', // Can Edit
+                                fill: 'hex color', // Can Edit
+                                fontSize: 0, // Can Edit
+                                letterSpacing: 0, // Can Edit
+                                stroke: 'hex color', // Can Edit
+                                strokeWidth: 0, // Can Edit
+                                shadowBlur: 0, // Can Edit
+                                shadowOpacity: 0, // Can Edit
+                                shadowColor: 'hex color', // Can Edit
+                                shadowOffsetX: 0, // Can Edit
+                                shadowOffsetY: 0, // Can Edit
+                                moveable: true,  // Can Edit
                             },
                         },
-                        add: [
-                            {x: 1000, y: 0},
+                        add: [ // Add Text Group
+                            {x: 0, y: 0},
                         ],
-                        clip: {
-                            url: 'assets/Font_Lucidity_Psych.ttf', 
-                            target: ['1-2'],
-                            height: 322,
+                        textClip: {
+                            url: 'font link', 
+                            target: ['1-1', '1-2', '1-3'],
+                            height: 0.78,
+                            rule: 1, // Optinal
                         },
                     },
                 },

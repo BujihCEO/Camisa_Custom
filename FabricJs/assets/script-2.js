@@ -274,14 +274,30 @@ for (var [index, item] of iniciar.entries()) {
                     setAttrs(group, att.position);
                     var width = group.width();
                     var height = group.height();
-
                     let targets = [];
-                    
-                    var input = document.createElement('input');
-                    Object.assign(input, {type: 'text', placeholder: 'Escreva aqui...'});
-
                     var noEditAttrs = {...att.attrs.noEdit};
                     var editAttrs = {...att.attrs.edit};
+                    var uppercase = e.text.onInput.uppercase;
+                    
+                    var input = document.createElement('textarea');
+                    input.setAttrs = (t)=> {
+                        Object.assign(t, {
+                            placeholder: 'Escreva aqui...',
+                            rows: 1,
+                            cols: 5,
+                        });
+                        t.style.resize = 'none';
+                        uppercase ? t.style.textTransform =  'uppercase' : '';
+                        if (noEditAttrs.wrap !== 'char') {
+                            t.addEventListener('keydown', function (e) {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                }
+                            });
+                            t.wrap = 'off';
+                        }
+                    };
+                    input.setAttrs(input);
 
                     if (e.text.add) {
                         e.text.add.forEach(e => {
@@ -296,13 +312,13 @@ for (var [index, item] of iniciar.entries()) {
                             });
                             canSelect.push(text);
                             colorAnalize(text, noEditAttrs);
-                            text.dragOn = [text];
                             group.add(text);
                             targets.push(text);
                             text.onSelect = ()=> {onSelect(text)};
                         });
                     }
                     targets[0].input = input;
+                    targets.forEach(t => { t.dragOn = targets });
 
                     var inputBox = document.createElement('div');
                     inputBox.className = 'inputTextBox';
@@ -330,7 +346,6 @@ for (var [index, item] of iniciar.entries()) {
                     callEditor.span.textContent = 'Editar';
                     callEditor.appendChild(callEditor.span);
 
-                    var uppercase = e.text.onInput.uppercase;
                     if (uppercase === true) {
                         targets.forEach(node => {
                             node.text(node.text().toUpperCase());
@@ -355,9 +370,10 @@ for (var [index, item] of iniciar.entries()) {
                     }
                     
                     if (e.text.onInput.align) {
-                        targets[0].on('fontSizeChange textChange xChange yChange', function() {
+                        align(e.text.onInput.align, targets[0]);
+                        targets[0].on('fontSizeChange letterSpacingChange textChange xChange yChange', function() {
                             align(e.text.onInput.align);
-                        }); 
+                        });
                     }
 
                     if (att.textClip) {

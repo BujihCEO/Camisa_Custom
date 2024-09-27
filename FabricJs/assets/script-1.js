@@ -34,6 +34,9 @@ closeApp.className = 'close';
 
 onTopApp.append(popupBtnWrap, closeApp);
 
+var appMain = document.createElement('div');
+appMain.className = 'appMain';
+
 var mainMenu = document.createElement('div');
 mainMenu.className = 'mainMenu';
 
@@ -104,7 +107,9 @@ mainDesign.append(mainDesign.close, mainEdit);
 var adjustBox = document.createElement('div');
 adjustBox.className = 'adjustBox toDown';
 
-popupEditor.append(canvaBox, onTopApp, mainMenu, mainDesign, adjustBox);
+appMain.append(mainMenu, mainDesign, adjustBox);
+
+popupEditor.append(canvaBox, onTopApp, appMain);
 
 var pageBtnWrap = document.createElement('div');
 pageBtnWrap.className = 'pageBtnWrap';
@@ -130,7 +135,9 @@ buyBtn.onclick = ()=> {createPrint()};
 
 pageBtnWrap.append(showPopup, addCartBtn, buyBtn);
 
-document.body.append(pageBtnWrap, editorApp);
+initial.append(pageBtnWrap);
+
+document.body.append(editorApp);
 
 function createPrint() {
     productLayer.getChildren().forEach(node => {
@@ -901,10 +908,18 @@ function textClip(url, targetID, text, height, rule) {
                         ctx._context.clip(newPath, rule);
                     },
                 });
+                // if (target.children[0] === text[0]) {
+                //     target.setAttrs({
+                //         hitFunc: function (ctx) {
+                //             ctx.rect(text[0].x, text[0].y, text[0].width, text[0].height);
+                //             ctx.fillStrokeShape(this);
+                //         }
+                //     })
+                // }
             }
         });
 
-        text[0].on('fontSizeChange textChange xChange yChange', function() {
+        text[0].on('fontSizeChange letterSpacingChange textChange xChange yChange', function() {
             update();
         });
     });
@@ -964,7 +979,24 @@ function NewPotrace(event, parent, icon, attrs) {
 
     reader.onload = function () {
         img.onload = () => {
-            Potrace.loadImageFromFile(file);
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var scaleFactor = 1;
+            var maxSize = 2000;
+            if (img.width > maxSize || img.height > maxSize) {
+                scaleFactor = Math.min(maxSize / img.width, maxSize / img.height);
+            }
+            var width = img.width * scaleFactor;
+            var height = img.height * scaleFactor;
+            
+            img.width = width;
+            img.height = height;
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            var url = canvas.toDataURL();
+            Potrace.loadImageFromUrl(url);
             Potrace.process(() => {
                 var svgText = Potrace.getSVG(1);
                 var parser = new DOMParser();
@@ -979,8 +1011,8 @@ function NewPotrace(event, parent, icon, attrs) {
 
                 var shape = new Konva.Shape({
                     id: 'svg-test',
-                    width: img.width,
-                    height: img.height,
+                    width: width,
+                    height: height,
                     icon: icon,
                     path2D: path2D,
                     ...noEdit,
@@ -1002,7 +1034,7 @@ function NewPotrace(event, parent, icon, attrs) {
                         });
                         ctx.clip(shape.getAttr('path2D'));
                         ctx.fillStyle = shape.fill();
-                        ctx.fillRect(0, 0, img.width, img.height);
+                        ctx.fillRect(0, 0, width, height);
                         ctx.fillStrokeShape(shape);
                     },
                 });
@@ -1091,17 +1123,27 @@ function applySharpen(ctx, width, height, intensity = 1) {
     ctx.putImageData(dstData, 0, 0);
 }
 
+
 function upPotrace() {
     loadOn(0);
     var img = new Image();
     img.onload = () => {
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        var scaleFactor = 1;
+        var maxSize = 2000;
+        if (img.width > maxSize || img.height > maxSize) {
+            scaleFactor = Math.min(maxSize / img.width, maxSize / img.height);
+        }
+        var width = img.width * scaleFactor;
+        var height = img.height * scaleFactor;
+        img.width = width;
+        img.height = height;
+        canvas.width = width;
+        canvas.height = height;
         ctx.filter = `brightness(${nodeTarget[0].getAttr('potrace')})
             invert(${nodeTarget[0].getAttr('invert')})`;
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         applySharpen(ctx, canvas.width, canvas.height, nodeTarget[0].getAttr('sharpen'));
         var url = canvas.toDataURL();
         Potrace.loadImageFromUrl(url);
@@ -1185,12 +1227,12 @@ function btnHold(element, action) {
     }
 }
 
-function align(v) {
-    var parent = nodeTarget[0].getParent();
+function align(v, t = nodeTarget[0]) {
+    var parent = t.getParent();
     var pSize = parent.size();
-    var nodeSize = nodeTarget[0].size();
-    var newPos = nodeTarget[0].position();
-    var scale = nodeTarget[0].scale();
+    var nodeSize = t.size();
+    var newPos = t.position();
+    var scale = t.scale();
 
     switch (v) {
         case 'top':
@@ -1215,7 +1257,7 @@ function align(v) {
             break;
     }
 
-    nodeTarget[0].position(newPos);
+    t.position(newPos);
     transformer.getLayer().batchDraw();
 }
 
@@ -1264,7 +1306,6 @@ function createInput() {
             previewElement: button
         });
         colorPickers.push(input);
-        box.input = input;
         button.onclick = ()=> {input.jscolor.show()};
         button.append(input);
         box.append(button);
@@ -1282,7 +1323,7 @@ function createInput() {
             }
         }
         
-        input.change = () => {
+        box.change = () => {
             var value = nodeTarget[0].getAttr(add.attr);
             input.jscolor.fromString(value);
             parent.btn.style.setProperty('--color', value);
@@ -1309,8 +1350,6 @@ function createInput() {
             step: v.label ? (v.max - v.min) * 0.005 : 1 
         });
         
-        box.input = inputRange;
-        
         var inputText = document.createElement('input');
         inputText.type = 'text';
         inputText.value = inputRange.value;
@@ -1321,7 +1360,7 @@ function createInput() {
             inputText.value = `${Math.round(mappedValue)}`;
         }
     
-        inputRange.change = () => {
+        box.change = () => {
             var value = nodeTarget[0].getAttr(add.attr) / (v.scale ? 5 : 1);
             inputRange.value = value;
             v.label ? mapToRange(value) : inputText.value = value;
@@ -1357,20 +1396,6 @@ function createInput() {
             inputRange.dispatchEvent(new Event('input'));
         });
     
-        // inputText.addEventListener('keydown', (e) => {
-        //     var step = parseFloat(inputRange.step) || 1;
-        //     var value = parseFloat(inputText.value);
-    
-        //     if (e.key === 'ArrowUp') {
-        //         value = value + step;
-        //     } else if (e.key === 'ArrowDown') {
-        //         value = value - step;
-        //     }
-            
-        //     inputRange.value = value;
-        //     inputRange.dispatchEvent(new Event('input'));
-        // });
-    
         box.append(title, inputRange, inputText);
         parent.list.push(box);
     }
@@ -1388,9 +1413,7 @@ function createInput() {
         var btnBox = document.createElement('div');
         add.class ? btnBox.className = add.class : '';
 
-        box.input = btnBox;
-
-        btnBox.change = ()=> {
+        box.change = ()=> {
             var value = nodeTarget[0].getAttr(add.attr);
             btnBox.value = value;
         };
@@ -1466,22 +1489,18 @@ function createInput() {
         box.className = 'inputTextBox';
         box.attr = add.attr;
 
-        var input = document.createElement('input');
-        Object.assign(input, {type: 'text'});
-
-        box.input = input;
-
-        input.change = ()=> {
+        box.change = ()=> {
             var value = nodeTarget[0].getAttr(add.attr);
-            input.value = value;
             var target = nodeTarget[0].input;
-            input.oninput = ()=> {
-                target.value = input.value;
+            var clone = target.cloneNode(false);
+            clone.value = value;
+            target.setAttrs(clone);
+            box.replaceChildren(clone);
+            clone.oninput = ()=> {
+                target.value = clone.value;
                 target.dispatchEvent(new Event('input'));
             };
         };
-
-        box.append(input);
         parent.list.push(box);
     }
 
@@ -1606,6 +1625,12 @@ function createInput() {
                     attr: 'fontSize',
                     values: {min: 1, max: 200, scale: true},
                 },
+                {
+                    name: 'Espaço entre letras',
+                    type: 'range',
+                    attr: 'letterSpacing',
+                    values: {min: 0, max: 30, scale: true},
+                },
             ]
         },
 
@@ -1617,7 +1642,7 @@ function createInput() {
                     name: 'Espessura',
                     type: 'range',
                     attr: 'strokeWidth',
-                    values: {min: 0, max: 200},
+                    values: {min: 0, max: 50, scale: true},
                 },
                 {
                     name: 'Cor',
@@ -1755,7 +1780,7 @@ function createInput() {
                 e.box.list.forEach(c => {
                     if (attrs.includes(c.attr)) {
                         e.box.append(c);
-                        c.input.change();
+                        c.change();
                     } else {
                         c.remove();
                     }
