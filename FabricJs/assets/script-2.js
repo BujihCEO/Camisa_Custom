@@ -231,7 +231,7 @@ for (var [index, item] of iniciar.entries()) {
                                     var img = new Image();
                                     img.src = btn.url;
                                     if (i === 0) {
-                                        getPath(btn.url, maskTarget, {...mask.attrs});
+                                        imgPath(btn.url, maskTarget, {...mask.attrs});
                                         if (btn.clip) {
                                             if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
                                             else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
@@ -243,7 +243,7 @@ for (var [index, item] of iniciar.entries()) {
                                         if (button === maskBox.selected) {
                                             return;
                                         } else {
-                                            getPath(btn.url, maskTarget, {...mask.attrs});
+                                            imgPath(btn.url, maskTarget, {...mask.attrs});
                                             if (btn.clip) {
                                                 if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
                                                 else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
@@ -259,7 +259,7 @@ for (var [index, item] of iniciar.entries()) {
                                 box.append(maskBox);
                             }
                             if (mask.url) {
-                                getPath(mask.url, maskTarget, {...mask.attrs});
+                                imgPath(mask.url, maskTarget, {...mask.attrs});
                             }
                         }
                     }

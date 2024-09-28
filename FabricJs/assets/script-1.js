@@ -759,38 +759,48 @@ function colorAnalize(target, attrs) {
     }
 }
 
-function getPath(url, parent, attrs) {
-    parent.destroyChildren();
+function getPath(url) {
     return fetch(url)
-        .then(response => response.text())
-        .then(svgText => {
-            var parser = new DOMParser();
-            var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-            var pathElement = svgDoc.querySelector('path');
-            if (pathElement) {
-                var pathData = pathElement.getAttribute('d');
-                var path2D = new Path2D(pathData);
-                var shape = new Konva.Shape({
-                    height: parent.height(),
-                    width: parent.width(),
-                    ...attrs,
-                    sceneFunc: function (ctx) {
-                        ctx.clip(path2D);
-                        ctx.fillStyle = shape.fill();
-                        ctx.fillRect(0, 0, shape.width(), shape.height());
-                    },
-                });
-                colorAnalize(shape, attrs);
-                parent.add(shape);
-            } else {
-                throw new Error("No path element found in the SVG.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching or parsing SVG:", error);
-            throw error;
-        });
+    .then(response => response.text())
+    .then(svgText => {
+        var parser = new DOMParser();
+        var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+        var pathElement = svgDoc.querySelector('path');
+        if (pathElement) {
+          return pathElement.getAttribute('d');
+        } else {
+          throw new Error("No path element found in the SVG.");
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching or parsing SVG:", error);
+        throw error;
+    });
 }
+  
+function imgPath(url, parent, attrs) {
+    parent.destroyChildren();
+    getPath(url)
+    .then(pathData => {
+        var path2D = new Path2D(pathData);
+        var shape = new Konva.Shape({
+            height: parent.height(),
+            width: parent.width(),
+            ...attrs,
+            sceneFunc: function (ctx) {
+            ctx.clip(path2D);
+            ctx.fillStyle = this.fill();
+            ctx.fillRect(0, 0, this.width(), this.height());
+            },
+        });
+        colorAnalize(shape, attrs);
+        parent.add(shape);
+    })
+    .catch(error => {
+        console.error("Error processing SVG path:", error);
+    });
+}
+
 
 function translatePathData(pathData, dx, dy, scaleX, scaleY) {
     return pathData.replace(/([MLHVCSQTA])([^MLHVCSQTA]+)/gi, function(match, command, params) {
@@ -1122,7 +1132,6 @@ function applySharpen(ctx, width, height, intensity = 1) {
     
     ctx.putImageData(dstData, 0, 0);
 }
-
 
 function upPotrace() {
     loadOn(0);
@@ -1988,3 +1997,5 @@ window.addEventListener('resize', ()=> {
         e.jscolor.width = Math.min(460, Math.max(window.innerWidth - 57));
     });
 });
+
+console.log('script 1');
