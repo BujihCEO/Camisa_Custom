@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: calc(1 * 62.5%);">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="http://127.0.0.1:5500/FabricJs/assets/index.css">
+    <script src="http://127.0.0.1:5500/FabricJs/assets/konva.min.js"></script>
+    <script src="http://127.0.0.1:5500/FabricJs/assets/potrace.js"></script>
+    <script src="http://127.0.0.1:5500/FabricJs/assets/jscolor.js"></script>
+    <script src="http://127.0.0.1:5500/FabricJs/assets/opentype.min.js"></script>
+</head>
+<body>
+    <input class="InputColor hidden" type="text" form="{{ 'product-form-' | append: section.id }}" name="properties[Cor:]">
+    <input class="InputPrintFront hidden" type="file" form="{{ 'product-form-' | append: section.id }}" name="properties[_hiddenPropertyName Estampa Frente]">
+    <input class="InputPrintBack hidden" type="file" form="{{ 'product-form-' | append: section.id }}" name="properties[_hiddenPropertyName Estampa Costa]">
+    <input class="InputPreviewFront hidden" type="file" form="{{ 'product-form-' | append: section.id }}" name="properties[Preview Frente:]">
+    <input class="InputPreviewBack hidden" type="file" form="{{ 'product-form-' | append: section.id }}" name="properties[Preview Costa:]">
+    <div class="initial"></div>
+</body>
+<script src="http://127.0.0.1:5500/FabricJs/assets/script-1.js"></script>
+<script src="index.js"></script>
+<script src="http://127.0.0.1:5500/FabricJs/assets/script-2.js"></script>
+</html>

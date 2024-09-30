@@ -804,7 +804,6 @@ button.close {
 
 .imgChooser {
     gap: 10px;
-    height: 100px;
 }
 
 .imgChooser > button {

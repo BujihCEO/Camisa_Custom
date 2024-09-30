@@ -1,3 +1,7 @@
+var assets = 'http://127.0.0.1:5500/FabricJs/assets/';
+
+var printList = [];
+
 var initial = document.querySelector('.initial');
 
 var prPreview = document.createElement('div');
@@ -140,20 +144,24 @@ initial.append(pageBtnWrap);
 document.body.append(editorApp);
 
 function createPrint() {
-    productLayer.getChildren().forEach(node => {
+    printList.forEach(node => {
         var visible = node.isVisible();
         if (!visible) node.show();
         var target = node.print;
         var scale = target.scale();
         target.setAttrs({scale: {x:1, y:1}});
-        target.toImage({
-            ...target.size(),
-            x: target.x(),
-            y: target.y(),
-            callback(img) {
-                img.style = 'width: 100%';
-                document.body.append(img);
-            }
+        new Promise((resolve) => {
+            target.toBlob({
+                ...target.size(),
+                x: target.x(),
+                y: target.y(),
+                callback(blop) {
+                    var fileList = new DataTransfer();
+                    fileList.items.add(new File([blop], node.name));
+                    target.input.files = fileList.files;
+                    resolve();
+                }
+            });
         });
         target.setAttr('scale', scale);
         if (!visible) node.hide();
@@ -417,32 +425,31 @@ function clickTap(target, callback) {
 
 var previewList = [];
 
-function setPreviews(cnv = true) {
+function setPreviews() {
     var parent = prPreview;
     stage.setAttrs({x:0, y:0, scale: {x:1, y:1}});
-    productLayer.children.forEach((node, index) => {
+    printList.forEach((node, index) => {
         var visible = node.isVisible();
-        if (cnv) {
-            visible || node.show();
-            var canvas = node.toCanvas({
-                ...node.size(),
-                x: node.x(),
-                y: 52,
-            });
-            canvas.style = '';
-            parent.children[index] ? parent.replaceChild(canvas, parent.children[index]) : parent.appendChild(canvas);
-        } else {
-            node.toImage({
-                ...node.size(),
-                x: node.x(),
-                y: 52,
-                callback(img) {
-                    img.style = 'width: 100%';
-                    img.width = Math.min(500, Math.max(img.width));
-                    parent.children[index] ? parent.replaceChild(img, parent.children[index]) : parent.appendChild(img);
-                }
-            });
-        }
+        node.toImage({
+            ...node.size(),
+            x: node.x(),
+            y: 52,
+            callback(img) {
+                img.style = 'width: 100%';
+                img.width = Math.min(500, Math.max(img.width));
+                parent.children[index] ? parent.replaceChild(img, parent.children[index]) : parent.append(img);
+            }
+        });
+        node.toBlob({
+            ...node.size(),
+            x: node.x(),
+            y: 52,
+            callback(blop) {
+                var fileList = new DataTransfer();
+                fileList.items.add(new File([blop], 'Preview' + node.name));
+                node.input.files = fileList.files;
+            }
+        });
         visible || node.hide();
     });
 }
@@ -622,7 +629,7 @@ function setAttrs(t, a) {
     t.setAttrs(a);
 }
 
-var needDraw = ['overFill', 'brightness', 'contrast'];
+var needDraw = ['imgFill', 'brightness', 'contrast'];
 
 function newUpload(e, parent, icon, attrs) {
     var file = e.target.files[0];
@@ -639,7 +646,7 @@ function newUpload(e, parent, icon, attrs) {
 
             var noEdit = {...attrs.noEdit};
             var edit = {...attrs.edit};
-            Object.assign(edit, { brightness: 1, contrast: 1 });
+            Object.assign(edit, { brightness: 1, contrast: 1, moveable: true });
 
             var kvImg = new Konva.Image({
                 image: canvas,
@@ -657,11 +664,11 @@ function newUpload(e, parent, icon, attrs) {
                 canvas.ctx.globalCompositeOperation = 'source-over';
                 canvas.ctx.filter = eval("`" + filter + "`");
                 canvas.ctx.drawImage(img, 0, 0);
-                if (kvImg.getAttr('overFill')) {
-                    canvas.ctx.fillStyle = kvImg.getAttr('overFill');
+                if (kvImg.getAttr('imgFill')) {
+                    canvas.ctx.fillStyle = kvImg.getAttr('imgFill');
                     canvas.ctx.globalCompositeOperation = 'source-in';
                     canvas.ctx.drawImage(img, 0, 0);
-                    canvas.ctx.globalCompositeOperation = 'overlay';
+                    canvas.ctx.globalCompositeOperation = 'color';
                     canvas.ctx.fillRect(0, 0, kvImg.width(), kvImg.height());
                 }
             };
@@ -715,10 +722,14 @@ function createMenuColor(parent, color, id) {
     button.append(jscolorButton);
     parent.append(button);
 
-    jscolorButton.oninput = ()=> {
+    let timeout;
+
+    jscolorButton.oninput = () => {
         var newColor = jscolorButton.jscolor.toHEXString();
         button.style.setProperty('--color', newColor);
+        clearTimeout(timeout);
         jscolorButton.targets.forEach(e => {
+            e.clearCache();
             e.onColor[id].forEach(attr => {
                 e.setAttr(attr, newColor);
                 if (needDraw.includes(attr)) {
@@ -726,7 +737,14 @@ function createMenuColor(parent, color, id) {
                 }
             });
         });
+        timeout = setTimeout(() => {
+            jscolorButton.targets.forEach(e => {
+                e.cache();
+            });
+            console.log('cache');
+        }, 1000);
     };
+
 }
 
 function colorAnalize(target, attrs) {
@@ -778,29 +796,23 @@ function getPath(url) {
     });
 }
   
-function imgPath(url, parent, attrs) {
+function imgPath(pathData, parent, attrs) {
     parent.destroyChildren();
-    getPath(url)
-    .then(pathData => {
-        var path2D = new Path2D(pathData);
-        var shape = new Konva.Shape({
-            height: parent.height(),
-            width: parent.width(),
-            ...attrs,
-            sceneFunc: function (ctx) {
-            ctx.clip(path2D);
-            ctx.fillStyle = this.fill();
-            ctx.fillRect(0, 0, this.width(), this.height());
-            },
-        });
-        colorAnalize(shape, attrs);
-        parent.add(shape);
-    })
-    .catch(error => {
-        console.error("Error processing SVG path:", error);
+    var path2D = new Path2D(pathData);
+    var shape = new Konva.Shape({
+        height: parent.height(),
+        width: parent.width(),
+        ...attrs,
+        sceneFunc: function (ctx) {
+        ctx.clip(path2D);
+        ctx.fillStyle = this.fill();
+        ctx.fillRect(0, 0, this.width(), this.height());
+        },
     });
+    colorAnalize(shape, attrs);
+    shape.cache();
+    parent.add(shape);
 }
-
 
 function translatePathData(pathData, dx, dy, scaleX, scaleY) {
     return pathData.replace(/([MLHVCSQTA])([^MLHVCSQTA]+)/gi, function(match, command, params) {
@@ -935,48 +947,30 @@ function textClip(url, targetID, text, height, rule) {
     });
 }
 
-function setClip(url, target, rule = 0) {
-    return fetch(url)
-    .then(response => response.text())
-    .then(svgText => {
-        var parser = new DOMParser();
-        var svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-        var pathElement = svgDoc.querySelector('path');
-        if (pathElement) {
-            var clip = pathElement.getAttribute('d');
-            var width = target.width();
-            var height = target.height();
-            var pathClip = new Path2D(clip);
-            
-            rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
-            target.setAttrs({
-                pathClip: pathClip,
-                rule: rule,
-                clipFunc: function (ctx) {
-                    ctx.rect(0, 0, width, height);
-                    var path2D = new Path2D();
-                    rule === 'evenodd' && path2D.rect(0, 0, width, height);
-                    path2D.addPath(target.getAttr('pathClip'));
-                    target.getAttr('pathText') && path2D.addPath(target.getAttr('pathText'));
-                    ctx._context.clip(path2D, rule);
-                },
-            });
-
-            // var rect = new Konva.Rect({
+function setClip(pathdata, target, rule = 0) {
+    var pathClip = new Path2D(pathdata);
+    var width = target.width();
+    var height = target.height();
+    
+    rule === 0 ? rule = 'nonzero' : rule = 'evenodd';
+    target.setAttrs({
+        pathClip: pathClip,
+        rule: rule,
+        clipFunc: function (ctx) {
+            ctx.rect(0, 0, width, height);
+            var path2D = new Path2D();
+            rule === 'evenodd' && path2D.rect(0, 0, width, height);
+            path2D.addPath(target.getAttr('pathClip'));
+            target.getAttr('pathText') && path2D.addPath(target.getAttr('pathText'));
+            ctx._context.clip(path2D, rule);
+        },
+    });
+    // var rect = new Konva.Rect({
             //     height: height,
             //     width: width,
             //     fill: 'red',
             // });
             // //target.add(rect);
-
-        } else {
-            console.error('no path found');
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching or parsing SVG:", error);
-        throw error;
-    });
 }
 
 function NewPotrace(event, parent, icon, attrs) {
@@ -1078,8 +1072,9 @@ function NewPotrace(event, parent, icon, attrs) {
                 iconsList.selected = undefined;
                 nodesBox.selected = undefined;
                 event.target.value = '';
-                loadOff();
                 dragOn([shape]);
+                shape.cache();
+                loadOff();
                 toShow(adjustBox, updateSets);
             });
         };
@@ -1164,6 +1159,7 @@ function upPotrace() {
             var pathData = pathElement.getAttribute('d');
             var path2D = new Path2D(pathData);
             nodeTarget[0].setAttr('path2D', path2D);
+            nodeTarget[0].cache();
             loadOff();
         });
     };
@@ -1319,16 +1315,25 @@ function createInput() {
         button.append(input);
         box.append(button);
         
+        var timeout;
         input.oninput = ()=> {
             var newColor = input.jscolor.toHEXString();
             if (nodeTarget.length > 0) {
+                clearTimeout(timeout);
                 nodeTarget.forEach(e => {
+                    e.clearCache();
                     e.setAttr(add.attr, newColor);
                     parent.btn.style.setProperty('--color', newColor);
                     if (needDraw.includes(add.attr)) {
                         e.image().draw();
                     }
                 });
+                timeout = setTimeout(() => {
+                    nodeTarget.forEach(e => {
+                        e.cache();
+                    });
+                    console.log('cache');
+                }, 1000);
             }
         }
         
@@ -1380,9 +1385,12 @@ function createInput() {
                 nodeTarget.forEach(e => {
                     var value = inputRange.value * (v.scale ? 5 : 1);
                     e.setAttr(add.attr, value);
-                    add.func ? eval(add.func) : '';
-                    if (needDraw.includes(add.attr)) {
+                    if (add.func) {
+                        eval(add.func);
+                    } else if (needDraw.includes(add.attr)) {
                         e.image().draw();
+                    } else {
+                        e.cache();
                     }
                 });
             }
@@ -1562,7 +1570,7 @@ function createInput() {
                 {
                     name: 'Cor',
                     type: 'color',
-                    attr: 'overFill',
+                    attr: 'imgFill',
                 }
             ]
         },
@@ -1616,7 +1624,7 @@ function createInput() {
                     attr: 'invert',
                     func: 'upPotrace()',
                     btns: [
-                        {text: 'Inverter', value: ['0', '1'], icon: 'assets/invert-svg.svg', class: 'invert'},
+                        {text: 'Inverter', value: ['0', '1'], icon: assets + 'invert-svg.svg', class: 'invert'},
                     ],
                 },
             ]
@@ -1729,10 +1737,10 @@ function createInput() {
                     attr: 'moveable',
                     btnHold: 'moveNode(value)',
                     btns: [
-                        {value: {n: 'up', v: 1}, class: 'up'},
-                        {value: {n: 'down', v: 1}, class: 'down'},
-                        {value: {n: 'left', v: 1}, class: 'left'},
-                        {value: {n: 'right', v: 1}, class: 'right'},
+                        {value: {n: 'up', v: 5 }, class: 'up'},
+                        {value: {n: 'down', v: 5}, class: 'down'},
+                        {value: {n: 'left', v: 5}, class: 'left'},
+                        {value: {n: 'right', v: 5}, class: 'right'},
                     ],
                 },
             ]
@@ -1862,14 +1870,18 @@ var menuColorList = [];
 const Camiseta = {
     areas: {
         Frente: {
-            url: 'assets/Camiseta-Front.png',
+            url: assets + 'Camiseta-Front.png',
             tamanho: {escala: 40, l: 3508, a: 4961},
             posição: {x: true, y: true},
+            input: 'InputPrintFront',
+            inputPrv: 'InputPreviewFront'
         }, 
         Costa: {
-            url: 'assets/Camiseta-Back.png',
+            url: assets + 'Camiseta-Back.png',
             tamanho: {escala: 40, l: 3508, a: 4961},
             posição: {x: true, y: 14},
+            input: 'InputPrintBack',
+            inputPrv: 'InputPreviewBack',
         }
     },
     cores: [
@@ -1880,33 +1892,6 @@ const Camiseta = {
         {name: 'Azul Marinho', color: '#191970'},
         {name: 'Azul Claro', color: '#87ceeb'},
         {name: 'Vermelho', color: '#ff0000'},
-    ],
-    tamanho: [
-        {t: 'P', l:40, a: 44},
-        {t: 'M', l:42, a: 46},
-        {t: 'G', l:44, a: 48},
-        {t: 'GG', l:46, a: 50},
-        {t: 'XGG', l:48, a: 52},
-    ],
-};
-
-const BabyLook = {
-    areas: {
-        Frente: {
-            url: 'assets/Camiseta-Front.png',
-            tamanho: {escala: 40, l: 3508, a: 4961},
-            posição: {x: true, y: true},
-        }, 
-        Costa: {
-            url: 'assets/Camiseta-Back.png',
-            tamanho: {escala: 40, l: 3508, a: 4961},
-            posição: {x: true, y: 14},
-        }
-    },
-    cores: [
-        {name: 'Off-White', color: '#FDF5E6'},
-        {name: 'Branco', color: '#ffffff'},
-        {name: 'Preto', color: '#2b2b2b'},
     ],
     tamanho: [
         {t: 'P', l:40, a: 44},
@@ -1935,6 +1920,9 @@ function createProduct() {
                 ...productLayer.size(),
                 clip: productLayer.size(),
             });
+            e[areaName].hide();
+
+            e[areaName].name = areaName;
 
             e[areaName].cor = new Konva.Image({ ...productLayer.size() });
             setPrColor(e[areaName].cor, area.url, e.cores[0].color),
@@ -1961,12 +1949,18 @@ function createProduct() {
 
             e[areaName].add(e[areaName].cor, e[areaName].print, e[areaName].overlay);
             productLayer.add(e[areaName]);
+
+            e[areaName].input = document.querySelector(`.${area.inputPrv}`);
+            e[areaName].print.input = document.querySelector(`.${area.input}`);
+
         });
         if (prColor === undefined) {
             prColor = addMainMenu('color', 'Cor do produto', false, true);
             prColor.style.setProperty('--color', e.cores[0].color);
             prColor.box = document.createElement('div');
             prColor.box.className = 'iconListBox';
+            var InputColor = document.querySelector('.InputColor');
+            InputColor.value = Camiseta.cores[0].name;
             Camiseta.cores.forEach(cor => {
                 var button = document.createElement('button');
                 button.className = `iconBtn color`;
@@ -1977,6 +1971,7 @@ function createProduct() {
                     Object.keys(e.areas).forEach(areaName => {
                         e[areaName].cor.image().draw(cor.color);
                     });
+                    InputColor.value = cor.name;
                 };
                 var span = document.createElement('span');
                 span.textContent = cor.name;
@@ -1997,5 +1992,3 @@ window.addEventListener('resize', ()=> {
         e.jscolor.width = Math.min(460, Math.max(window.innerWidth - 57));
     });
 });
-
-console.log('script 1');

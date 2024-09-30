@@ -1,7 +1,7 @@
-var setPrintArea = [
+var iniciar = [
     {
         area: {   
-            node: frontPrint,
+            node: Camiseta.Frente,
             name: 'Frente',
             add: [
                 {

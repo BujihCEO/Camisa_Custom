@@ -7,14 +7,15 @@ if (colorMenu) {
 var editList = [];
 var btnAreaList = [];
 for (var [index, item] of iniciar.entries()) {
-    if (item.area.node) {
-        let a = item.area;
+    if (item.node) {
+        let a = item;
         let p = a.node;
+        printList.push(p);
         let btn = document.createElement('button');
         let print = a.node.print;
         let rect = new Konva.Rect({...print.size()});
         print.add(rect);
-        btn.textContent = a.name;
+        btn.textContent = p.name;
         btnAreaList.push(btn);
         popupBtnWrap.appendChild(btn);
         let edit = document.createElement('div');
@@ -29,11 +30,11 @@ for (var [index, item] of iniciar.entries()) {
                     if (e === btn) {
                         e.classList.add('selected');
                         editList[i].classList.remove('hidden');
-                        iniciar[i].area.node.show();
+                        iniciar[i].node.show();
                     } else {
                         e.classList.remove('selected');
                         editList[i].classList.add('hidden');
-                        iniciar[i].area.node.hide();
+                        iniciar[i].node.hide();
                     }
                 });
             }
@@ -52,6 +53,7 @@ for (var [index, item] of iniciar.entries()) {
 
         if (index === 0) {
             btn.classList.add('selected');
+            p.show();
         } else { 
             p.hide();
             edit.classList.add('hidden'); 
@@ -208,7 +210,10 @@ for (var [index, item] of iniciar.entries()) {
                     if (att.clip) {
                         var clip = att.clip;
                         if (clip.url) {
-                            setClip(clip.url, group, clip.rule ? clip.rule : 0);
+                            getPath(clip.url)
+                                .then(pathdata => {
+                                    setClip(pathdata, group, clip.rule ? clip.rule : 0);
+                                });
                         }
                     }
 
@@ -229,37 +234,73 @@ for (var [index, item] of iniciar.entries()) {
                                 btn.forEach((btn, i) => {
                                     var button = document.createElement('button');
                                     var img = new Image();
-                                    img.src = btn.url;
-                                    if (i === 0) {
-                                        imgPath(btn.url, maskTarget, {...mask.attrs});
-                                        if (btn.clip) {
-                                            if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
-                                            else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
+                                    img.onload = () => {
+                                        var canvas = document.createElement('canvas');
+                                        var ctx = canvas.getContext('2d');
+                                        var scale = 1;
+                                        var maxHeight = 100;
+                                        var maxWidth = 150;
+                                        if (img.width > maxWidth || img.height > maxHeight) {
+                                            scale = Math.min(maxWidth / img.width, maxHeight / img.height);
                                         }
+                                        canvas.width = img.width * scale;
+                                        canvas.height = img.height * scale;
+                                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                                        var btnImg = new Image();
+                                        btnImg.onload = () => {
+                                            button.append(btnImg);
+                                        };
+                                        btnImg.src = canvas.toDataURL();
+                                    };
+                                    img.src = btn.url;
+                                    if (btn.img !== false) {
+                                        getPath(btn.url)
+                                        .then(pathdata => {
+                                            button.setImg = ()=> { imgPath(pathdata, maskTarget, {...mask.attrs}) }
+                                            i === 0 && button.setImg();
+                                        });
+                                    }
+                                    if (btn.clip) {
+                                        if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
+                                        else {
+                                            getPath(btn.clip.url)
+                                            .then(pathdata => {
+                                                var targets = [];
+                                                btn.clip.target.forEach(target => { targets.push(stage.findOne(`#${target}`)) });
+                                                button.setClip = ()=> {
+                                                    targets.forEach(target => {
+                                                        setClip(pathdata, target, btn.clip.rule ? btn.clip.rule : 0);
+                                                    });
+                                                }
+                                                i === 0 && button.setClip();
+                                            });
+                                        }
+                                    }
+                                    if (i === 0) {
                                         button.classList.add('selected');
                                         maskBox.selected = button;
                                     }
+
                                     button.onclick = ()=> {
                                         if (button === maskBox.selected) {
                                             return;
                                         } else {
-                                            imgPath(btn.url, maskTarget, {...mask.attrs});
-                                            if (btn.clip) {
-                                                if (!btn.clip.url || !btn.clip.target) {return console.error('Sem url ou target')}
-                                                else { setClip(btn.clip.url, stage.findOne(`#${btn.clip.target}`), btn.clip.rule ? btn.clip.rule : 0) }
-                                            }
+                                            button.setImg && button.setImg();
+                                            button.setClip &&  button.setClip();
                                             maskBox.selected.classList.remove('selected');
                                             button.classList.add('selected');
                                             maskBox.selected = button;
                                         }
                                     };
-                                    button.append(img);
                                     maskBox.append(button);
                                 });
                                 box.append(maskBox);
                             }
                             if (mask.url) {
-                                imgPath(mask.url, maskTarget, {...mask.attrs});
+                                getPath(mask.url)
+                                    .then(pathdata => {
+                                        imgPath(pathdata, maskTarget, {...mask.attrs});
+                                    });
                             }
                         }
                     }
@@ -381,13 +422,6 @@ for (var [index, item] of iniciar.entries()) {
                         textClip(clip.url, clip.target, targets, clip.height, clip.rule);
                     }
 
-                    if (att.clip) {
-                        var clip = att.clip;
-                        if (clip.url) {
-                            setClip(clip.url, group, clip.rule ? clip.rule : 0);
-                        }
-                    }
-
                     configBox.append(selectText, callEditor);
                     inputBox.append(input, configBox);
                     box.appendChild(inputBox);
@@ -398,3 +432,7 @@ for (var [index, item] of iniciar.entries()) {
 
     }
 }
+
+setTimeout(() => {
+    setPreviews();
+}, 3000);
