@@ -1,4 +1,4 @@
-var assets = '/FabricJs/assets/';
+var assets = '/Camisa_Custom/FabricJs/assets/';
 
 var prAssets = window.location.pathname;
 
