@@ -1,14 +1,15 @@
 body {
-    font-family: sans-serif;
     --base-border-radius: 12px;
     color: #0d1216;
     --light-border: #d7d7d7;
+    --light-btn-bg: rgba(57, 76, 96, .15);
 }
 
 button {
     background: none;
     border: none;
     cursor: pointer;
+    font-family: inherit;
     font-size: 12px;
     padding: unset;
 }
@@ -19,6 +20,18 @@ button {
 
 .toDown {
     translate: 0 100% !important;
+}
+
+.initial {
+    display: grid;
+    gap: 15px;
+}
+
+.boxPreview {
+    display: grid;
+    border: 3px solid var(--light-btn-bg);
+    border-radius: 20px;
+    overflow: hidden;
 }
 
 .prPreview {
@@ -32,43 +45,16 @@ button {
     aspect-ratio: 1;
 }
 
-.pageBtnWrap {
-    position: fixed;
-    display: grid;
-    grid-template: 1fr 1fr / 1fr 1fr;
-    gap: 6px;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.pageBtnWrap > button {
+.showPopup {
     display: flex;
     height: 50px;
-    background: black;
-    color: white;
-    font-size: 17px;
-    border-radius: 20px;
+    width: 100%;
+    font-size: 18px;
     padding: 5px;
-    font-weight: 600;
+    font-weight: 700;
     align-items: center;
     justify-content: center;
-    border: 2px solid black;
-}
-
-.pageBtnWrap > button:hover {
-    background: white;
-    color: black;
-}
-
-.pageBtnWrap > button:hover::after {
-    filter: invert(0);
-}
-
-.showPopup {
-    grid-column: 1/3;
+    background-color: var(--light-btn-bg);
 }
 
 .showPopup::after {
@@ -78,7 +64,45 @@ button {
     aspect-ratio: 1;
     margin: 0 10px;
     background: url(https://www.svgrepo.com/show/522527/edit-3.svg) center / contain no-repeat;
-    filter: invert(1);
+}
+
+.prSize {
+    display: grid;
+    gap: 10px;
+    overflow: hidden;
+    > span {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    > *:nth-child(2) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        > button {
+            font-size: 16px;
+            padding: 4px 10px;
+            background: white;
+            border: 1px solid black;
+            border-radius: 99px;
+            transition: 0.3s;
+        }
+        > button.selected {
+            background: black;
+            color: white;
+        }
+    }
+    > *:nth-child(3) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: max-content;
+        background: black;
+        color: white;
+        padding: 8px;
+        border-radius: 99px;
+        font-size: 12px;
+        transition: 0.3s;
+    }
 }
 
 .editorApp {
@@ -90,6 +114,7 @@ button {
     top: 0;
     left: 0;
     background: #393939f2;
+    z-index: 4999;
 }
 
 .popupEditor {
@@ -104,12 +129,20 @@ button {
 @media only screen and (min-width: 768px) {
     .popupEditor {
         border-radius: 30px;
+        margin: 15px 0;
+        height: calc(100% - 30px);
     }
     .customBox {
         display: flex !important;
     }
     .customBox > * {
-        min-width: 33.333%;
+        min-width: calc(50% - 12px) !important;
+    }
+    .imageBox.multi {
+        grid-template: auto auto / auto auto;
+    }
+    .imageBox.multi > .configBox {
+        grid-column: 1 / 3;
     }
 }
 
@@ -145,7 +178,7 @@ button {
 }
 
 .popupBtnWrap > button.selected {
-    background-color: rgba(57, 76, 96, .15);
+    background-color: var(--light-btn-bg);
 }
 
 .onTopApp > .close {
@@ -157,6 +190,7 @@ button {
 
 .canvaBox {
     position: relative;
+    top: 52px;
     width: 100%;
     height: 100%;
 }
@@ -177,6 +211,11 @@ button {
 .mainMenu > * {
     overflow: auto;
     width: 100%;
+}
+
+.mainMenu > *:first-child {
+    padding: 0 0 5px;
+    border-bottom: 1px solid var(--light-border);
 }
 
 .mainDesign {
@@ -228,7 +267,7 @@ button {
     box-sizing: border-box;
 }
 
-.customBox >* {
+.customBox > * {
     display: grid;
     justify-items: center;
     gap: 10px;
@@ -255,7 +294,8 @@ button {
 .imageBox {
     display: grid;
     justify-items: center;
-    row-gap: 10px;
+    align-items: center;
+    gap: 10px;
 }
 
 .imageBox > .boxPositions, .imageBox > .iconsBox {
@@ -290,11 +330,11 @@ button {
     aspect-ratio: 1/1;
 }
 
-.imageBox > .iconsBox.multi > button > div {
+.imageBox.multi > .iconsBox > button > div {
     height: 80%;
 }
 
-.imageBox > .iconsBox.multi > button > span {
+.imageBox.multi > .iconsBox > button > span {
     display: block;
     height: 20%;
     width: 100%;
@@ -326,7 +366,7 @@ button {
     width: calc(50% - 5px);
     gap: 5px;
     border-radius: var(--base-border-radius);
-    background-color: rgba(57, 76, 96, .15);
+    background-color: var(--light-btn-bg);
 }
 
 .configBox > button::before {
@@ -465,7 +505,7 @@ button {
     height: 40px;
     aspect-ratio: 1;
     border-radius: 50%;
-    background-color: rgba(57, 76, 96, .15);
+    background-color: var(--light-btn-bg);
 }
 
 .adjustBox.none::after {
@@ -487,6 +527,7 @@ button {
     display: grid;
     align-items: center;
     justify-items: center;
+    justify-content: center;
     height: 100%;
     gap: 5px;
     max-width: 80px;
@@ -497,7 +538,7 @@ button {
 }
 
 .iconBtn.selected {
-    background-color: rgba(57, 76, 96, .15);
+    background-color: var(--light-btn-bg);
 }
 
 .iconBtn::before {
@@ -641,7 +682,7 @@ button.invert {
     height: 45px;
     font-size: 16px;
     font-weight: 600;
-    background-color: rgba(57, 76, 96, .15);
+    background-color: var(--light-btn-bg);
     padding: 10px;
     border-radius: var(--base-border-radius);
 }
@@ -651,7 +692,7 @@ button.invert {
     width: auto;
 }
 
-.slider {
+.popupEditor .slider {
     position: relative;
     display: flex;
     align-items: center;
@@ -662,7 +703,7 @@ button.invert {
     padding: 0 5px;
 }
 
-.slider >* {
+.popupEditor .slider >* {
     flex: none;
     height: calc(80% - 5px);
     border-radius: var(--base-border-radius);
@@ -670,10 +711,26 @@ button.invert {
     transition: 0.3s;
 }
 
-.slider > .selected {
+.popupEditor .slider > .selected {
     height: calc(100% - 5px);
     box-shadow: 0 0 3px 0px red;
     border: 2px solid red;
+}
+
+.chooseBox {
+    display: flex;
+    gap: 8px;
+}
+
+.chooseBox > button {
+    padding: 8px 15px;
+    border-radius: 99px;
+    font-size: 16px;
+}
+
+.chooseBox > button.selected {
+    background-color: var(--light-btn-bg);
+    font-weight: 600;
 }
 
 .colorBox {
@@ -717,6 +774,22 @@ button.invert {
     border: none !important;
 }
 
+.Camiseta::before {
+    background: url(icons/icon-Camiseta.svg) center / contain;
+}
+
+.BabyLook::before {
+    background: url(icons/icon-Baby-Look.svg) center / contain;
+}
+
+.Cropped::before {
+    background: url(icons/Cropped.svg) center / contain;
+}
+
+.Ecobag::before {
+    background: url(icons/icon-Ecobag.svg) center / contain;
+}
+
 button.close {
     background: url(https://www.svgrepo.com/show/510922/close-sm.svg) center / contain no-repeat;
 }
@@ -742,19 +815,19 @@ button.close {
 }
 
 .type-text::before {
-    background: url(keyboard.svg) center / 100% no-repeat;
+    background: url(icons/keyboard.svg) center / 100% no-repeat;
 }
 
 .fontSize::before {
-    background: url(font-size.svg) center / 100% no-repeat;
+    background: url(icons/font-size.svg) center / 100% no-repeat;
 }
 
 [type="Text"] .stroke::before {
-    background: url(text-stroke.svg) center / 80% no-repeat;
+    background: url(icons/text-stroke.svg) center / 80% no-repeat;
 }
 
 [type="Text"] .shadow::before {
-    background: url(text-shadow.svg) center / 80% no-repeat;
+    background: url(icons/text-shadow.svg) center / 80% no-repeat;
 }
 
 [type="Text"] .color::before {
@@ -782,6 +855,10 @@ button.close {
     box-sizing: border-box;
 }
 
+.borderImg::before {
+    background: url(icons/img-border.svg) center / 100% no-repeat;
+}
+
 .position::before {
     background: url(https://www.svgrepo.com/show/376029/drag.svg) center / 80% no-repeat;
 }
@@ -795,11 +872,11 @@ button.close {
 }
 
 .callDesign::before {
-    background: url(design.svg) center / 100% no-repeat;
+    background: url(icons/design.svg) center / 100% no-repeat;
 }
 
-.initial::before {
-    background: url(center-focus.svg) center / 100% no-repeat;
+.Resize::before {
+    background: url(icons/center-focus.svg) center / 100% no-repeat;
 }
 
 .imgChooser {
@@ -812,4 +889,54 @@ button.close {
 
 .imgChooser > button > img {
     height: 100%;
+}
+
+.LoadingCustom {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    top: 0px;
+    left: 0px;
+    height: 100vh;
+    width: 100vw;
+    z-index: 99999;
+    background-color: #000000e6;
+}
+
+.LoadingCustom > span {
+    text-align: center;
+    color: white;
+    font-size: 30px;
+}
+
+.loadDots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadDots > div {
+    width: 20px;
+    height: 20px;
+    background: aqua;
+    border-radius: 50%;
+    margin : 3px;
+    animation: loadDots 0.6s infinite alternate;
+}
+
+.loadDots > div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loadDots > div:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loadDots {
+    to {
+        transform: translateY(-20px);
+    }
 }

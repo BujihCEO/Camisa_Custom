@@ -3,90 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="index.css">
     <title>Document</title>
 </head>
 <body>
-    <div class="bannerBox">
-        <div class="productBox">
-            <div class="productImg">
-
-            </div>
-        </div>
-        <div class="BannerText">
-            <p>Personalize do seu jeito</p>
-        </div>
-    </div>
+    
 </body>
-<style>
-    body {
-        padding-top: 50px;
-        margin: 0px;
-    }
-
-    .bannerBox {
-        display: flex;
-        align-items: center;
-        width: 100vw;
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-        flex-direction: column;
-    }
-
-    .productBox {
-        display: flex;
-        height: 400px;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .productImg {
-        height: 100%;
-        width: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        --time: 10s;
-        animation: changeBackground var(--time) infinite steps(1), sliderBanner var(--time) infinite;
-    }
-
-    @keyframes changeBackground {
-        0%, 97.5% {
-            background-image: url(assets/Bootleg\ Branca.png);
-        }
-        22.5% {
-            background-image: url(assets/Illusion\ Branca.png);
-        }
-        47.5% {
-            background-image: url(assets/Moments\ Branca.png);
-        }
-        72.5% {
-            background-image: url(assets/Sometimes\ Branca.png);
-        }
-    }
-
-    @keyframes sliderBanner {
-        0%, 20%, 25%, 45%, 50%, 70%, 75%, 95%, 100% {
-            transform: translateX(0%);
-            filter: drop-shadow(10px 0px 5px black);
-        }
-        22.5%, 47.5%, 72.5%, 97.5% {
-            transform: translateX(-100%);
-            filter: drop-shadow(0px 0px 5px black);
-        }
-    }
-
-    .BannerText {
-        display: flex;
-        justify-content: center;
-    }
-
-    .BannerText p {
-        font-size: 35px;
-        font-weight: 600;
-        font-family: sans-serif;
-        text-align: center;
-        margin: 10px;
-        text-transform: uppercase;
+<style> 
+    .hidden {
+        display: none !important;
     }
 </style>
+<script>
+    import("./index.js")
+</script>
 </html>

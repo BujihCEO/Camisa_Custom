@@ -1,0 +1,10 @@
+.editor {
+    display: grid;
+    justify-items: center;
+    width: 100%;
+}
+
+.editor canvas, .editor img {
+    max-height: 300px;
+    max-width: 100%;
+}
